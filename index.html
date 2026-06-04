@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Volko Engineering — Projektu kalkulators</title>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 <style>
 :root{--navy:#1a2b3c;--gold:#c8a84b;--bg:#f4f5f0;--card:#fff;--text:#1a2b3c;--muted:#6b7280;--border:#e2e8f0;--radius:10px;--red:#dc2626;--green:#059669}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -391,20 +392,27 @@ body { font-family:-apple-system,'Segoe UI',sans-serif; background:var(--bg); co
 <body>
 
 <div id="lock">
-<div class="lk-logo">
-<svg width="54" height="54" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><defs>
-<linearGradient id="lglk" x1="0" y1="0" x2="0" y2="1">
-<stop offset="0%" stop-color="#f0d060"/>
-<stop offset="60%" stop-color="#c8a84b"/>
-<stop offset="100%" stop-color="#8b6200"/>
-</linearGradient>
-</defs><path d="M8 46 A24 24 0 1 1 52 46" stroke="url(#lglk)" stroke-width="3" fill="none" stroke-linecap="round"/><rect x="12" y="34" width="9" height="14" rx="1.5" fill="url(#lglk)"/><rect x="25" y="24" width="9" height="24" rx="1.5" fill="url(#lglk)"/><rect x="38" y="14" width="9" height="34" rx="1.5" fill="url(#lglk)"/></svg>
-<div class="lk-brand">VOLKO</div>
+<canvas id="bg-canvas" style="position:absolute;inset:0;width:100%;height:100%;z-index:0;"></canvas>
+<div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;">
+  <div style="background:rgba(15,25,38,0.75);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(200,168,75,0.25);border-radius:18px;padding:40px 44px;box-shadow:0 24px 80px rgba(0,0,0,0.6);text-align:center;max-width:340px;width:100%;">
+    <div class="lk-logo" style="justify-content:center">
+      <svg width="54" height="54" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><defs>
+      <linearGradient id="lglk" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f0d060"/><stop offset="60%" stop-color="#c8a84b"/><stop offset="100%" stop-color="#8b6200"/>
+      </linearGradient></defs>
+      <path d="M8 46 A24 24 0 1 1 52 46" stroke="url(#lglk)" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <rect x="12" y="34" width="9" height="14" rx="1.5" fill="url(#lglk)"/>
+      <rect x="25" y="24" width="9" height="24" rx="1.5" fill="url(#lglk)"/>
+      <rect x="38" y="14" width="9" height="34" rx="1.5" fill="url(#lglk)"/></svg>
+      <div class="lk-brand">VOLKO</div>
+    </div>
+    <div class="lk-sub" style="margin-bottom:28px">Engineering · Projektu kalkulators</div>
+    <input type="password" id="pi" placeholder="Parole" autocomplete="off">
+    <button onclick="auth()" style="margin-top:4px">Ienākt</button>
+    <div class="lerr" id="pe"></div>
+    <div style="margin-top:16px;font-size:.65rem;color:rgba(255,255,255,.2);letter-spacing:1px;">Velc 3D modeli ar peli · Zoom ar ritenīti</div>
+  </div>
 </div>
-<div class="lk-sub">Engineering · Projektu kalkulators</div>
-<input type="password" id="pi" placeholder="Parole" autocomplete="off">
-<button onclick="auth()">Ienākt</button>
-<div class="lerr" id="pe"></div>
 </div>
 
 <div id="app" style="display:none">
@@ -2261,10 +2269,318 @@ function showWelcome() {
     if (win) win.innerHTML = aiWelcomeMsg();
 }
 
-// Init
+// Init AI
 (function aiInit() {
     const win = document.getElementById('ai-chat-window');
     if (win && win.innerHTML.trim() === '') win.innerHTML = aiWelcomeMsg();
+})();
+
+// ══════════════════════════════════════════════════════════════
+// THREE.JS — 3D MĀJAS MODELIS (LOGIN EKRĀNS)
+// ══════════════════════════════════════════════════════════════
+(function init3D() {
+    if (typeof THREE === 'undefined') return;
+    const canvas = document.getElementById('bg-canvas');
+    if (!canvas) return;
+
+    // Renderer
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
+
+    // Scene
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0d1a27);
+    scene.fog = new THREE.FogExp2(0x0d1a27, 0.018);
+
+    // Camera
+    const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 200);
+    camera.position.set(10, 6, 14);
+    camera.lookAt(0, 2, 0);
+
+    // ── LIGHTS ─────────────────────────────────────────────────
+    const ambient = new THREE.AmbientLight(0x334466, 0.8);
+    scene.add(ambient);
+
+    const sunLight = new THREE.DirectionalLight(0xfff4e0, 2.5);
+    sunLight.position.set(15, 25, 10);
+    sunLight.castShadow = true;
+    sunLight.shadow.mapSize.width = 2048;
+    sunLight.shadow.mapSize.height = 2048;
+    sunLight.shadow.camera.near = 0.5;
+    sunLight.shadow.camera.far = 80;
+    sunLight.shadow.camera.left = -20;
+    sunLight.shadow.camera.right = 20;
+    sunLight.shadow.camera.top = 20;
+    sunLight.shadow.camera.bottom = -20;
+    scene.add(sunLight);
+
+    // Warm window glow
+    const winLight = new THREE.PointLight(0xffd060, 3, 12);
+    winLight.position.set(0, 3, 3.5);
+    scene.add(winLight);
+
+    // Blue fill light from behind
+    const fillLight = new THREE.DirectionalLight(0x4466aa, 0.6);
+    fillLight.position.set(-10, 5, -10);
+    scene.add(fillLight);
+
+    // ── MATERIALS ──────────────────────────────────────────────
+    const wallMat = new THREE.MeshStandardMaterial({ color: 0x1e3250, roughness: 0.85, metalness: 0.05 });
+    const wall2Mat = new THREE.MeshStandardMaterial({ color: 0x243d62, roughness: 0.9, metalness: 0.0 });
+    const roofMat = new THREE.MeshStandardMaterial({ color: 0xb89430, roughness: 0.5, metalness: 0.4 });
+    const roofDarkMat = new THREE.MeshStandardMaterial({ color: 0x8b6200, roughness: 0.7, metalness: 0.2 });
+    const winMat = new THREE.MeshStandardMaterial({ color: 0xffd060, emissive: 0xffb020, emissiveIntensity: 1.2, roughness: 0.0, metalness: 0.8 });
+    const doorMat = new THREE.MeshStandardMaterial({ color: 0xc8a84b, roughness: 0.4, metalness: 0.6 });
+    const groundMat = new THREE.MeshStandardMaterial({ color: 0x0d1e30, roughness: 1.0, metalness: 0.0 });
+    const pathMat = new THREE.MeshStandardMaterial({ color: 0x1a2d45, roughness: 0.9 });
+    const chimMat = new THREE.MeshStandardMaterial({ color: 0x1a2540, roughness: 0.9 });
+    const treeTrunkMat = new THREE.MeshStandardMaterial({ color: 0x3d2b1a, roughness: 1.0 });
+    const treeLeaveMat = new THREE.MeshStandardMaterial({ color: 0x0d3320, roughness: 0.9, transparent: true, opacity: 0.9 });
+
+    // ── HOUSE GROUP ────────────────────────────────────────────
+    const house = new THREE.Group();
+
+    // Main body
+    const bodyGeo = new THREE.BoxGeometry(7, 3.5, 5);
+    const body = new THREE.Mesh(bodyGeo, wallMat);
+    body.position.y = 1.75;
+    body.castShadow = true;
+    body.receiveShadow = true;
+    house.add(body);
+
+    // Side extension (garage/wing)
+    const wingGeo = new THREE.BoxGeometry(3, 2.5, 3.5);
+    const wing = new THREE.Mesh(wingGeo, wall2Mat);
+    wing.position.set(-4.5, 1.25, 0);
+    wing.castShadow = true;
+    wing.receiveShadow = true;
+    house.add(wing);
+
+    // Main roof (pyramid)
+    const roofGeo = new THREE.ConeGeometry(5.2, 2.8, 4);
+    const roofMesh = new THREE.Mesh(roofGeo, roofMat);
+    roofMesh.position.y = 4.9;
+    roofMesh.rotation.y = Math.PI / 4;
+    roofMesh.castShadow = true;
+    house.add(roofMesh);
+
+    // Wing roof
+    const wingRoofGeo = new THREE.ConeGeometry(2.8, 2.0, 4);
+    const wingRoof = new THREE.Mesh(wingRoofGeo, roofDarkMat);
+    wingRoof.position.set(-4.5, 3.5, 0);
+    wingRoof.rotation.y = Math.PI / 4;
+    wingRoof.castShadow = true;
+    house.add(wingRoof);
+
+    // Chimney
+    const chimGeo = new THREE.BoxGeometry(0.6, 2.5, 0.6);
+    const chim = new THREE.Mesh(chimGeo, chimMat);
+    chim.position.set(2, 5.5, 0.5);
+    chim.castShadow = true;
+    house.add(chim);
+
+    // Chimney cap
+    const chimCapGeo = new THREE.BoxGeometry(0.9, 0.15, 0.9);
+    const chimCap = new THREE.Mesh(chimCapGeo, roofDarkMat);
+    chimCap.position.set(2, 6.8, 0.5);
+    house.add(chimCap);
+
+    // Front windows (2 on ground floor)
+    [-2, 2].forEach(x => {
+        // Window frame
+        const frameGeo = new THREE.BoxGeometry(1.5, 1.5, 0.15);
+        const frameMat = new THREE.MeshStandardMaterial({ color: 0x2a4060, roughness: 0.5 });
+        const frame = new THREE.Mesh(frameGeo, frameMat);
+        frame.position.set(x, 1.8, 2.58);
+        frame.castShadow = true;
+        house.add(frame);
+        // Window glass
+        const wGeo = new THREE.BoxGeometry(1.2, 1.2, 0.1);
+        const win = new THREE.Mesh(wGeo, winMat);
+        win.position.set(x, 1.8, 2.62);
+        house.add(win);
+    });
+
+    // Upper window (gable)
+    const upWinGeo = new THREE.BoxGeometry(1.0, 0.8, 0.1);
+    const upWin = new THREE.Mesh(upWinGeo, winMat);
+    upWin.position.set(0, 4.0, 2.58);
+    house.add(upWin);
+
+    // Door
+    const doorFrameGeo = new THREE.BoxGeometry(1.3, 2.3, 0.15);
+    const doorFrameMesh = new THREE.Mesh(doorFrameGeo, roofMat);
+    doorFrameMesh.position.set(0, 1.15, 2.57);
+    house.add(doorFrameMesh);
+    const doorGeoInner = new THREE.BoxGeometry(1.0, 2.0, 0.1);
+    const doorMesh = new THREE.Mesh(doorGeoInner, doorMat);
+    doorMesh.position.set(0, 1.0, 2.62);
+    house.add(doorMesh);
+    // Door handle
+    const handleGeo = new THREE.SphereGeometry(0.08, 8, 8);
+    const handleMat = new THREE.MeshStandardMaterial({ color: 0xffd060, metalness: 0.9, roughness: 0.1 });
+    const handle = new THREE.Mesh(handleGeo, handleMat);
+    handle.position.set(0.35, 0.95, 2.68);
+    house.add(handle);
+
+    // Steps
+    [0, 0.15, 0.3].forEach((y, i) => {
+        const stepGeo = new THREE.BoxGeometry(1.6 - i * 0.1, 0.15, 0.35 + i * 0.1);
+        const step = new THREE.Mesh(stepGeo, new THREE.MeshStandardMaterial({ color: 0x2a4060, roughness: 0.8 }));
+        step.position.set(0, y, 2.8 + i * 0.15);
+        step.receiveShadow = true;
+        house.add(step);
+    });
+
+    // Wing windows
+    const wwGeo = new THREE.BoxGeometry(1.2, 1.0, 0.1);
+    const ww = new THREE.Mesh(wwGeo, winMat);
+    ww.position.set(-4.5, 1.5, 1.76);
+    house.add(ww);
+
+    scene.add(house);
+
+    // ── GROUND & PATH ──────────────────────────────────────────
+    const groundGeo = new THREE.PlaneGeometry(80, 80);
+    const ground = new THREE.Mesh(groundGeo, groundMat);
+    ground.rotation.x = -Math.PI / 2;
+    ground.receiveShadow = true;
+    scene.add(ground);
+
+    // Path to door
+    const pathGeo = new THREE.BoxGeometry(1.4, 0.02, 6);
+    const path = new THREE.Mesh(pathGeo, pathMat);
+    path.position.set(0, 0.01, 5.8);
+    path.receiveShadow = true;
+    scene.add(path);
+
+    // Grid
+    const grid = new THREE.GridHelper(60, 40, 0x1a2d45, 0x0f1e2d);
+    grid.position.y = 0.01;
+    scene.add(grid);
+
+    // ── TREES ──────────────────────────────────────────────────
+    function addTree(x, z, h) {
+        const g = new THREE.Group();
+        const trunkGeo = new THREE.CylinderGeometry(0.15, 0.2, h * 0.4, 8);
+        const trunk = new THREE.Mesh(trunkGeo, treeTrunkMat);
+        trunk.position.y = h * 0.2;
+        trunk.castShadow = true;
+        g.add(trunk);
+        [0, h * 0.25, h * 0.45].forEach((ty, i) => {
+            const r = (0.9 - i * 0.2) * h * 0.35;
+            const cGeo = new THREE.ConeGeometry(r, h * 0.45, 7);
+            const c = new THREE.Mesh(cGeo, treeLeaveMat);
+            c.position.y = h * 0.4 + ty;
+            c.castShadow = true;
+            g.add(c);
+        });
+        g.position.set(x, 0, z);
+        scene.add(g);
+    }
+    addTree(7, 5, 4.5);
+    addTree(8, 2, 3.5);
+    addTree(-8, 4, 5);
+    addTree(-9, 1, 3.8);
+    addTree(-7, -3, 4.2);
+    addTree(9, -2, 3.2);
+
+    // ── STARS ──────────────────────────────────────────────────
+    const starsPositions = [];
+    for (let i = 0; i < 2000; i++) {
+        starsPositions.push(
+            (Math.random() - 0.5) * 300,
+            Math.random() * 120 + 8,
+            (Math.random() - 0.5) * 300
+        );
+    }
+    const starsGeo = new THREE.BufferGeometry();
+    starsGeo.setAttribute('position', new THREE.Float32BufferAttribute(starsPositions, 3));
+    const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.25, transparent: true, opacity: 0.9, sizeAttenuation: true });
+    const stars = new THREE.Points(starsGeo, starsMat);
+    scene.add(stars);
+
+    // ── MOON ───────────────────────────────────────────────────
+    const moonGeo = new THREE.SphereGeometry(2, 16, 16);
+    const moonMat = new THREE.MeshStandardMaterial({ color: 0xfff4d0, emissive: 0xffd060, emissiveIntensity: 0.3, roughness: 0.8 });
+    const moon = new THREE.Mesh(moonGeo, moonMat);
+    moon.position.set(25, 35, -40);
+    scene.add(moon);
+
+    // ── MOUSE/TOUCH INTERACTION ────────────────────────────────
+    let isDragging = false;
+    let prevX = 0, prevY = 0;
+    let rotY = 0.3, rotX = 0.1;
+    let targetRotY = 0.3, targetRotX = 0.1;
+    let zoom = 14, targetZoom = 14;
+
+    canvas.addEventListener('mousedown', e => { isDragging = true; prevX = e.clientX; prevY = e.clientY; });
+    window.addEventListener('mousemove', e => {
+        if (!isDragging) return;
+        targetRotY += (e.clientX - prevX) * 0.008;
+        targetRotX += (e.clientY - prevY) * 0.004;
+        targetRotX = Math.max(-0.3, Math.min(0.5, targetRotX));
+        prevX = e.clientX; prevY = e.clientY;
+    });
+    window.addEventListener('mouseup', () => { isDragging = false; });
+
+    canvas.addEventListener('wheel', e => {
+        targetZoom += e.deltaY * 0.02;
+        targetZoom = Math.max(6, Math.min(25, targetZoom));
+    }, { passive: true });
+
+    canvas.addEventListener('touchstart', e => { isDragging = true; prevX = e.touches[0].clientX; prevY = e.touches[0].clientY; });
+    canvas.addEventListener('touchmove', e => {
+        if (!isDragging) return;
+        targetRotY += (e.touches[0].clientX - prevX) * 0.01;
+        prevX = e.touches[0].clientX; prevY = e.touches[0].clientY;
+        e.preventDefault();
+    }, { passive: false });
+    canvas.addEventListener('touchend', () => { isDragging = false; });
+
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // ── ANIMATION LOOP ─────────────────────────────────────────
+    const clock = new THREE.Clock();
+    function animate() {
+        requestAnimationFrame(animate);
+        const t = clock.getElapsedTime();
+
+        // Auto-rotate when not dragging
+        if (!isDragging) targetRotY += 0.002;
+
+        // Smooth lerp
+        rotY += (targetRotY - rotY) * 0.06;
+        rotX += (targetRotX - rotX) * 0.06;
+        zoom += (targetZoom - zoom) * 0.06;
+
+        // Orbit camera
+        camera.position.x = Math.sin(rotY) * zoom * Math.cos(rotX);
+        camera.position.z = Math.cos(rotY) * zoom * Math.cos(rotX);
+        camera.position.y = zoom * Math.sin(rotX) + 3;
+        camera.lookAt(0, 2.5, 0);
+
+        // Window flicker
+        winLight.intensity = 2.8 + Math.sin(t * 1.7) * 0.2 + Math.sin(t * 3.1) * 0.1;
+
+        // Stars slow drift
+        stars.rotation.y = t * 0.00015;
+
+        // Gentle house bob
+        house.position.y = Math.sin(t * 0.4) * 0.04;
+
+        renderer.render(scene, camera);
+    }
+    animate();
 })();
 
 </script>
