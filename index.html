@@ -430,6 +430,36 @@ body { font-family:-apple-system,'Segoe UI',sans-serif; background:var(--bg); co
 
 <div id="tab-ar" class="tab-panel active">
 <div class="mw">
+
+<!-- ══ IEVADA CEĻVEDIS (redzams pirms izvēles) ══ -->
+<div id="ar-guide" class="card" style="margin-bottom:18px;background:linear-gradient(135deg,var(--navy) 0%,#2d4a6b 100%);color:white;">
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;">
+    <div style="text-align:center;padding:10px 8px;">
+      <div style="font-size:1.6rem;margin-bottom:5px">🏗</div>
+      <div style="font-size:.75rem;font-weight:700;color:var(--gold);margin-bottom:3px">SOLIS 1</div>
+      <div style="font-size:.78rem;color:rgba(255,255,255,.85);line-height:1.4">Izvēlies projekta tipu<br><span style="color:rgba(255,255,255,.5);font-size:.7rem">Jaunbūve? Legalizācija?<br>Rekonstrukcija?</span></div>
+    </div>
+    <div style="text-align:center;padding:10px 8px;border-left:1px solid rgba(255,255,255,.1)">
+      <div style="font-size:1.6rem;margin-bottom:5px">📐</div>
+      <div style="font-size:.75rem;font-weight:700;color:var(--gold);margin-bottom:3px">SOLIS 2</div>
+      <div style="font-size:.78rem;color:rgba(255,255,255,.85);line-height:1.4">Ievadi platību m²<br><span style="color:rgba(255,255,255,.5);font-size:.7rem">Ēkas lielums nosaka<br>büvniecības grupu</span></div>
+    </div>
+    <div style="text-align:center;padding:10px 8px;border-left:1px solid rgba(255,255,255,.1)">
+      <div style="font-size:1.6rem;margin-bottom:5px">📍</div>
+      <div style="font-size:.75rem;font-weight:700;color:var(--gold);margin-bottom:3px">SOLIS 3</div>
+      <div style="font-size:.78rem;color:rgba(255,255,255,.85);line-height:1.4">Izvēlies pašvaldību<br><span style="color:rgba(255,255,255,.5);font-size:.7rem">Rīgā cenas augstākas<br>par citiem novadiem</span></div>
+    </div>
+    <div style="text-align:center;padding:10px 8px;border-left:1px solid rgba(255,255,255,.1)">
+      <div style="font-size:1.6rem;margin-bottom:5px">💰</div>
+      <div style="font-size:.75rem;font-weight:700;color:var(--gold);margin-bottom:3px">REZULTĀTS</div>
+      <div style="font-size:.78rem;color:rgba(255,255,255,.85);line-height:1.4">Cena + soļu plāns<br><span style="color:rgba(255,255,255,.5);font-size:.7rem">Kas jādara, kāpēc,<br>cik tas maksā</span></div>
+    </div>
+  </div>
+  <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.1);font-size:.74rem;color:rgba(255,255,255,.5);text-align:center;">
+    💡 Ja kaut kas nav skaidrs — atver <strong style="color:var(--gold)">🤖 AI Konsultants</strong> tabu augšā un uzdod jautājumu
+  </div>
+</div>
+
 <div class="two-col">
 <div>
 <div class="card">
@@ -524,7 +554,16 @@ body { font-family:-apple-system,'Segoe UI',sans-serif; background:var(--bg); co
 </div>
 <div class="card">
 <div class="card-title">Cenas aprēķins</div>
-<div id="ar-p-empty" class="p-empty">🏗 Izvēlies tipu un ievadi platību</div>
+<div id="ar-p-empty" class="p-empty">
+<div style="font-size:1.6rem;margin-bottom:8px">🏗</div>
+<div style="font-weight:700;color:var(--navy);margin-bottom:6px">Izvēlies projekta tipu</div>
+<div style="font-size:.78rem;line-height:1.55">
+1. Kreisajā pusē izvēlies <strong>projekta tipu</strong><br>
+2. Ievadi <strong>platību m²</strong> un stāvu skaitu<br>
+3. Izvēlies <strong>pašvaldību</strong><br>
+4. Saņem <strong>cenu + soļu plānu</strong>
+</div>
+</div>
 <div id="ar-p-result" style="display:none">
 <div class="p-box">
 <div class="p-box-lbl">Klientam piedāvāt</div>
@@ -1227,51 +1266,38 @@ body { font-family:-apple-system,'Segoe UI',sans-serif; background:var(--bg); co
       </div>
     </div>
 
-    <!-- API Key josla -->
-    <div class="api-key-section" id="ai-api-section">
-      <div class="api-key-header" onclick="aiToggleApiSection()">
-        <h4>🔑 Gemini API atslēga</h4>
-        <span class="toggle-icon" id="ai-api-toggle-icon">▲ sakļaut</span>
-      </div>
-      <div class="api-key-body" id="ai-api-body">
-        <div style="font-size:.78rem;color:#666;margin-bottom:8px;">
-          Bezmaksas atslēga: <a href="https://aistudio.google.com/apikey" target="_blank"
-          style="color:var(--navy)">aistudio.google.com/apikey</a>. Tiek saglabāta tikai pārlūkā (sessionStorage).
-        </div>
-        <div class="api-key-row">
-          <input class="api-input" type="password" id="ai-api-input"
-                 placeholder="AIza..." autocomplete="off">
-          <button class="api-save-btn" onclick="aiSaveKey()">Saglabāt</button>
-        </div>
-        <div class="api-status" id="ai-api-status">Nav ievadīta atslēga</div>
-      </div>
+    <!-- Status josla — AI gatavs -->
+    <div style="background:#ecfdf5;border:1px solid #6ee7b7;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:.8rem;color:#065f46;display:flex;align-items:center;gap:8px;">
+      <span style="font-size:1rem">✅</span>
+      <span><strong>AI Konsultants gatavs</strong> — powered by Abacus AI. Uzdod jebkuru jautājumu par büvniecību Latvijā.</span>
     </div>
 
-    <!-- Ātrās pogas -->
-    <div class="quick-btns">
-      <button class="qbtn" onclick="aiQuick('Cik maksā 120m² jaunbūve Rīgā?')">💰 120m² jaunbūve Rīgā?</button>
-      <button class="qbtn" onclick="aiQuick('Kā legalizēt patvaļīgi celtu ēku?')">🏚️ Legalizācija</button>
-      <button class="qbtn" onclick="aiQuick('Kas ir ESI un vai tā vajadzīga?')">📋 Kas ir ESI?</button>
-      <button class="qbtn" onclick="aiQuick('Kāda atšķirība L1 vs L2 vs L3 BK detalizācijā?')">📐 L1 vs L2 vs L3</button>
-      <button class="qbtn" onclick="aiQuick('Ko nozīmē II grupas ēka?')">🏠 II grupas ēka</button>
-      <button class="qbtn" onclick="aiQuick('Cik ilgi aizņem legalizācija?')">⏱️ Legalizācijas laiks</button>
-      <button class="qbtn" onclick="aiQuick('Kāpēc vajag TAA apsekošanu?')">🔍 Kāpēc TAA?</button>
-      <button class="qbtn" onclick="aiQuick('Kādi dokumenti vajadzīgi no klienta?')">📁 Klienta dokumenti</button>
+    <!-- Ātrās pogas — 2 rindas -->
+    <div style="margin-bottom:10px;">
+      <div style="font-size:.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:7px;">🚀 Ātrie jautājumi — klikšķini lai sāktu</div>
+      <div class="quick-btns">
+        <button class="qbtn" onclick="aiQuick('Kur sākt ja gribu celt jaunu māju? Izskaidro soli pa solim.')">🏗 Kur sākt — jaunbūve?</button>
+        <button class="qbtn" onclick="aiQuick('Man ir māja kas uzcelta bez atļaujas. Ko darīt? Kādi riski un kāda ir legalizācijas procedūra?')">⚠️ Patvaļīga ēka — ko darīt?</button>
+        <button class="qbtn" onclick="aiQuick('Kas ir NOD — nodošana ekspluatācijā? Kāpēc tas vajadzīgs un kā tas notiek?')">📋 Kas ir NOD?</button>
+        <button class="qbtn" onclick="aiQuick('Kas ir BIS sistēma? Kā tā darbojas un kāpēc visi büvniecības dokumenti iet caur BIS?')">💻 Kas ir BIS?</button>
+        <button class="qbtn" onclick="aiQuick('Cik viss kopā izmaksās? Man ir 120m² privātmāja Rīgas novadā. Vajag legalizēt. Aprēķini pilnu izmaksu sadalījumu.')">💰 Cik maksā legalizācija?</button>
+        <button class="qbtn" onclick="aiQuick('Kāda büvniecības atļauja man vajadzīga? Izskaidro atšķirību starp paskaidrojuma rakstu, apliecinājuma karti un büvatļauju.')">📑 Kāda atļauja vajadzīga?</button>
+        <button class="qbtn" onclick="aiQuick('Kas notiks ja celšu bez atļaujas? Kādi ir riski Latvijā?')">🚫 Riski bez atļaujas</button>
+        <button class="qbtn" onclick="aiQuick('Kādi dokumenti man jāsagatavo pirms es vēršos pie arhitekta? Kas jau jābūt rokās?')">📁 Kādi dokumenti vajadzīgi?</button>
+        <button class="qbtn" onclick="aiQuick('Ko nozīmē ESI — juridiskā esošās situācijas izpēte? Kad tā vajadzīga un ko tā pārbauda?')">🔍 Kas ir ESI?</button>
+        <button class="qbtn" onclick="aiQuick('Vai var pārdot māju bez ekspluatācijas akta? Ko tas nozīmē bankā un nekustamo īpašumu tirgū?')">🏠 Pārdot bez NOD?</button>
+        <button class="qbtn" onclick="aiQuick('Cik ilgi aizņem viss büvniecības process no projekta līdz dzīvoklim? Dod reālistisku laika plānu.')">⏱️ Cik ilgi viss aizņem?</button>
+        <button class="qbtn" onclick="aiQuick('Kas ir kadastra numurs un kā to atrast? Kāpēc tas vajadzīgs büvniecībā?')">🔢 Kas ir kadastra numurs?</button>
+      </div>
     </div>
 
     <!-- Chat window -->
-    <div class="chat-window" id="ai-chat-window">
-      <div class="msg ai">
-        Sveiki! Es esmu Volko Engineering AI konsultants. Varu palīdzēt ar jautājumiem par
-        arhitektūras projektiem, cenām, BK dokumentāciju un būvniecības procesiem Latvijā.<br><br>
-        Uzdodi jautājumu vai izmanto ātrās pogas augšā! ⬆️
-      </div>
-    </div>
+    <div class="chat-window" id="ai-chat-window"></div>
 
     <!-- Input -->
     <div class="chat-input-row">
       <textarea class="chat-input" id="ai-input"
-                placeholder="Uzdod jautājumu..." rows="1"
+                placeholder="Uzdod jautājumu latviski vai angliski..." rows="1"
                 onkeydown="aiKeydown(event)"></textarea>
       <button class="send-btn" id="ai-send-btn" onclick="aiSend()">Sūtīt ▶</button>
     </div>
@@ -1292,7 +1318,19 @@ body { font-family:-apple-system,'Segoe UI',sans-serif; background:var(--bg); co
 
 <script>
 const PWD="22!Deamontools";
-function auth(){if(document.getElementById("pi").value===PWD){document.getElementById("lock").style.display="none";document.getElementById("app").style.display="block";sessionStorage.setItem("va","1");}else{document.getElementById("pe").textContent="Nepareiza parole";document.getElementById("pi").value="";}}
+function auth(){
+  const entered=document.getElementById("pi").value.trim();
+  if(entered===PWD){
+    document.getElementById("lock").style.display="none";
+    document.getElementById("app").style.display="block";
+    sessionStorage.setItem("va","1");
+    showWelcome();
+  }else{
+    document.getElementById("pe").textContent="Nepareiza parole — pārbaudi lielos/mazos burtus";
+    document.getElementById("pi").value="";
+    document.getElementById("pi").focus();
+  }
+}
 document.getElementById("pi").addEventListener("keydown",e=>{if(e.key==="Enter")auth();document.getElementById("pe").textContent="";});
 if(sessionStorage.getItem("va")){document.getElementById("lock").style.display="none";document.getElementById("app").style.display="block";}
 function switchTab(id,btn){document.querySelectorAll(".tab-panel").forEach(t=>t.classList.remove("active"));document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));document.getElementById("tab-"+id).classList.add("active");btn.classList.add("active");}
@@ -2131,44 +2169,42 @@ function aiRemoveLoading() {
     if (el) el.remove();
 }
 
-async function sendToGemini(userMessage) {
-    const apiKey = sessionStorage.getItem('gemini-key');
-    if (!apiKey) { aiShowApiPrompt(); return null; }
+// ── ABACUS API (OpenAI-compatible, iebūvēta atslēga) ──────────
+const ABACUS_KEY = "s2_b0bdc13a9b0f4d829a852dbf5281761f";
 
-    const contents = aiChatHistory.map(m => ({
-        role: m.role,
-        parts: [{ text: m.text }]
-    }));
-    contents.push({ role: 'user', parts: [{ text: userMessage }] });
+async function sendToAI(userMessage) {
+    const messages = [
+        { role: "system", content: AI_SYSTEM },
+        ...aiChatHistory.map(m => ({
+            role: m.role === 'model' ? 'assistant' : m.role,
+            content: m.text
+        })),
+        { role: "user", content: userMessage }
+    ];
 
-    const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-        {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                system_instruction: { parts: [{ text: AI_SYSTEM }] },
-                contents: contents,
-                generationConfig: { temperature: 0.7, maxOutputTokens: 1024 }
-            })
-        }
-    );
+    const response = await fetch("https://routellm.abacus.ai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+            "Authorization": "Bearer " + ABACUS_KEY,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            model: "route-llm",
+            messages: messages,
+            temperature: 0.7,
+            max_tokens: 1500
+        })
+    });
 
     const data = await response.json();
-    if (data.error) throw new Error(data.error.message);
-    return data.candidates[0].content.parts[0].text;
+    if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+    return data.choices[0].message.content;
 }
 
 async function aiSend() {
     const input = document.getElementById('ai-input');
-    const msg   = input.value.trim();
+    const msg = input.value.trim();
     if (!msg || aiTyping) return;
-
-    const apiKey = sessionStorage.getItem('gemini-key');
-    if (!apiKey) {
-        aiShowApiPrompt();
-        return;
-    }
 
     input.value = '';
     input.style.height = '44px';
@@ -2177,11 +2213,10 @@ async function aiSend() {
 
     aiAppendMsg('user', msg);
     aiChatHistory.push({ role: 'user', text: msg });
-
     aiShowLoading();
 
     try {
-        const reply = await sendToGemini(msg);
+        const reply = await sendToAI(msg);
         aiRemoveLoading();
         if (reply) {
             aiChatHistory.push({ role: 'model', text: reply });
@@ -2189,16 +2224,7 @@ async function aiSend() {
         }
     } catch(err) {
         aiRemoveLoading();
-        let errMsg = 'Kļūda: ' + err.message;
-        if (err.message.toLowerCase().includes('api key') ||
-            err.message.toLowerCase().includes('invalid')) {
-            errMsg = '⚠️ Nepareiza API atslēga. Pārbaudi un ievadi atkārtoti.';
-            sessionStorage.removeItem('gemini-key');
-            aiUpdateApiStatus(false);
-            document.getElementById('ai-api-body').style.display = 'block';
-            document.getElementById('ai-api-toggle-icon').textContent = '▲ sakļaut';
-        }
-        aiAppendMsg('error', errMsg);
+        aiAppendMsg('error', '⚠️ Kļūda: ' + err.message + ' — pārbaudi interneta savienojumu.');
     }
 
     aiTyping = false;
@@ -2211,11 +2237,7 @@ function aiQuick(text) {
 }
 
 function aiKeydown(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        aiSend();
-    }
-    // Auto-resize textarea
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); aiSend(); }
     const ta = document.getElementById('ai-input');
     setTimeout(() => {
         ta.style.height = '44px';
@@ -2226,56 +2248,34 @@ function aiKeydown(e) {
 function aiClearChat() {
     aiChatHistory = [];
     const win = document.getElementById('ai-chat-window');
-    win.innerHTML = '<div class="msg ai">Saruna notīrīta. Ko vēlies uzzināt?</div>';
+    win.innerHTML = aiWelcomeMsg();
 }
 
-function aiSaveKey() {
-    const val = document.getElementById('ai-api-input').value.trim();
-    if (!val) { aiUpdateApiStatus(false, 'Ievadi atslēgu!'); return; }
-    sessionStorage.setItem('gemini-key', val);
-    document.getElementById('ai-api-input').value = '';
-    aiUpdateApiStatus(true);
-    // Sakļauj joslu pēc saglabāšanas
-    setTimeout(() => {
-        document.getElementById('ai-api-body').style.display = 'none';
-        document.getElementById('ai-api-toggle-icon').textContent = '▼ izvērst';
-    }, 800);
+function aiWelcomeMsg() {
+    return `<div class="msg ai">
+<strong>Sveicināti! Es esmu Volko Engineering AI konsultants.</strong><br><br>
+Varu atbildēt uz jebkuru jautājumu par:<br>
+• 🏗 <strong>Büvniecības procesu</strong> — kas jādara, kādā secībā<br>
+• 📋 <strong>Atļaujām</strong> — BIS, büvatļauja, paskaidrojuma raksts<br>
+• ⚠️ <strong>Legalizāciju</strong> — kā sakārtot patvaļīgu ēku<br>
+• 💰 <strong>Cenām</strong> — cik maksā projekts, NOD, ESI<br>
+• 📝 <strong>NOD</strong> — nodošana ekspluatācijā, process, dokumenti<br>
+• ❓ Jebko citu par büvniecību Latvijā<br><br>
+<em>Izmanto ātrās pogas zemāk vai uzraksti savu jautājumu!</em>
+</div>`;
 }
 
-function aiUpdateApiStatus(ok, msg) {
-    const el = document.getElementById('ai-api-status');
-    if (ok) {
-        el.className = 'api-status ok';
-        el.textContent = '✓ Atslēga saglabāta (sesijā)';
-    } else {
-        el.className = 'api-status err';
-        el.textContent = msg || 'Nav ievadīta atslēga';
-    }
+// ── WELCOME SCREEN (pēc pieslēgšanās) ────────────────────────
+function showWelcome() {
+    // Inicializē AI chat ar welcome ziņu
+    const win = document.getElementById('ai-chat-window');
+    if (win) win.innerHTML = aiWelcomeMsg();
 }
 
-function aiShowApiPrompt() {
-    document.getElementById('ai-api-body').style.display = 'block';
-    document.getElementById('ai-api-toggle-icon').textContent = '▲ sakļaut';
-    document.getElementById('ai-api-input').focus();
-    aiUpdateApiStatus(false, '⚠️ Ievadi API atslēgu lai turpinātu');
-}
-
-function aiToggleApiSection() {
-    const body = document.getElementById('ai-api-body');
-    const icon = document.getElementById('ai-api-toggle-icon');
-    const visible = body.style.display !== 'none';
-    body.style.display = visible ? 'none' : 'block';
-    icon.textContent = visible ? '▼ izvērst' : '▲ sakļaut';
-}
-
-// Init AI — pārbauda vai atslēga jau saglabāta
+// Init
 (function aiInit() {
-    const existing = sessionStorage.getItem('gemini-key');
-    if (existing) {
-        aiUpdateApiStatus(true);
-        document.getElementById('ai-api-body').style.display = 'none';
-        document.getElementById('ai-api-toggle-icon').textContent = '▼ izvērst';
-    }
+    const win = document.getElementById('ai-chat-window');
+    if (win && win.innerHTML.trim() === '') win.innerHTML = aiWelcomeMsg();
 })();
 
 </script>
