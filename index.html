@@ -18,65 +18,55 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-        /* ── PASSWORD ─────────────────────────────── */
-        #lock {
-            position: fixed; inset: 0; background: var(--navy);
-            display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999;
-        }
+        /* ── PASSWORD ──────────────────────────── */
+        #lock { position: fixed; inset: 0; background: var(--navy); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; }
         #lock .brand { color: var(--gold); font-size: 2.2rem; font-weight: 800; letter-spacing: 6px; }
-        #lock .brand-sub { color: rgba(255,255,255,0.3); font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 40px; }
-        #lock input {
-            width: 260px; padding: 13px 16px; margin-bottom: 8px;
-            background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15);
-            border-radius: 8px; color: #fff; font-size: 1rem; text-align: center;
-            letter-spacing: 4px; outline: none; transition: border-color .2s;
-        }
+        #lock .brand-sub { color: rgba(255,255,255,0.3); font-size: .72rem; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 40px; }
+        #lock input { width: 260px; padding: 13px 16px; margin-bottom: 8px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: #fff; font-size: 1rem; text-align: center; letter-spacing: 4px; outline: none; transition: border-color .2s; }
         #lock input:focus { border-color: var(--gold); }
-        #lock button {
-            width: 260px; padding: 13px; background: var(--gold); color: var(--navy);
-            border: none; border-radius: 8px; font-weight: 700; font-size: .9rem;
-            letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer;
-        }
+        #lock button { width: 260px; padding: 13px; background: var(--gold); color: var(--navy); border: none; border-radius: 8px; font-weight: 700; font-size: .9rem; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; }
         #lock button:hover { opacity: .88; }
         .lerr { color: #fc8181; font-size: .8rem; margin-top: 10px; min-height: 18px; }
 
-        /* ── HEADER ─────────────────────────────── */
-        header { background: var(--navy); padding: 18px 32px; display: flex; align-items: center; justify-content: space-between; }
+        /* ── HEADER ────────────────────────────── */
+        header { background: var(--navy); padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; }
         .logo { color: var(--gold); font-size: 1.3rem; font-weight: 800; letter-spacing: 4px; }
         .logo span { color: rgba(255,255,255,0.3); font-weight: 300; margin-left: 8px; }
         .logo-sub { color: rgba(255,255,255,0.25); font-size: .7rem; letter-spacing: 2px; text-transform: uppercase; }
 
-        /* ── LAYOUT ─────────────────────────────── */
-        main { max-width: 1060px; margin: 0 auto; padding: 28px 20px; display: grid; grid-template-columns: 370px 1fr; gap: 20px; align-items: start; }
+        /* ── TABS ──────────────────────────────── */
+        .tabs { background: var(--navy); border-top: 1px solid rgba(255,255,255,0.08); display: flex; padding: 0 32px; }
+        .tab-btn { padding: 12px 24px; color: rgba(255,255,255,0.4); font-size: .82rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; border: none; background: none; border-bottom: 2px solid transparent; transition: all .2s; }
+        .tab-btn:hover { color: rgba(255,255,255,0.7); }
+        .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* ── LAYOUT ────────────────────────────── */
+        main { max-width: 1060px; margin: 0 auto; padding: 24px 20px; display: grid; grid-template-columns: 370px 1fr; gap: 20px; align-items: start; }
         @media (max-width: 760px) { main { grid-template-columns: 1fr; } }
 
         /* ── CARDS ─────────────────────────────── */
         .card { background: var(--card); border-radius: var(--radius); padding: 22px; box-shadow: 0 1px 3px rgba(0,0,0,.07), 0 4px 12px rgba(0,0,0,.04); }
         .card-title { font-size: .68rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
 
-        /* ── FORM ─────────────────────────────── */
+        /* ── FORM ──────────────────────────────── */
         .field { margin-bottom: 14px; }
         label.lbl { display: block; font-size: .75rem; font-weight: 600; color: var(--muted); letter-spacing: .8px; text-transform: uppercase; margin-bottom: 5px; }
-        select, input[type="number"] {
-            width: 100%; padding: 9px 12px; border: 1px solid var(--border);
-            border-radius: 7px; font-size: .92rem; color: var(--text);
-            background: #fafaf8; outline: none; transition: border-color .2s; appearance: none;
-        }
-        select {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-            background-repeat: no-repeat; background-position: right 11px center; padding-right: 32px;
-        }
+        select, input[type="number"] { width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 7px; font-size: .92rem; color: var(--text); background: #fafaf8; outline: none; transition: border-color .2s; appearance: none; }
+        select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 11px center; padding-right: 32px; }
         select:focus, input:focus { border-color: var(--gold); background: #fff; }
         .checks { display: flex; flex-direction: column; gap: 7px; }
         .check { display: flex; align-items: center; gap: 8px; font-size: .86rem; cursor: pointer; }
         .check input { width: 15px; height: 15px; accent-color: var(--gold); cursor: pointer; flex-shrink: 0; }
+        .field-note { font-size: .72rem; color: var(--muted); margin-top: 4px; }
 
-        /* ── GROUP ─────────────────────────────── */
+        /* ── GROUP BADGE ───────────────────────── */
         .grp-row { display: flex; gap: 12px; align-items: center; padding: 12px 14px; background: var(--bg); border-radius: 8px; margin-bottom: 14px; }
         .grp-badge { background: var(--navy); color: var(--gold); padding: 7px 14px; border-radius: 6px; font-size: .92rem; font-weight: 700; letter-spacing: 1px; white-space: nowrap; }
         .grp-desc { font-size: .81rem; color: var(--muted); line-height: 1.4; }
 
-        /* ── PRICE ─────────────────────────────── */
+        /* ── PRICE DISPLAY ─────────────────────── */
         .p-empty { text-align: center; padding: 28px; color: var(--muted); font-size: .85rem; }
         .p-icon { font-size: 1.8rem; margin-bottom: 6px; }
         .p-box { background: var(--navy); border-radius: 8px; padding: 16px 18px; margin-bottom: 10px; }
@@ -90,16 +80,16 @@
         .hint { margin-top: 10px; padding: 10px 12px; background: #fffbf0; border-radius: 7px; border-left: 3px solid var(--gold); font-size: .78rem; color: #78350f; }
         .hint strong { color: var(--navy); }
 
-        /* ── SERVICES ─────────────────────────── */
+        /* ── SERVICES / SCOPE ──────────────────── */
         .svc-list { list-style: none; }
         .svc-list li { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: .86rem; }
         .svc-list li:last-child { border-bottom: none; }
         .svc-tot { margin-top: 10px; padding: 10px 12px; background: var(--bg); border-radius: 7px; display: flex; justify-content: space-between; font-size: .86rem; font-weight: 700; }
 
-        /* ── STEPS ─────────────────────────────── */
+        /* ── STEPS (AR) ────────────────────────── */
         .steps-wrap { grid-column: 1 / -1; }
         .steps-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
-        @media (max-width: 600px) { .steps-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 600px) { .steps-grid { grid-column: 1fr; } }
         .steps-sub { font-size: .72rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
         .step { display: flex; gap: 11px; padding: 10px 0; border-bottom: 1px solid var(--border); }
         .step:last-child { border-bottom: none; }
@@ -110,6 +100,35 @@
         .docs li { font-size: .85rem; padding: 7px 0; border-bottom: 1px solid var(--border); display: flex; gap: 8px; }
         .docs li::before { content: '→'; color: var(--gold); font-weight: 700; flex-shrink: 0; }
         .docs li:last-child { border-bottom: none; }
+
+        /* ── BK LEVEL PILLS ────────────────────── */
+        .level-pills { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+        .level-pill { border: 2px solid var(--border); border-radius: 8px; padding: 10px 12px; cursor: pointer; transition: all .15s; text-align: center; }
+        .level-pill:hover { border-color: var(--gold); }
+        .level-pill.selected { border-color: var(--gold); background: #fffbf0; }
+        .level-pill .lp-code { font-size: .95rem; font-weight: 800; color: var(--navy); }
+        .level-pill .lp-name { font-size: .68rem; color: var(--muted); margin-top: 2px; }
+        .level-pill .lp-rate { font-size: .72rem; color: var(--gold); font-weight: 700; margin-top: 4px; }
+
+        /* ── BK SCOPE TABLE ────────────────────── */
+        .bk-full { grid-column: 1 / -1; }
+        .scope-toggle { background: none; border: 1px solid var(--border); border-radius: 7px; padding: 8px 14px; font-size: .8rem; color: var(--muted); cursor: pointer; margin-bottom: 14px; display: flex; align-items: center; gap: 6px; }
+        .scope-toggle:hover { border-color: var(--gold); color: var(--text); }
+        .scope-table { width: 100%; border-collapse: collapse; font-size: .8rem; }
+        .scope-table th { padding: 8px 10px; text-align: left; font-size: .68rem; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); border-bottom: 2px solid var(--border); white-space: nowrap; }
+        .scope-table th:first-child { width: 45%; }
+        .scope-table td { padding: 7px 10px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.35; }
+        .scope-table tr:last-child td { border-bottom: none; }
+        .s-yes { color: #059669; font-weight: 600; }
+        .s-part { color: #d97706; }
+        .s-no { color: #9ca3af; }
+        .scope-excl { margin-top: 16px; }
+        .scope-excl-title { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #9ca3af; margin-bottom: 8px; }
+        .excl-list { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
+        .excl-list li { font-size: .75rem; padding: 3px 9px; background: #fef2f2; color: #991b1b; border-radius: 4px; }
+
+        /* ── BK UNIT BADGE ─────────────────────── */
+        .unit-badge { display: inline-block; background: var(--navy); color: var(--gold); font-size: .7rem; font-weight: 700; letter-spacing: 1px; padding: 2px 8px; border-radius: 4px; margin-left: 6px; vertical-align: middle; }
     </style>
 </head>
 <body>
@@ -125,164 +144,348 @@
 
 <!-- APP -->
 <div id="app" style="display:none">
+
 <header>
     <div class="logo">VOLKO<span>Engineering</span></div>
     <div class="logo-sub">Projektu kalkulators</div>
 </header>
 
+<div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('ar',this)">AR — Arhitektūra</button>
+    <button class="tab-btn" onclick="switchTab('bk',this)">BK — Būvkonstrukcijas</button>
+</div>
+
+<!-- ═══════════════ AR TAB ═══════════════ -->
+<div id="tab-ar" class="tab-content active">
 <main>
 
-<!-- FORM -->
-<div class="card">
-    <div class="card-title">Ēkas parametri</div>
-
-    <div class="field">
-        <label class="lbl">Projekta tips</label>
-        <select id="type" onchange="calc()">
-            <option value="">— izvēlēties —</option>
-            <optgroup label="Jauns projekts">
-                <option value="jaunbuve">Jaunbūve</option>
-                <option value="izmaiņu">Izmaiņu projekts</option>
-                <option value="rekonstrukcija">Rekonstrukcija / pārbūve</option>
-                <option value="vienk">Vienkāršota atjaunošana</option>
-                <option value="nojaukšana">Nojaukšanas projekts</option>
-                <option value="tipveida">Tipveida projekts</option>
-            </optgroup>
-            <optgroup label="Legalizācija">
-                <option value="la">Patvaļīga būvniecība</option>
-                <option value="lbv">Nereģistrētas izmaiņas — vienkāršotas</option>
-                <option value="lbp">Nereģistrētas izmaiņas — pilnas</option>
-                <option value="lc">Funkcijas maiņa</option>
-            </optgroup>
-        </select>
-    </div>
-
-    <div class="field">
-        <label class="lbl">Platība (m²)</label>
-        <input type="number" id="area" placeholder="piem. 120" min="1" oninput="calc()">
-    </div>
-
-    <div class="field">
-        <label class="lbl">Stāvu skaits</label>
-        <select id="floors" onchange="calc()">
-            <option value="1">1 stāvs</option>
-            <option value="2">2 stāvi</option>
-            <option value="3">3 stāvi</option>
-            <option value="4">4+ stāvi</option>
-        </select>
-    </div>
-
-    <div class="field">
-        <label class="lbl">Ēkas funkcija</label>
-        <select id="func" onchange="calc()">
-            <option value="1.00">Individuālā dzīvojamā māja</option>
-            <option value="1.05">Dvīņu māja</option>
-            <option value="1.10">Rindu māja</option>
-            <option value="1.30">Daudzdzīvokļu māja</option>
-            <option value="0.85">Vasarnīca / dārza māja</option>
-            <option value="0.70">Saimniecības ēka</option>
-            <option value="0.60">Garāža</option>
-            <option value="0.65">Noliktava</option>
-            <option value="1.20">Biroja ēka</option>
-            <option value="1.25">Tirdzniecības ēka</option>
-            <option value="1.15">Jaukta lietojuma ēka</option>
-            <option value="0.50">Inženierbūve / žogs</option>
-        </select>
-    </div>
-
-    <div class="field">
-        <label class="lbl">Pašvaldība</label>
-        <select id="muni" onchange="calc()">
-            <option value="1.00">— izvēlēties —</option>
-            <option value="1.20">Rīga</option>
-            <option value="1.10">Mārupes novads</option>
-            <option value="1.10">Ķekavas novads</option>
-            <option value="1.10">Salaspils novads</option>
-            <option value="1.10">Ādažu novads</option>
-            <option value="1.10">Ropažu novads</option>
-            <option value="1.10">Olaines novads</option>
-            <option value="1.10">Stopiņu / Garkalnes / Babītes / Carnikavas novads</option>
-            <option value="1.00">Jūrmala</option>
-            <option value="1.00">Siguldas novads</option>
-            <option value="1.00">Jelgava</option>
-            <option value="1.00">Ogres novads</option>
-            <option value="1.00">Saulkrastu novads</option>
-            <option value="1.00">Limbažu novads</option>
-            <option value="1.00">Tukuma novads</option>
-            <option value="1.00">Cēsu novads</option>
-            <option value="1.00">Dobeles / Bauskas / Kandavas novads</option>
-            <option value="1.02">Valmieras novads</option>
-            <option value="1.02">Talsu novads</option>
-            <option value="1.02">Saldus / Kuldīgas novads</option>
-            <option value="1.02">Jēkabpils / Madonas novads</option>
-            <option value="1.00">Cits novads</option>
-        </select>
-    </div>
-
-    <div class="field">
-        <label class="lbl">Apgrūtinājumi (+10% katrs)</label>
-        <div class="checks">
-            <label class="check"><input type="checkbox" id="c1" onchange="calc()"> Kultūras piemineklis / NKMP</label>
-            <label class="check"><input type="checkbox" id="c2" onchange="calc()"> Patvaļīga būvniecība / legalizācija</label>
-            <label class="check"><input type="checkbox" id="c3" onchange="calc()"> Kopīpašums (līdzīpašnieki)</label>
-            <label class="check"><input type="checkbox" id="c4" onchange="calc()"> Ēka robežai tuvāk par 4m</label>
-            <label class="check"><input type="checkbox" id="c5" onchange="calc()"> Steidzams termiņš</label>
-        </div>
-    </div>
-</div>
-
-<!-- RESULTS -->
-<div>
-    <div class="card" style="margin-bottom:16px">
-        <div class="card-title">Būves grupa</div>
-        <div class="grp-row">
-            <div class="grp-badge" id="gb">—</div>
-            <div class="grp-desc" id="gd">Ievadi platību un stāvu skaitu</div>
-        </div>
-    </div>
-
+    <!-- FORM -->
     <div class="card">
-        <div class="card-title">Cenas aprēķins</div>
-        <div class="p-empty" id="pe2"><div class="p-icon">🏗</div>Izvēlies projekta tipu un ievadi platību</div>
-        <div id="pr" style="display:none">
-            <div class="p-box">
-                <div class="p-box-lbl">Klientam piedāvāt</div>
-                <div class="p-box-val" id="pvc">—</div>
-                <div class="p-box-note">bez PVN · ietver 20% rezervi tirgošanai</div>
+        <div class="card-title">Ēkas parametri</div>
+        <div class="field">
+            <label class="lbl">Projekta tips</label>
+            <select id="type" onchange="calc()">
+                <option value="">— izvēlēties —</option>
+                <optgroup label="Jauns projekts">
+                    <option value="jaunbuve">Jaunbūve</option>
+                    <option value="izmaiņu">Izmaiņu projekts</option>
+                    <option value="rekonstrukcija">Rekonstrukcija / pārbūve</option>
+                    <option value="vienk">Vienkāršota atjaunošana</option>
+                    <option value="nojaukšana">Nojaukšanas projekts</option>
+                    <option value="tipveida">Tipveida projekts</option>
+                </optgroup>
+                <optgroup label="Legalizācija">
+                    <option value="la">Patvaļīga būvniecība</option>
+                    <option value="lbv">Nereģistrētas izmaiņas — vienkāršotas</option>
+                    <option value="lbp">Nereģistrētas izmaiņas — pilnas</option>
+                    <option value="lc">Funkcijas maiņa</option>
+                </optgroup>
+            </select>
+        </div>
+        <div class="field">
+            <label class="lbl">Platība (m²)</label>
+            <input type="number" id="area" placeholder="piem. 120" min="1" oninput="calc()">
+        </div>
+        <div class="field">
+            <label class="lbl">Stāvu skaits</label>
+            <select id="floors" onchange="calc()">
+                <option value="1">1 stāvs</option><option value="2">2 stāvi</option><option value="3">3 stāvi</option><option value="4">4+ stāvi</option>
+            </select>
+        </div>
+        <div class="field">
+            <label class="lbl">Ēkas funkcija</label>
+            <select id="func" onchange="calc()">
+                <option value="1.00">Individuālā dzīvojamā māja</option>
+                <option value="1.05">Dvīņu māja</option>
+                <option value="1.10">Rindu māja</option>
+                <option value="1.30">Daudzdzīvokļu māja</option>
+                <option value="0.85">Vasarnīca / dārza māja</option>
+                <option value="0.70">Saimniecības ēka</option>
+                <option value="0.60">Garāža</option>
+                <option value="0.65">Noliktava</option>
+                <option value="1.20">Biroja ēka</option>
+                <option value="1.25">Tirdzniecības ēka</option>
+                <option value="1.15">Jaukta lietojuma ēka</option>
+                <option value="0.50">Inženierbūve / žogs</option>
+            </select>
+        </div>
+        <div class="field">
+            <label class="lbl">Pašvaldība</label>
+            <select id="muni" onchange="calc()">
+                <option value="1.00">— izvēlēties —</option>
+                <option value="1.20">Rīga</option>
+                <option value="1.10">Mārupes novads</option><option value="1.10">Ķekavas novads</option><option value="1.10">Salaspils novads</option><option value="1.10">Ādažu novads</option><option value="1.10">Ropažu novads</option><option value="1.10">Olaines novads</option><option value="1.10">Stopiņu / Garkalnes / Babītes / Carnikavas novads</option>
+                <option value="1.00">Jūrmala</option><option value="1.00">Siguldas novads</option><option value="1.00">Jelgava</option><option value="1.00">Ogres novads</option><option value="1.00">Saulkrastu novads</option><option value="1.00">Limbažu novads</option><option value="1.00">Tukuma novads</option><option value="1.00">Cēsu novads</option><option value="1.00">Dobeles / Bauskas / Kandavas novads</option>
+                <option value="1.02">Valmieras novads</option><option value="1.02">Talsu novads</option><option value="1.02">Saldus / Kuldīgas novads</option><option value="1.02">Jēkabpils / Madonas novads</option>
+                <option value="1.00">Cits novads</option>
+            </select>
+        </div>
+        <div class="field">
+            <label class="lbl">Apgrūtinājumi (+10% katrs)</label>
+            <div class="checks">
+                <label class="check"><input type="checkbox" id="c1" onchange="calc()"> Kultūras piemineklis / NKMP</label>
+                <label class="check"><input type="checkbox" id="c2" onchange="calc()"> Patvaļīga būvniecība / legalizācija</label>
+                <label class="check"><input type="checkbox" id="c3" onchange="calc()"> Kopīpašums (līdzīpašnieki)</label>
+                <label class="check"><input type="checkbox" id="c4" onchange="calc()"> Ēka robežai tuvāk par 4m</label>
+                <label class="check"><input type="checkbox" id="c5" onchange="calc()"> Steidzams termiņš</label>
             </div>
-            <div class="p-int">
-                <span>Iekšējā cena (minimums)</span>
-                <strong id="pvi">—</strong>
-            </div>
-            <div class="brkd" id="brkd"></div>
-            <div class="hint" id="hint"></div>
         </div>
     </div>
 
-    <div class="card" id="svc-card" style="display:none; margin-top:16px">
-        <div class="card-title">Iekļautie pakalpojumi</div>
-        <ul class="svc-list" id="svc-list"></ul>
-        <div class="svc-tot"><span>Kopā (iekšējā)</span><span id="svc-tot-v">—</span></div>
+    <!-- RESULTS -->
+    <div>
+        <div class="card" style="margin-bottom:16px">
+            <div class="card-title">Būves grupa</div>
+            <div class="grp-row">
+                <div class="grp-badge" id="gb">—</div>
+                <div class="grp-desc" id="gd">Ievadi platību un stāvu skaitu</div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">Cenas aprēķins</div>
+            <div class="p-empty" id="pe2"><div class="p-icon">🏗</div>Izvēlies projekta tipu un ievadi platību</div>
+            <div id="pr" style="display:none">
+                <div class="p-box"><div class="p-box-lbl">Klientam piedāvāt</div><div class="p-box-val" id="pvc">—</div><div class="p-box-note">bez PVN · ar 20% rezervi tirgošanai</div></div>
+                <div class="p-int"><span>Iekšējā cena (minimums)</span><strong id="pvi">—</strong></div>
+                <div class="brkd" id="brkd"></div>
+                <div class="hint" id="hint"></div>
+            </div>
+        </div>
+        <div class="card" id="svc-card" style="display:none; margin-top:16px">
+            <div class="card-title">Iekļautie pakalpojumi</div>
+            <ul class="svc-list" id="svc-list"></ul>
+            <div class="svc-tot"><span>Kopā (iekšējā)</span><span id="svc-tot-v">—</span></div>
+        </div>
     </div>
-</div>
 
-<!-- STEPS (full width) -->
-<div class="card steps-wrap" id="steps-card" style="display:none">
-    <div class="card-title" id="steps-title">Legalizācijas soļi</div>
-    <div class="steps-grid">
-        <div>
-            <div class="steps-sub">Darba secība</div>
-            <div id="steps-list"></div>
-        </div>
-        <div>
-            <div class="steps-sub">Klientam jāsagatavo</div>
-            <ul class="docs" id="docs-list"></ul>
+    <!-- STEPS -->
+    <div class="card steps-wrap" id="steps-card" style="display:none">
+        <div class="card-title" id="steps-title">Legalizācijas soļi</div>
+        <div class="steps-grid">
+            <div><div class="steps-sub">Darba secība</div><div id="steps-list"></div></div>
+            <div><div class="steps-sub">Klientam jāsagatavo</div><ul class="docs" id="docs-list"></ul></div>
         </div>
     </div>
-</div>
 
 </main>
 </div>
+
+<!-- ═══════════════ BK TAB ═══════════════ -->
+<div id="tab-bk" class="tab-content">
+<main>
+
+    <!-- BK FORM -->
+    <div class="card">
+        <div class="card-title">BK — Konstruktīvā sistēma</div>
+
+        <div class="field">
+            <label class="lbl">Konstruktīvā sistēma</label>
+            <select id="bk-sys" onchange="calcBK()">
+                <option value="">— izvēlēties —</option>
+                <optgroup label="Sienas">
+                    <option value="Siena – vieglbetona bloki">Siena – vieglbetona bloki</option>
+                    <option value="Siena – koka karkass">Siena – koka karkass</option>
+                    <option value="Siena – CLT">Siena – CLT</option>
+                </optgroup>
+                <optgroup label="Jumts">
+                    <option value="Jumts – koka spāres">Jumts – koka spāres</option>
+                    <option value="Jumts – koka kopnes">Jumts – koka kopnes</option>
+                    <option value="Jumts – CLT paneļi">Jumts – CLT paneļi</option>
+                </optgroup>
+                <optgroup label="Pārsegumi">
+                    <option value="Grīda/Pārsegums – koka sijas">Grīda/Pārsegums – koka sijas</option>
+                    <option value="Grīda/Pārsegums – CLT paneļi">Grīda/Pārsegums – CLT paneļi</option>
+                    <option value="Pārsegums – dobie paneļi">Pārsegums – dobie paneļi</option>
+                    <option value="Pārsegums – monolītais betons">Pārsegums – monolītais betons</option>
+                </optgroup>
+                <optgroup label="Pamati">
+                    <option value="Pamati – lentveidīgi">Pamati – lentveidīgi</option>
+                    <option value="Pamati – plāksne">Pamati – plāksne</option>
+                    <option value="Pamati – punktveida">Pamati – punktveida</option>
+                </optgroup>
+                <optgroup label="Sijas (garums metros)">
+                    <option value="Sijas – līmsijas">Sijas – līmsijas</option>
+                    <option value="Sijas – tērauda sijas">Sijas – tērauda sijas</option>
+                </optgroup>
+                <optgroup label="Aiļu pārsedzes">
+                    <option value="Aiļu pārsedze – gatavā">Aiļu pārsedze – gatavā</option>
+                    <option value="Aiļu pārsedze – monolītā">Aiļu pārsedze – monolītā</option>
+                </optgroup>
+                <optgroup label="Ražotāja rasējumi">
+                    <option value="Ražotājs – koka karkasi">Ražotājs – koka karkasi</option>
+                    <option value="Ražotājs – CLT paneļi">Ražotājs – CLT paneļi</option>
+                    <option value="Ražotājs – betona sendvičpaneļi">Ražotājs – betona sendvičpaneļi</option>
+                </optgroup>
+            </select>
+        </div>
+
+        <div class="field">
+            <label class="lbl">Ēkas kopējā platība (m²)</label>
+            <input type="number" id="bk-ekas" placeholder="piem. 180" min="1" oninput="calcBK()">
+            <div class="field-note">Nosaka apjomatlaidē koeficientu</div>
+        </div>
+
+        <div class="field">
+            <label class="lbl">Elementa daudzums <span class="unit-badge" id="bk-unit-badge">m²</span></label>
+            <input type="number" id="bk-daudzums" placeholder="piem. 45" min="0.1" step="0.1" oninput="calcBK()">
+            <div class="field-note" id="bk-unit-note">m² — sienas, jumts, pārsegums, pamati</div>
+        </div>
+
+        <div class="field">
+            <label class="lbl">Pakalpojuma līmenis</label>
+            <div class="level-pills">
+                <div class="level-pill" id="pill-L1" onclick="selectLevel('L1')">
+                    <div class="lp-code">L1</div>
+                    <div class="lp-name">Standarta</div>
+                    <div class="lp-rate">0.5 vien/m²</div>
+                </div>
+                <div class="level-pill selected" id="pill-L2" onclick="selectLevel('L2')">
+                    <div class="lp-code">L2 ⭐</div>
+                    <div class="lp-name">Build Ready</div>
+                    <div class="lp-rate">0.96 vien/m²</div>
+                </div>
+                <div class="level-pill" id="pill-L3" onclick="selectLevel('L3')">
+                    <div class="lp-code">L3</div>
+                    <div class="lp-name">Pro / Factory</div>
+                    <div class="lp-rate">1.8 vien/m²</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="field">
+            <label class="lbl">Sarežģītība</label>
+            <select id="bk-sarezg" onchange="calcBK()">
+                <option value="1.00">Vienkāršs ×1.00</option>
+                <option value="1.10" selected>Vidējs ×1.10</option>
+                <option value="1.25">Sarežģīts ×1.25</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label class="lbl">Steidzamība</label>
+            <select id="bk-steidz" onchange="calcBK()">
+                <option value="1.00" selected>Standarta ×1.00</option>
+                <option value="1.15">Steidzams ×1.15</option>
+                <option value="1.30">Ļoti steidzams ×1.30</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label class="lbl">Segments</label>
+            <select id="bk-seg" onchange="calcBK()">
+                <option value="1.00" selected>Privātie klienti ×1.00</option>
+                <option value="1.30">Ražotāji ×1.30</option>
+            </select>
+        </div>
+
+        <div class="field" id="bk-slani-field" style="display:none">
+            <label class="lbl">Slāņu skaits (L3)</label>
+            <select id="bk-slani" onchange="calcBK()">
+                <option value="0">0 — nav piemērojams ×1.00</option>
+                <option value="1">1 slānis ×0.80</option>
+                <option value="2">2 slāņi ×1.00</option>
+                <option value="3" selected>3 slāņi ×1.10</option>
+                <option value="4">4 slāņi ×1.15</option>
+                <option value="5">5 slāņi ×1.20</option>
+                <option value="6">6+ slāņi ×1.25</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label class="lbl">Papildu mezgli (virs bāzes)</label>
+            <input type="number" id="bk-mezgli" placeholder="0" min="0" value="0" oninput="calcBK()">
+            <div class="field-note">Katrs papildu mezgls = 25 EUR</div>
+        </div>
+    </div>
+
+    <!-- BK RESULTS -->
+    <div>
+        <div class="card" style="margin-bottom:16px">
+            <div class="card-title">Atlaide pēc apjoma</div>
+            <div class="grp-row">
+                <div class="grp-badge" id="bk-area-badge">—</div>
+                <div class="grp-desc" id="bk-area-desc">Ievadi ēkas kopējo platību</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">BK cenas aprēķins</div>
+            <div class="p-empty" id="bk-pe"><div class="p-icon">⚙️</div>Izvēlies sistēmu un ievadi platību</div>
+            <div id="bk-pr" style="display:none">
+                <div class="p-box"><div class="p-box-lbl">Klientam piedāvāt</div><div class="p-box-val" id="bk-pvc">—</div><div class="p-box-note">bez PVN · ar 20% rezervi tirgošanai</div></div>
+                <div class="p-int"><span>Iekšējā cena (minimums)</span><strong id="bk-pvi">—</strong></div>
+                <div class="brkd" id="bk-brkd"></div>
+                <div class="hint" id="bk-hint"></div>
+            </div>
+        </div>
+
+        <!-- Level description -->
+        <div class="card" id="bk-level-card" style="margin-top:16px">
+            <div class="card-title">Izvēlētais līmenis</div>
+            <div id="bk-level-desc" style="font-size:.85rem;line-height:1.6;color:var(--muted)">Izvēlies līmeni augstāk</div>
+        </div>
+    </div>
+
+    <!-- BK SCOPE (full width) -->
+    <div class="bk-full">
+        <div class="card">
+            <div class="card-title">Pakalpojuma saturs — Ko iekļauj katrs līmenis</div>
+            <button class="scope-toggle" onclick="toggleScope()">
+                <span id="scope-arrow">▼</span> Rādīt / slēpt detalizētu sarakstu
+            </button>
+            <div id="scope-table-wrap" style="display:none">
+                <table class="scope-table">
+                    <thead>
+                        <tr>
+                            <th>Nodevums / Saturs</th>
+                            <th>L1 Standarta</th>
+                            <th>L2 Build Ready ⭐</th>
+                            <th>L3 Pro / Factory</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Slodžu analīze (sniega, vēja, EC)</td><td class="s-part">Kopsavilkums</td><td class="s-yes">Pilnā apjomā</td><td class="s-yes">+ aprēķinu izvilkumi</td></tr>
+                        <tr><td>Ēkas telpiskās noturības analīze</td><td class="s-part">Vienkāršota shēma</td><td class="s-yes">Iekļauts</td><td class="s-yes">Detalizēti</td></tr>
+                        <tr><td>Pamatu dimensionēšana</td><td class="s-yes">Standarta</td><td class="s-yes">Iekļauts</td><td class="s-yes">Detalizēti</td></tr>
+                        <tr><td>Nesošo elementu aprēķins</td><td class="s-part">Galvenie elementi</td><td class="s-yes">Pilnā apjomā</td><td class="s-yes">+ optimizācija</td></tr>
+                        <tr><td>Statisko aprēķinu kopsavilkums</td><td class="s-yes">Iekļauts</td><td class="s-yes">+ izvilkumi</td><td class="s-yes">Detalizēti</td></tr>
+                        <tr><td>Kondensācijas riska analīze (U-vērtības)</td><td class="s-no">Nav</td><td class="s-part">Kritiskajiem pīrāgiem</td><td class="s-yes">Pilnam kompleksam</td></tr>
+                        <tr><td>Konstrukciju plāni un griezumi</td><td class="s-yes">Iekļauts</td><td class="s-yes">Iekļauts</td><td class="s-yes">Iekļauts</td></tr>
+                        <tr><td>Detalizēti mezglu rasējumi</td><td class="s-no">Nav</td><td class="s-part">Max 5 mezgli</td><td class="s-yes">Max 8 mezgli</td></tr>
+                        <tr><td>Pārseguma / jumta konstrukciju plāns</td><td class="s-part">Kopsavilkums</td><td class="s-yes">Iekļauts</td><td class="s-yes">Detalizēti</td></tr>
+                        <tr><td>Koka kopņu aprēķins</td><td class="s-no">Nav</td><td class="s-yes">Iekļauts</td><td class="s-yes">Iekļauts</td></tr>
+                        <tr><td>Ražošanas rasējumi (koks / CLT / metāls)</td><td class="s-no">Nav</td><td class="s-no">Nav (atsevišķi)</td><td class="s-yes">Iekļauts</td></tr>
+                        <tr><td>Montāžas plāni un secības shēma</td><td class="s-no">Nav</td><td class="s-no">Nav</td><td class="s-yes">Iekļauts</td></tr>
+                        <tr><td>OpenCutList (zāģmateriālu optim.)</td><td class="s-no">Nav</td><td class="s-part">Galvenajiem elem.</td><td class="s-yes">Pilns + ražošanas garumi</td></tr>
+                        <tr><td>Atbildīgā projektētāja apliecinājums</td><td class="s-yes">Iekļauts</td><td class="s-yes">Iekļauts</td><td class="s-yes">Iekļauts</td></tr>
+                        <tr><td>BIM modelis</td><td class="s-part">Vienkāršota 3D shēma</td><td class="s-part">Kritiskās zonas</td><td class="s-yes">Pilns LOD 350+</td></tr>
+                        <tr><td>Piegādes formāts</td><td>PDF</td><td>PDF + IFC</td><td>PDF + IFC (ražošanai)</td></tr>
+                        <tr><td>Koordinācija ar arhitektu</td><td class="s-part">Ierobežota (e-pasts)</td><td class="s-part">1–2 sanāksmes</td><td class="s-yes">Regulārā režīmā</td></tr>
+                        <tr><td>Atbildes uz būvvaldes komentāriem</td><td class="s-yes">Iekļauts</td><td class="s-yes">Iekļauts</td><td class="s-yes">Iekļauts</td></tr>
+                        <tr><td>Autoruzraudzības konsultācijas</td><td class="s-no">Nav</td><td class="s-part">1 konsultācija</td><td class="s-part">2 konsultācijas</td></tr>
+                    </tbody>
+                </table>
+                <div class="scope-excl">
+                    <div class="scope-excl-title">Nav iekļauts nevienā līmenī</div>
+                    <ul class="excl-list">
+                        <li>Ģeotehniskā izpēte</li>
+                        <li>Topogrāfija / uzmērīšana</li>
+                        <li>Ārējo tīklu inženierija</li>
+                        <li>Ražotāja KMD (tērauda savienojumi)</li>
+                        <li>Projekta pārstrāde pēc arhitektūras izmaiņām</li>
+                        <li>Autoruzraudzības vizītes objektā</li>
+                        <li>Veidņu / stutēšanas aprēķini</li>
+                        <li>Tiesu ekspertīze</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+</div><!-- end tab-bk -->
+
+</div><!-- end app -->
 
 <script>
 // ── AUTH ─────────────────────────────────────────────────────
@@ -306,7 +509,17 @@ if (sessionStorage.getItem('va')) {
     document.getElementById('app').style.display = 'block';
 }
 
-// ── DATA ─────────────────────────────────────────────────────
+// ── TABS ─────────────────────────────────────────────────────
+function switchTab(id, btn) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    btn.classList.add('active');
+}
+
+// ══════════════════════════════════════════════════════════════
+// AR CALCULATOR
+// ══════════════════════════════════════════════════════════════
 const R = {
     jaunbuve:       [32,30,28,26,24,22,21,20,19,18,16],
     'izmaiņu':      [22,20,18,16,15,14,13,12,11,10, 9],
@@ -316,143 +529,230 @@ const R = {
     tipveida:       [14,12,11,10, 9, 8, 7, 6, 6, 6, 5],
 };
 const BRACKS = [30,60,90,120,150,180,210,240,270,300,Infinity];
-const MINS = { jaunbuve:[1700,2100], 'izmaiņu':[1700,2100], rekonstrukcija:[2500,2900], la:[2500,2900], lbp:[2500,2900] };
+const MINS = { jaunbuve:[1700,2100],'izmaiņu':[1700,2100],rekonstrukcija:[2500,2900],la:[2500,2900],lbp:[2500,2900] };
 const GC = { I:0.75, II:1.20, III:1.80 };
-
 const LEGAL = {
     la:  { r:'rekonstrukcija', svc:{ I:[], II:[['ESI',950],['TAA',400],['NOD',950]], III:[['ESI',950],['TAA',400],['NOD',950]] } },
     lbv: { r:'vienk',          svc:{ I:[], II:[], III:[] } },
     lbp: { r:'rekonstrukcija', svc:{ I:[['TAA',400]], II:[['TAA',400],['NOD',950]], III:[['TAA',400],['NOD',950]] } },
     lc:  { r:'rekonstrukcija', svc:{ I:[['ESI',950],['NOD',950]], II:[['ESI',950],['NOD',950]], III:[['ESI',950],['NOD',950]] } },
 };
-
 const STEPS = {
     la: {
-        I: [{t:'Uzmērīšana',d:'Plāni pēc esošā stāvokļa'},{t:'Apliecinājuma karte (BIS)',d:'Vienkāršota procedūra'},{t:'Kadastra uzmērīšana → ZG',d:'VZD + nostiprināšana'}],
-        II:[{t:'ESI — Juridiskā esošās situācijas izpēte',d:'Zona, robežas, ZG ieraksti, vai legalizācija vispār iespējama'},{t:'TAA — Tehniskā apsekošana',d:'Konstruktīvā drošība, fotofiksācija, atbilstība normām'},{t:'Uzmērīšana un rasējumi',d:'Plāni, šķērsgriezumi, fasādes pēc esošā stāvokļa'},{t:'AR projekts (legalizācijai)',d:'Rasējumi + paskaidrojuma raksts, normatīvu atbilstība'},{t:'BIS iesniegums',d:'Apliecinājuma karte vai Būvatļauja atkarā no gadījuma'},{t:'Pašvaldības saskaņošana',d:'Būvvalde; ja kultūrpiemineklis → NKMP'},{t:'NOD — Nodošana ekspluatācijā',d:'Komisija vai vienkāršota procedūra'},{t:'Kadastra uzmērīšana → ZG',d:'Platības atjaunošana, nostiprināšana'}],
+        I:[{t:'Uzmērīšana',d:'Plāni pēc esošā stāvokļa'},{t:'Apliecinājuma karte (BIS)',d:'Vienkāršota procedūra'},{t:'Kadastra uzmērīšana → ZG',d:'VZD + nostiprināšana'}],
+        II:[{t:'ESI — Juridiskā esošās situācijas izpēte',d:'Zona, robežas, ZG ieraksti, vai legalizācija iespējama'},{t:'TAA — Tehniskā apsekošana',d:'Konstruktīvā drošība, fotofiksācija, normatīvu atbilstība'},{t:'Uzmērīšana un rasējumi',d:'Plāni, šķērsgriezumi, fasādes pēc esošā stāvokļa'},{t:'AR projekts (legalizācijai)',d:'Rasējumi + paskaidrojuma raksts, normatīvu atbilstība'},{t:'BIS iesniegums',d:'Apliecinājuma karte vai Būvatļauja atkarā no gadījuma'},{t:'Pašvaldības saskaņošana',d:'Būvvalde; ja kultūrpiemineklis → NKMP'},{t:'NOD — Nodošana ekspluatācijā',d:'Komisija vai vienkāršota procedūra'},{t:'Kadastra uzmērīšana → ZG',d:'Platības atjaunošana, nostiprināšana'}],
         III:[{t:'ESI — Juridiskā esošās situācijas izpēte',d:'Zona, robežas, ZG ieraksti'},{t:'TAA — Tehniskā apsekošana',d:'Sarežģīta — iesaistāms sertificēts konstruktors'},{t:'Uzmērīšana un rasējumi',d:'Pilna esošā stāvokļa dokumentācija'},{t:'AR + BK projekts',d:'Arhitektūra + būvkonstrukcijas (obligāti III grupai)'},{t:'BIS — Būvatļauja',d:'III grupai apliecinājuma karte nav pietiekama'},{t:'Pašvaldības saskaņošana',d:'Detālais saskaņošanas process'},{t:'NOD — Nodošana ekspluatācijā',d:'Pilna komisija'},{t:'Kadastra uzmērīšana → ZG',d:'Obligāta'}],
     },
-    lbv: {
-        I: [{t:'Paskaidrojuma raksts vai Apliecinājuma karte',d:'BIS — atkarā no apjoma'},{t:'Rasējumi (izmainītais stāvoklis)',d:''},{t:'BIS akcepta saņemšana',d:''},{t:'Kadastra datu atjaunošana',d:'Ja mainījusies platība'}],
+    lbv:{
+        I:[{t:'Paskaidrojuma raksts vai Apliecinājuma karte',d:'BIS'},{t:'Rasējumi (izmainītais stāvoklis)',d:''},{t:'BIS akcepta saņemšana',d:''},{t:'Kadastra datu atjaunošana',d:'Ja mainījusies platība'}],
         II:[{t:'Paskaidrojuma raksts vai Apliecinājuma karte',d:'BIS'},{t:'Rasējumi (izmainītais stāvoklis)',d:''},{t:'BIS akcepta saņemšana',d:''},{t:'Kadastra datu atjaunošana',d:''}],
         III:[{t:'TAA — Tehniskā apsekošana',d:'Sarežģītu izmaiņu gadījumā'},{t:'Rasējumi (izmainītais stāvoklis)',d:'Pilna dokumentācija'},{t:'BIS — Pārbūves atļauja',d:'III grupai vienmēr pilna atļauja'},{t:'Kadastra datu atjaunošana',d:''}],
     },
-    lbp: {
-        I: [{t:'TAA — Tehniskā apsekošana',d:'Nesošo konstrukciju pārbaude'},{t:'Uzmērīšana (esošais stāvoklis)',d:''},{t:'AR projekts',d:'Izmainītais stāvoklis + normatīvu atbilstība'},{t:'BIS — Apliecinājuma karte',d:''},{t:'Kadastra datu atjaunošana',d:''}],
-        II:[{t:'TAA — Tehniskā apsekošana',d:'Nesošo konstrukciju pārbaude'},{t:'Uzmērīšana (esošais stāvoklis)',d:''},{t:'AR projekts',d:'Izmainītais stāvoklis + normatīvu atbilstība'},{t:'BIS — Pārbūves atļauja vai Apliecinājuma karte',d:''},{t:'Pašvaldības saskaņošana',d:'Ja skar ārējo izskatu vai struktūru'},{t:'NOD (ja nepieciešams)',d:''},{t:'Kadastra datu atjaunošana',d:''}],
+    lbp:{
+        I:[{t:'TAA — Tehniskā apsekošana',d:'Nesošo konstrukciju pārbaude'},{t:'Uzmērīšana (esošais stāvoklis)',d:''},{t:'AR projekts',d:'Izmainītais stāvoklis + normatīvu atbilstība'},{t:'BIS — Apliecinājuma karte',d:''},{t:'Kadastra datu atjaunošana',d:''}],
+        II:[{t:'TAA — Tehniskā apsekošana',d:'Nesošo konstrukciju pārbaude'},{t:'Uzmērīšana (esošais stāvoklis)',d:''},{t:'AR projekts',d:'Izmainītais stāvoklis + normatīvu atbilstība'},{t:'BIS — Pārbūves atļauja vai Apliecinājuma karte',d:''},{t:'Pašvaldības saskaņošana',d:'Ja skar ārējo izskatu'},{t:'NOD (ja nepieciešams)',d:''},{t:'Kadastra datu atjaunošana',d:''}],
         III:[{t:'TAA — Tehniskā apsekošana',d:''},{t:'Uzmērīšana',d:''},{t:'AR + BK projekts',d:'Obligāti abi'},{t:'BIS — Pārbūves atļauja',d:''},{t:'Pašvaldības saskaņošana',d:''},{t:'NOD',d:''},{t:'Kadastra datu atjaunošana',d:''}],
     },
-    lc: {
-        I: [{t:'ESI — Juridiskā izpēte',d:'Vai zonā ļauj jauno funkciju'},{t:'AR projekts (jaunai funkcijai)',d:'Plānojums, sanitārie mezgli, ugunsdrošība'},{t:'BIS — Pārbūves atļauja ar funkcijas maiņu',d:''},{t:'NOD — ar jauno funkciju',d:''},{t:'Kadastra dati → ZG',d:'Funkcija mainās ierakstos, bieži vajag notāru'}],
+    lc:{
+        I:[{t:'ESI — Juridiskā izpēte',d:'Vai zonā ļauj jauno funkciju'},{t:'AR projekts (jaunai funkcijai)',d:'Plānojums, sanitārie mezgli, ugunsdrošība'},{t:'BIS — Pārbūves atļauja ar funkcijas maiņu',d:''},{t:'NOD — ar jauno funkciju',d:''},{t:'Kadastra dati → ZG',d:'Funkcija mainās ierakstos'}],
         II:[{t:'ESI — Juridiskā izpēte',d:'Svarīgi: vai zonā ļauj jauno funkciju'},{t:'AR projekts (jaunai funkcijai)',d:'Plānojums, sanitārie mezgli, ugunsdrošība, energoefektivitāte'},{t:'BIS — Pārbūves atļauja ar funkcijas maiņu',d:''},{t:'NOD — ar jauno funkciju',d:''},{t:'Kadastra dati → ZG',d:'Funkcija mainās ierakstos, bieži vajag notāru'}],
         III:[{t:'ESI — Juridiskā izpēte',d:'Detalizēta zonējuma analīze'},{t:'AR + BK projekts',d:'Pilna projektēšana jaunajai funkcijai'},{t:'BIS — Pārbūves atļauja',d:''},{t:'Pašvaldības saskaņošana',d:''},{t:'NOD',d:''},{t:'Kadastra dati → ZG',d:''}],
     },
 };
-
 const DOCS = {
-    la: ['Zemesgrāmatas izraksts (zemesgramata.lv)','Kadastra izziņa (kadastrs.lv)','Robežu plāns (VZD)','Pašvaldības TIN (teritorijas izmantošanas noteikumi)','Kaimiņu piekrišana (ja robežai tuvāk par 4m)','Kopīpašnieku piekrišana (ja ir)','Esošie projekti (ja ir)'],
+    la:['Zemesgrāmatas izraksts','Kadastra izziņa','Robežu plāns (VZD)','Pašvaldības TIN','Kaimiņu piekrišana (ja robežai tuvāk par 4m)','Kopīpašnieku piekrišana (ja ir)','Esošie projekti (ja ir)'],
     lbv:['Zemesgrāmatas izraksts','Esošie projekti / plāni','Kopīpašnieku piekrišana (ja ir)'],
-    lbp:['Zemesgrāmatas izraksts','Kadastra izziņa','Esošie projekti','Kopīpašnieku piekrišana (ja ir)','Kaimiņu piekrišana (ja skar fasādi, robežai tuvāk par 4m)'],
-    lc: ['Zemesgrāmatas izraksts','Kadastra izziņa','Pašvaldības TIN — vai zonā ļauj jauno funkciju','Esošie projekti','Kopīpašnieku piekrišana (ja ir)'],
+    lbp:['Zemesgrāmatas izraksts','Kadastra izziņa','Esošie projekti','Kopīpašnieku piekrišana (ja ir)','Kaimiņu piekrišana (robežai tuvāk par 4m)'],
+    lc:['Zemesgrāmatas izraksts','Kadastra izziņa','Pašvaldības TIN — vai zonā ļauj jauno funkciju','Esošie projekti','Kopīpašnieku piekrišana (ja ir)'],
 };
 
-// ── HELPERS ──────────────────────────────────────────────────
-function grp(a, f) {
-    if (a <= 25 && f <= 1) return 'I';
-    if (a > 1500 || f >= 4) return 'III';
-    return 'II';
-}
-function bi(a) { for (let i=0;i<BRACKS.length;i++) if (a<=BRACKS[i]) return i; return BRACKS.length-1; }
-function r50(n) { return Math.round(n/50)*50; }
-function eur(n) { return n.toLocaleString('lv-LV') + ' EUR'; }
+function grp(a,f){if(a<=25&&f<=1)return'I';if(a>1500||f>=4)return'III';return'II';}
+function bi(a){for(let i=0;i<BRACKS.length;i++)if(a<=BRACKS[i])return i;return BRACKS.length-1;}
+function r50(n){return Math.round(n/50)*50;}
+function eur(n){return n.toLocaleString('lv-LV')+' EUR';}
 
-// ── CALC ─────────────────────────────────────────────────────
 function calc() {
-    const type  = document.getElementById('type').value;
-    const area  = parseFloat(document.getElementById('area').value) || 0;
-    const floors= parseInt(document.getElementById('floors').value) || 1;
-    const fCoef = parseFloat(document.getElementById('func').value) || 1;
-    const mCoef = parseFloat(document.getElementById('muni').value) || 1;
-    const encs  = ['c1','c2','c3','c4','c5'].filter(id=>document.getElementById(id).checked).length;
-    const eCoef = encs > 0 ? +(1 + encs*0.10).toFixed(2) : 1.00;
-
-    // group
-    if (area > 0) {
-        const g = grp(area, floors);
-        document.getElementById('gb').textContent = g + ' grupa';
-        const gd = { I:'≤25 m² un 1 stāvs — vienkāršota procedūra (apliecinājuma karte)', II:'26–1500 m², līdz 3 stāviem — standarta procedūra (II grupas atļauja)', III:'>1500 m² vai 4+ stāvi — sarežģīta procedūra (būvatļauja, obligāts BK)' };
-        document.getElementById('gd').textContent = gd[g];
-    } else {
-        document.getElementById('gb').textContent = '—';
-        document.getElementById('gd').textContent = 'Ievadi platību un stāvu skaitu';
+    const type=document.getElementById('type').value;
+    const area=parseFloat(document.getElementById('area').value)||0;
+    const floors=parseInt(document.getElementById('floors').value)||1;
+    const fCoef=parseFloat(document.getElementById('func').value)||1;
+    const mCoef=parseFloat(document.getElementById('muni').value)||1;
+    const encs=['c1','c2','c3','c4','c5'].filter(id=>document.getElementById(id).checked).length;
+    const eCoef=encs>0?+(1+encs*0.10).toFixed(2):1.00;
+    if(area>0){
+        const g=grp(area,floors);
+        document.getElementById('gb').textContent=g+' grupa';
+        const gd={I:'≤25 m² un 1 stāvs — vienkāršota procedūra',II:'26–1500 m², līdz 3 stāviem — standarta procedūra',III:'>1500 m² vai 4+ stāvi — sarežğīta procedūra'};
+        document.getElementById('gd').textContent=gd[g];
+    }else{document.getElementById('gb').textContent='—';document.getElementById('gd').textContent='Ievadi platību un stāvu skaitu';}
+    const isL=['la','lbv','lbp','lc'].includes(type);
+    const show=isL&&area>0;
+    document.getElementById('steps-card').style.display=show?'block':'none';
+    if(show){
+        const g=grp(area,floors);
+        const tt={la:'Patvaļīga būvniecība',lbv:'Nereģistrētas izmaiņas (vienkāršotas)',lbp:'Nereģistrētas izmaiņas (pilnas)',lc:'Funkcijas maiņa'};
+        document.getElementById('steps-title').textContent=tt[type]+' · '+g+' grupa';
+        document.getElementById('steps-list').innerHTML=(STEPS[type][g]||STEPS[type]['II']).map((s,i)=>
+            `<div class="step"><div class="sn">${i+1}</div><div><div class="st">${s.t}</div>${s.d?`<div class="sd">${s.d}</div>`:''}</div></div>`).join('');
+        document.getElementById('docs-list').innerHTML=(DOCS[type]||[]).map(d=>`<li>${d}</li>`).join('');
     }
-
-    const isL = ['la','lbv','lbp','lc'].includes(type);
-    const show = isL && area > 0;
-    document.getElementById('steps-card').style.display = show ? 'block' : 'none';
-
-    if (show) {
-        const g = grp(area, floors);
-        const tt = { la:'Patvaļīga būvniecība', lbv:'Nereģistrētas izmaiņas (vienkāršotas)', lbp:'Nereģistrētas izmaiņas (pilnas)', lc:'Funkcijas maiņa' };
-        document.getElementById('steps-title').textContent = tt[type] + ' · ' + g + ' grupa';
-        document.getElementById('steps-list').innerHTML = (STEPS[type][g]||STEPS[type]['II']).map((s,i)=>
-            `<div class="step"><div class="sn">${i+1}</div><div><div class="st">${s.t}</div>${s.d?`<div class="sd">${s.d}</div>`:''}</div></div>`
-        ).join('');
-        document.getElementById('docs-list').innerHTML = (DOCS[type]||[]).map(d=>`<li>${d}</li>`).join('');
-    }
-
-    if (!type || area <= 0) {
-        document.getElementById('pe2').style.display = 'block';
-        document.getElementById('pr').style.display = 'none';
-        document.getElementById('svc-card').style.display = 'none';
-        return;
-    }
-
-    const g     = grp(area, floors);
-    const gCoef = GC[g];
-    const rKey  = isL ? LEGAL[type].r : type;
-    const rates = R[rKey];
-    if (!rates) return;
-
-    const rate = rates[bi(area)];
-    const base = area * rate * fCoef * gCoef * mCoef * eCoef;
-    const minA = MINS[isL ? type : rKey];
-    const minV = minA ? (area <= 60 ? minA[0] : minA[1]) : 0;
-    const arInt = r50(Math.max(base, minV));
-
-    const svcs    = isL ? (LEGAL[type].svc[g] || LEGAL[type].svc['II'] || []) : [];
-    const svcTot  = svcs.reduce((a,s)=>a+s[1], 0);
-    const totInt  = arInt + svcTot;
-    const totCli  = r50(totInt * 1.20);
-
-    document.getElementById('pe2').style.display = 'none';
-    document.getElementById('pr').style.display = 'block';
-    document.getElementById('pvc').textContent = eur(totCli);
-    document.getElementById('pvi').textContent = eur(totInt);
-
-    let bh = `<div class="br"><span>Likme (${rKey})</span><span>${rate} €/m²</span></div>
+    if(!type||area<=0){document.getElementById('pe2').style.display='block';document.getElementById('pr').style.display='none';document.getElementById('svc-card').style.display='none';return;}
+    const g=grp(area,floors);const gCoef=GC[g];
+    const rKey=isL?LEGAL[type].r:type;const rates=R[rKey];if(!rates)return;
+    const rate=rates[bi(area)];
+    const base=area*rate*fCoef*gCoef*mCoef*eCoef;
+    const minA=MINS[isL?type:rKey];const minV=minA?(area<=60?minA[0]:minA[1]):0;
+    const arInt=r50(Math.max(base,minV));
+    const svcs=isL?(LEGAL[type].svc[g]||LEGAL[type].svc['II']||[]):[];
+    const svcTot=svcs.reduce((a,s)=>a+s[1],0);
+    const totInt=arInt+svcTot;const totCli=r50(totInt*1.20);
+    document.getElementById('pe2').style.display='none';document.getElementById('pr').style.display='block';
+    document.getElementById('pvc').textContent=eur(totCli);document.getElementById('pvi').textContent=eur(totInt);
+    let bh=`<div class="br"><span>Likme (${rKey})</span><span>${rate} €/m²</span></div>
 <div class="br"><span>Platība</span><span>${area} m²</span></div>
 <div class="br"><span>Funkcija</span><span>×${fCoef.toFixed(2)}</span></div>
 <div class="br"><span>Grupa (${g})</span><span>×${gCoef.toFixed(2)}</span></div>
 <div class="br"><span>Pašvaldība</span><span>×${mCoef.toFixed(2)}</span></div>
 ${encs>0?`<div class="br"><span>Apgrūtinājumi (${encs}×10%)</span><span>×${eCoef.toFixed(2)}</span></div>`:''}
 <div class="br tot"><span>AR projekts</span><span>${eur(arInt)}</span></div>`;
-    if (svcTot > 0) {
-        svcs.forEach(s => { bh += `<div class="br"><span>+ ${s[0]}</span><span>${eur(s[1])}</span></div>`; });
-        bh += `<div class="br tot"><span>Kopā (iekšējā)</span><span>${eur(totInt)}</span></div>`;
-    }
-    document.getElementById('brkd').innerHTML = bh;
-    document.getElementById('hint').innerHTML = `<strong>Piedāvājumā rakstīt:</strong> "no <strong>${totCli.toLocaleString('lv-LV')}</strong> EUR + PVN" <span style="margin-left:8px;color:#a16207">(rezerve: ${eur(totCli-totInt)})</span>`;
+    if(svcTot>0){svcs.forEach(s=>{bh+=`<div class="br"><span>+ ${s[0]}</span><span>${eur(s[1])}</span></div>`;});bh+=`<div class="br tot"><span>Kopā (iekšējā)</span><span>${eur(totInt)}</span></div>`;}
+    document.getElementById('brkd').innerHTML=bh;
+    document.getElementById('hint').innerHTML=`<strong>Piedāvājumā rakstīt:</strong> "no <strong>${totCli.toLocaleString('lv-LV')}</strong> EUR + PVN" <span style="margin-left:8px;color:#a16207">(rezerve: ${eur(totCli-totInt)})</span>`;
+    if(svcs.length>0){document.getElementById('svc-card').style.display='block';document.getElementById('svc-list').innerHTML=`<li><span>AR projekts</span><span style="font-weight:600">${eur(arInt)}</span></li>`+svcs.map(s=>`<li><span>${s[0]}</span><span style="font-weight:600">${eur(s[1])}</span></li>`).join('');document.getElementById('svc-tot-v').textContent=eur(totInt);}
+    else{document.getElementById('svc-card').style.display='none';}
+}
 
-    if (svcs.length > 0) {
-        document.getElementById('svc-card').style.display = 'block';
-        document.getElementById('svc-list').innerHTML =
-            `<li><span>AR projekts (legalizācijai)</span><span style="font-weight:600">${eur(arInt)}</span></li>` +
-            svcs.map(s=>`<li><span>${s[0]}</span><span style="font-weight:600">${eur(s[1])}</span></li>`).join('');
-        document.getElementById('svc-tot-v').textContent = eur(totInt);
-    } else {
-        document.getElementById('svc-card').style.display = 'none';
+// ══════════════════════════════════════════════════════════════
+// BK CALCULATOR
+// ══════════════════════════════════════════════════════════════
+const BK_SYS = {
+    'Siena – vieglbetona bloki':        { c:1.00, u:'m2' },
+    'Siena – koka karkass':             { c:1.10, u:'m2' },
+    'Siena – CLT':                      { c:1.25, u:'m2' },
+    'Jumts – koka spāres':              { c:1.00, u:'m2' },
+    'Jumts – koka kopnes':              { c:1.10, u:'m2' },
+    'Jumts – CLT paneļi':               { c:1.30, u:'m2' },
+    'Grīda/Pārsegums – koka sijas':     { c:1.05, u:'m2' },
+    'Grīda/Pārsegums – CLT paneļi':     { c:0.84, u:'m2' },
+    'Pārsegums – dobie paneļi':         { c:1.10, u:'m2' },
+    'Pārsegums – monolītais betons':    { c:1.20, u:'m2' },
+    'Pamati – lentveidīgi':             { c:1.40, u:'m2' },
+    'Pamati – plāksne':                 { c:1.54, u:'m2' },
+    'Pamati – punktveida':              { c:1.26, u:'m2' },
+    'Sijas – līmsijas':                 { c:0.80, u:'m'  },
+    'Sijas – tērauda sijas':            { c:1.00, u:'m'  },
+    'Aiļu pārsedze – gatavā':           { c:0.50, u:'m2' },
+    'Aiļu pārsedze – monolītā':         { c:0.90, u:'m2' },
+    'Ražotājs – koka karkasi':          { c:1.15, u:'m2' },
+    'Ražotājs – CLT paneļi':            { c:1.25, u:'m2' },
+    'Ražotājs – betona sendvičpaneļi':  { c:1.30, u:'m2' },
+};
+const BK_RATES = { m2:{ L1:0.5, L2:0.96, L3:1.8 }, m:{ L1:0.3, L2:0.6, L3:1.1 } };
+const BK_AREA_COEF = [[25,1.20],[60,1.10],[100,1.05],[120,1.00],[180,0.95],[250,0.90],[400,0.85]];
+const BK_SLANI_COEF = [1.0, 0.8, 1.0, 1.1, 1.15, 1.2, 1.25];
+const BK_LEVEL_DESC = {
+    L1: '<strong>L1 BASIC — Standarta BK</strong> (LOD 200–300)<br>Kam: privātmāja vai neliels objekts, minimālais apjoms būvatļaujai.<br>Ietver: slodžu analīze, pamati, nesošo elementu aprēķins, konstrukciju plāni.<br>⚠ Bez detalizētiem mezgliem — būvlaikā var rasties papildu izmaksas.',
+    L2: '<strong>L2 BUILD READY ⭐ — Detalizēts BK</strong> (LOD 300–350)<br>Kam: standarta līmenis reālai būvniecībai. Samazina kļūdu risku būvlaukumā.<br>Ietver: visa L1 + max 5 mezgli, kondensācijas analīze, IFC fails, 1 autoruzraudzības konsultācija.<br>✓ Ieteicams lielākai privātbūvei vai mazam ražošanas objektam.',
+    L3: '<strong>L3 PRO / FACTORY — Pilns BK</strong> (LOD 350–400)<br>Kam: CLT, koka karkasa vai tērauda ražošana, sarežğīti daudzstāvu objekti.<br>Ietver: visa L2 + max 8 mezgli, ražošanas rasējumi, montāžas plāni, OpenCutList, BIM LOD 350+, 2 konsultācijas.',
+};
+
+let bkLevel = 'L2';
+
+function selectLevel(l) {
+    bkLevel = l;
+    ['L1','L2','L3'].forEach(x => {
+        document.getElementById('pill-'+x).classList.toggle('selected', x===l);
+    });
+    document.getElementById('bk-level-desc').innerHTML = BK_LEVEL_DESC[l] || '';
+    document.getElementById('bk-slani-field').style.display = l==='L3' ? 'block' : 'none';
+    calcBK();
+}
+
+function getAreaCoef(a) {
+    for(const[max,c] of BK_AREA_COEF) if(a<=max) return c;
+    return 0.85;
+}
+
+function calcBK() {
+    const sys = document.getElementById('bk-sys').value;
+    const ekasArea = parseFloat(document.getElementById('bk-ekas').value)||0;
+    const daudzums = parseFloat(document.getElementById('bk-daudzums').value)||0;
+    const sarezg = parseFloat(document.getElementById('bk-sarezg').value)||1.10;
+    const steidz = parseFloat(document.getElementById('bk-steidz').value)||1.00;
+    const seg = parseFloat(document.getElementById('bk-seg').value)||1.00;
+    const slani = parseInt(document.getElementById('bk-slani').value)||0;
+    const mezgli = parseInt(document.getElementById('bk-mezgli').value)||0;
+
+    // Update unit badge
+    if(sys && BK_SYS[sys]) {
+        const u = BK_SYS[sys].u;
+        document.getElementById('bk-unit-badge').textContent = u;
+        document.getElementById('bk-unit-note').textContent = u==='m' ? 'm — garums (sijas)' : 'm² — sienas, jumts, pārsegums, pamati';
     }
+
+    // Area coef display
+    if(ekasArea>0) {
+        const ac = getAreaCoef(ekasArea);
+        const labels = [[25,'0–25 m²'],[60,'26–60 m²'],[100,'61–100 m²'],[120,'101–120 m²'],[180,'121–180 m²'],[250,'181–250 m²'],[400,'251–400 m²']];
+        let lbl = '251–400 m²';
+        for(const[max,l] of labels) if(ekasArea<=max){lbl=l;break;}
+        document.getElementById('bk-area-badge').textContent = '×'+ac.toFixed(2);
+        document.getElementById('bk-area-desc').textContent = lbl+' — apjomatlaide koef. ×'+ac.toFixed(2);
+    }
+
+    if(!sys||ekasArea<=0||daudzums<=0) {
+        document.getElementById('bk-pe').style.display='block';
+        document.getElementById('bk-pr').style.display='none';
+        return;
+    }
+
+    const sysData = BK_SYS[sys];
+    const u = sysData.u;
+    const likme = BK_RATES[u][bkLevel];
+    const slaniCoef = BK_SLANI_COEF[Math.min(slani,6)];
+    const areaCoef = getAreaCoef(ekasArea);
+
+    // Formula: Cena = 5 × (Likme × Daudzums × Seg × Sis × Area × Slani × Sarezg × Steidz + Mezgli×5)
+    const units = likme * daudzums * seg * sysData.c * areaCoef * slaniCoef * sarezg * steidz;
+    const totalUnits = units + mezgli * 5;
+    const price = 5 * totalUnits;
+
+    const internal = Math.round(price/10)*10;
+    const client = Math.round(internal*1.20/10)*10;
+
+    document.getElementById('bk-pe').style.display='none';
+    document.getElementById('bk-pr').style.display='block';
+    document.getElementById('bk-pvc').textContent=eur(client);
+    document.getElementById('bk-pvi').textContent=eur(internal);
+
+    let bh=`<div class="br"><span>Bāzes likme</span><span>5 EUR/vien.</span></div>
+<div class="br"><span>Likme (${bkLevel})</span><span>${likme} vien/${u}</span></div>
+<div class="br"><span>Daudzums</span><span>${daudzums} ${u}</span></div>
+<div class="br"><span>Sistēmas koef.</span><span>×${sysData.c.toFixed(2)}</span></div>
+<div class="br"><span>Apjomatlaide</span><span>×${areaCoef.toFixed(2)}</span></div>
+${bkLevel==='L3'?`<div class="br"><span>Slāņi (${slani})</span><span>×${slaniCoef.toFixed(2)}</span></div>`:''}
+<div class="br"><span>Sarežğītība</span><span>×${sarezg.toFixed(2)}</span></div>
+<div class="br"><span>Steidzamība</span><span>×${steidz.toFixed(2)}</span></div>
+<div class="br"><span>Segments</span><span>×${seg.toFixed(2)}</span></div>
+${mezgli>0?`<div class="br"><span>Papildu mezgli (${mezgli}×25€)</span><span>+${mezgli*25} EUR</span></div>`:''}
+<div class="br tot"><span>Aprēķināts</span><span>${eur(internal)}</span></div>`;
+    document.getElementById('bk-brkd').innerHTML=bh;
+    document.getElementById('bk-hint').innerHTML=`<strong>Piedāvājumā rakstīt:</strong> "no <strong>${client.toLocaleString('lv-LV')}</strong> EUR + PVN" <span style="margin-left:8px;color:#a16207">(rezerve: ${eur(client-internal)})</span>`;
+
+    // Update level card
+    document.getElementById('bk-level-desc').innerHTML = BK_LEVEL_DESC[bkLevel]||'';
+}
+
+// Initialize level desc
+document.getElementById('bk-level-desc').innerHTML = BK_LEVEL_DESC['L2'];
+
+// ── SCOPE TOGGLE ─────────────────────────────────────────────
+function toggleScope() {
+    const w = document.getElementById('scope-table-wrap');
+    const a = document.getElementById('scope-arrow');
+    const vis = w.style.display === 'none';
+    w.style.display = vis ? 'block' : 'none';
+    a.textContent = vis ? '▲' : '▼';
 }
 </script>
 </body>
