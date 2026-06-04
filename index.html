@@ -1,733 +1,1392 @@
 <!DOCTYPE html>
 <html lang="lv">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Volko Engineering — Kalkulators</title>
-    <style>
-        :root {
-            --navy: #1a2b3c;
-            --gold: #c8a84b;
-            --bg: #f4f5f0;
-            --card: #ffffff;
-            --text: #1a2b3c;
-            --muted: #6b7280;
-            --border: #e2e8f0;
-            --radius: 10px;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Volko Engineering — Projektu kalkulators</title>
+<style>
+:root{--navy:#1a2b3c;--gold:#c8a84b;--bg:#f4f5f0;--card:#fff;--text:#1a2b3c;--muted:#6b7280;--border:#e2e8f0;--radius:10px;--red:#dc2626;--green:#059669}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+#lock{position:fixed;inset:0;background:var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999}
+.lk-logo{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.lk-brand{color:var(--gold);font-size:2rem;font-weight:800;letter-spacing:5px}
+.lk-sub{color:rgba(255,255,255,.25);font-size:.72rem;letter-spacing:3px;text-transform:uppercase;margin-bottom:34px}
+#lock input{width:260px;padding:13px 16px;margin-bottom:8px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:#fff;font-size:1rem;text-align:center;letter-spacing:4px;outline:none;transition:border-color .2s}
+#lock input:focus{border-color:var(--gold)}
+#lock button{width:260px;padding:13px;background:var(--gold);color:var(--navy);border:none;border-radius:8px;font-weight:700;font-size:.9rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer}
+#lock button:hover{opacity:.88}
+.lerr{color:#fc8181;font-size:.8rem;margin-top:8px;min-height:18px}
+header{background:var(--navy);padding:14px 32px;display:flex;align-items:center;justify-content:space-between}
+.h-logo{display:flex;align-items:center;gap:10px}
+.h-brand{color:var(--gold);font-size:1.2rem;font-weight:800;letter-spacing:4px}
+.h-brand span{color:rgba(255,255,255,.3);font-weight:300;margin-left:6px;font-size:.95rem}
+.h-sub{color:rgba(255,255,255,.25);font-size:.7rem;letter-spacing:2px;text-transform:uppercase}
+.tabs{background:var(--navy);border-top:1px solid rgba(255,255,255,.08);display:flex;padding:0 32px}
+.tab-btn{padding:11px 20px;color:rgba(255,255,255,.4);font-size:.78rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all .2s}
+.tab-btn:hover{color:rgba(255,255,255,.7)}
+.tab-btn.active{color:var(--gold);border-bottom-color:var(--gold)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+.mw{max-width:1080px;margin:0 auto;padding:22px 18px}
+.two-col{display:grid;grid-template-columns:360px 1fr;gap:18px;align-items:start}
+@media(max-width:760px){.two-col{grid-template-columns:1fr}}
+.card{background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.07),0 4px 12px rgba(0,0,0,.04);margin-bottom:16px}
+.card-title{font-size:.66rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.field{margin-bottom:13px}
+.lbl{display:block;font-size:.73rem;font-weight:600;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;margin-bottom:5px}
+select,input[type=number]{width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:7px;font-size:.9rem;color:var(--text);background:#fafaf8;outline:none;transition:border-color .2s;appearance:none}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:30px}
+select:focus,input:focus{border-color:var(--gold);background:#fff}
+.checks{display:flex;flex-direction:column;gap:7px}
+.chk{display:flex;align-items:flex-start;gap:8px;font-size:.84rem;cursor:pointer}
+.chk input{width:15px;height:15px;accent-color:var(--gold);cursor:pointer;flex-shrink:0;margin-top:2px}
+.info-card{display:none;background:#f0f6ff;border-left:3px solid #3b82f6;border-radius:0 8px 8px 0;padding:10px 13px;margin-top:8px;font-size:.78rem;color:#1e3a5f;line-height:1.55}
+.info-card.visible{display:block}
+.ic-title{font-weight:700;font-size:.84rem;color:var(--navy);margin-bottom:4px}
+.ic-permit{display:inline-block;background:var(--navy);color:var(--gold);font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:12px;margin:4px 4px 4px 0}
+.ic-risk{color:var(--red);font-weight:600;margin-top:5px;font-size:.74rem}
+.risk-box{background:#fef2f2;border-left:3px solid var(--red);border-radius:0 7px 7px 0;padding:8px 11px;margin-top:6px;font-size:.74rem;color:#991b1b;line-height:1.5;display:none}
+.risk-box.visible{display:block}
+.risk-box strong{display:block;color:var(--red);margin-bottom:2px;font-size:.77rem}
+.grp-row{display:flex;gap:11px;align-items:center;padding:12px 13px;background:var(--bg);border-radius:8px;margin-bottom:13px}
+.grp-badge{background:var(--navy);color:var(--gold);padding:7px 13px;border-radius:6px;font-size:.9rem;font-weight:700;letter-spacing:1px;white-space:nowrap}
+.grp-desc{font-size:.79rem;color:var(--muted);line-height:1.4}
+.p-empty{text-align:center;padding:26px;color:var(--muted);font-size:.83rem}
+.p-box{background:var(--navy);border-radius:8px;padding:15px 17px;margin-bottom:9px}
+.p-box-lbl{font-size:.63rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:2px}
+.p-box-val{font-size:1.75rem;font-weight:700;color:var(--gold)}
+.p-box-note{font-size:.7rem;color:rgba(255,255,255,.25);margin-top:2px}
+.p-int{background:#ecfdf5;border-radius:7px;padding:9px 13px;display:flex;justify-content:space-between;align-items:center;font-size:.82rem;color:#065f46;margin-bottom:9px}
+.brkd{background:var(--bg);border-radius:7px;padding:10px 12px;font-size:.76rem;color:var(--muted)}
+.br{display:flex;justify-content:space-between;padding:2px 0}
+.br.tot{font-weight:700;color:var(--text);border-top:1px solid var(--border);margin-top:4px;padding-top:6px}
+.hint-box{margin-top:9px;padding:9px 11px;background:#fffbf0;border-radius:7px;border-left:3px solid var(--gold);font-size:.76rem;color:#78350f}
+.hint-box strong{color:var(--navy)}
+.fp-box{background:linear-gradient(135deg,var(--navy),#2d4a6b);border-radius:10px;padding:18px;text-align:center}
+.fp-lbl{font-size:.63rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:4px}
+.fp-val{font-size:2rem;font-weight:800;color:var(--gold)}
+.fp-int{font-size:.7rem;color:rgba(255,255,255,.3);margin-top:3px}
+.fp-note{font-size:.73rem;color:rgba(255,255,255,.55);margin-top:8px;line-height:1.45}
+.steps-hdr{font-size:.64rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;padding-bottom:7px;border-bottom:1px solid var(--border)}
+.step-c{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--border)}
+.step-c:last-child{border-bottom:none}
+.sn{width:23px;height:23px;flex-shrink:0;background:var(--gold);color:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:800;margin-top:1px}
+.sc-title{font-size:.87rem;font-weight:700;color:var(--navy)}
+.sc-price{font-size:.73rem;color:var(--gold);font-weight:700}
+.why-box{background:#fffbf0;border-left:2px solid var(--gold);padding:5px 8px;border-radius:0 5px 5px 0;font-size:.73rem;color:#78350f;margin:3px 0;line-height:1.4}
+.sc-who{font-size:.7rem;color:var(--muted);margin-top:2px}
+.sc-docs{margin-top:4px;font-size:.7rem;color:var(--muted)}
+.sc-docs strong{color:var(--text)}
+.docs-list{list-style:none}
+.docs-list li{font-size:.81rem;padding:6px 0;border-bottom:1px solid var(--border);display:flex;gap:6px}
+.docs-list li::before{content:"→";color:var(--gold);font-weight:700;flex-shrink:0}
+.docs-list li:last-child{border-bottom:none}
+.steps-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:640px){.steps-grid{grid-template-columns:1fr}}
+#legalizacija-steps{display:none}
+#legalizacija-steps.visible{display:block}
 
-        /* ── PASSWORD ──────────────────────────── */
-        #lock { position: fixed; inset: 0; background: var(--navy); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; }
-        #lock .brand { color: var(--gold); font-size: 2.2rem; font-weight: 800; letter-spacing: 6px; }
-        #lock .brand-sub { color: rgba(255,255,255,0.3); font-size: .72rem; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 40px; }
-        #lock input { width: 260px; padding: 13px 16px; margin-bottom: 8px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: #fff; font-size: 1rem; text-align: center; letter-spacing: 4px; outline: none; transition: border-color .2s; }
-        #lock input:focus { border-color: var(--gold); }
-        #lock button { width: 260px; padding: 13px; background: var(--gold); color: var(--navy); border: none; border-radius: 8px; font-weight: 700; font-size: .9rem; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; }
-        #lock button:hover { opacity: .88; }
-        .lerr { color: #fc8181; font-size: .8rem; margin-top: 10px; min-height: 18px; }
+:root {
+    --navy: #1a2b3c;
+    --gold: #c8a84b;
+    --bg: #f4f5f0;
+    --card: #ffffff;
+    --text: #1a2b3c;
+    --muted: #6b7280;
+    --border: #e2e8f0;
+    --radius: 10px;
+    --red: #dc2626;
+    --green: #059669;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:-apple-system,'Segoe UI',sans-serif; background:var(--bg); color:var(--text); }
 
-        /* ── HEADER ────────────────────────────── */
-        header { background: var(--navy); padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; }
-        .logo { color: var(--gold); font-size: 1.3rem; font-weight: 800; letter-spacing: 4px; }
-        .logo span { color: rgba(255,255,255,0.3); font-weight: 300; margin-left: 8px; }
-        .logo-sub { color: rgba(255,255,255,0.25); font-size: .7rem; letter-spacing: 2px; text-transform: uppercase; }
+.card { background:var(--card); border-radius:var(--radius); padding:22px; box-shadow:0 1px 3px rgba(0,0,0,.07),0 4px 12px rgba(0,0,0,.04); margin-bottom:16px; }
+.card-title { font-size:.68rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid var(--border); }
+.section-wrap { max-width:1060px; margin:0 auto; padding:24px 20px; }
 
-        /* ── TABS ──────────────────────────────── */
-        .tabs { background: var(--navy); border-top: 1px solid rgba(255,255,255,0.08); display: flex; padding: 0 32px; }
-        .tab-btn { padding: 12px 24px; color: rgba(255,255,255,0.4); font-size: .82rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; border: none; background: none; border-bottom: 2px solid transparent; transition: all .2s; }
-        .tab-btn:hover { color: rgba(255,255,255,0.7); }
-        .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+/* ─── JAUNBUVE PAKETES ─────────────────────── */
+#jaunbuve-paketes { display:none; }
+#jaunbuve-paketes.visible { display:block; }
 
-        /* ── LAYOUT ────────────────────────────── */
-        main { max-width: 1060px; margin: 0 auto; padding: 24px 20px; display: grid; grid-template-columns: 370px 1fr; gap: 20px; align-items: start; }
-        @media (max-width: 760px) { main { grid-template-columns: 1fr; } }
+.paketes-header { text-align:center; margin-bottom:20px; }
+.paketes-header h2 { font-size:1rem; font-weight:800; color:var(--navy); }
+.paketes-header p { font-size:.8rem; color:var(--muted); margin-top:5px; }
 
-        /* ── CARDS ─────────────────────────────── */
-        .card { background: var(--card); border-radius: var(--radius); padding: 22px; box-shadow: 0 1px 3px rgba(0,0,0,.07), 0 4px 12px rgba(0,0,0,.04); }
-        .card-title { font-size: .68rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+.paketes-full-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+@media (max-width:760px) { .paketes-full-grid { grid-template-columns:1fr; } }
 
-        /* ── FORM ──────────────────────────────── */
-        .field { margin-bottom: 14px; }
-        label.lbl { display: block; font-size: .75rem; font-weight: 600; color: var(--muted); letter-spacing: .8px; text-transform: uppercase; margin-bottom: 5px; }
-        select, input[type="number"] { width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 7px; font-size: .92rem; color: var(--text); background: #fafaf8; outline: none; transition: border-color .2s; appearance: none; }
-        select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 11px center; padding-right: 32px; }
-        select:focus, input:focus { border-color: var(--gold); background: #fff; }
-        .checks { display: flex; flex-direction: column; gap: 7px; }
-        .check { display: flex; align-items: center; gap: 8px; font-size: .86rem; cursor: pointer; }
-        .check input { width: 15px; height: 15px; accent-color: var(--gold); cursor: pointer; flex-shrink: 0; }
-        .field-note { font-size: .72rem; color: var(--muted); margin-top: 4px; }
+.pf-card { border:2px solid var(--border); border-radius:12px; padding:18px; position:relative; }
+.pf-card.best { border-color:var(--gold); background:#fffbf0; }
+.pf-card.best::before { content:'IETEICAMS'; position:absolute; top:-11px; left:50%; transform:translateX(-50%); background:var(--gold); color:var(--navy); font-size:.6rem; font-weight:800; letter-spacing:2px; padding:3px 10px; border-radius:20px; white-space:nowrap; }
 
-        /* ── GROUP BADGE ───────────────────────── */
-        .grp-row { display: flex; gap: 12px; align-items: center; padding: 12px 14px; background: var(--bg); border-radius: 8px; margin-bottom: 14px; }
-        .grp-badge { background: var(--navy); color: var(--gold); padding: 7px 14px; border-radius: 6px; font-size: .92rem; font-weight: 700; letter-spacing: 1px; white-space: nowrap; }
-        .grp-desc { font-size: .81rem; color: var(--muted); line-height: 1.4; }
+.pf-code { font-size:.68rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:3px; }
+.pf-name { font-size:1rem; font-weight:800; color:var(--navy); margin-bottom:2px; }
+.pf-tagline { font-size:.72rem; color:var(--muted); margin-bottom:12px; }
 
-        /* ── PRICE DISPLAY ─────────────────────── */
-        .p-empty { text-align: center; padding: 28px; color: var(--muted); font-size: .85rem; }
-        .p-icon { font-size: 1.8rem; margin-bottom: 6px; }
-        .p-box { background: var(--navy); border-radius: 8px; padding: 16px 18px; margin-bottom: 10px; }
-        .p-box-lbl { font-size: .65rem; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,.4); margin-bottom: 3px; }
-        .p-box-val { font-size: 1.8rem; font-weight: 700; color: var(--gold); }
-        .p-box-note { font-size: .72rem; color: rgba(255,255,255,.25); margin-top: 2px; }
-        .p-int { background: #ecfdf5; border-radius: 7px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; font-size: .84rem; color: #065f46; margin-bottom: 10px; }
-        .brkd { background: var(--bg); border-radius: 7px; padding: 11px 13px; font-size: .78rem; color: var(--muted); }
-        .br { display: flex; justify-content: space-between; padding: 2.5px 0; }
-        .br.tot { font-weight: 700; color: var(--text); border-top: 1px solid var(--border); margin-top: 5px; padding-top: 7px; }
-        .hint { margin-top: 10px; padding: 10px 12px; background: #fffbf0; border-radius: 7px; border-left: 3px solid var(--gold); font-size: .78rem; color: #78350f; }
-        .hint strong { color: var(--navy); }
+.pf-price-box { background:var(--navy); border-radius:8px; padding:11px 13px; margin-bottom:11px; }
+.pf-price-lbl { font-size:.58rem; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,.4); margin-bottom:2px; }
+.pf-price-val { font-size:1.4rem; font-weight:700; color:var(--gold); }
+.pf-price-int { font-size:.68rem; color:rgba(255,255,255,.3); margin-top:2px; }
 
-        /* ── SERVICES / SCOPE ──────────────────── */
-        .svc-list { list-style: none; }
-        .svc-list li { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: .86rem; }
-        .svc-list li:last-child { border-bottom: none; }
-        .svc-tot { margin-top: 10px; padding: 10px 12px; background: var(--bg); border-radius: 7px; display: flex; justify-content: space-between; font-size: .86rem; font-weight: 700; }
+.pf-includes { list-style:none; margin-bottom:12px; }
+.pf-includes li { font-size:.76rem; color:var(--text); padding:3.5px 0; border-bottom:1px solid var(--border); display:flex; gap:7px; align-items:flex-start; line-height:1.4; }
+.pf-includes li:last-child { border-bottom:none; }
+.pf-check-g { color:var(--green); font-weight:700; flex-shrink:0; margin-top:1px; }
 
-        /* ── STEPS (AR) ────────────────────────── */
-        .steps-wrap { grid-column: 1 / -1; }
-        .steps-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
-        @media (max-width: 600px) { .steps-grid { grid-column: 1fr; } }
-        .steps-sub { font-size: .72rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
-        .step { display: flex; gap: 11px; padding: 10px 0; border-bottom: 1px solid var(--border); }
-        .step:last-child { border-bottom: none; }
-        .sn { width: 22px; height: 22px; flex-shrink: 0; background: var(--gold); color: var(--navy); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .7rem; font-weight: 700; margin-top: 1px; }
-        .st { font-size: .88rem; font-weight: 600; }
-        .sd { font-size: .78rem; color: var(--muted); margin-top: 2px; line-height: 1.35; }
-        .docs { list-style: none; }
-        .docs li { font-size: .85rem; padding: 7px 0; border-bottom: 1px solid var(--border); display: flex; gap: 8px; }
-        .docs li::before { content: '→'; color: var(--gold); font-weight: 700; flex-shrink: 0; }
-        .docs li:last-child { border-bottom: none; }
+.pf-risk { background:#fef2f2; border-left:3px solid var(--red); border-radius:6px; padding:9px 11px; margin-bottom:10px; font-size:.73rem; color:#991b1b; line-height:1.5; }
+.pf-risk strong { display:block; margin-bottom:3px; color:var(--red); font-size:.76rem; }
 
-        /* ── BK LEVEL PILLS ────────────────────── */
-        .level-pills { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
-        .level-pill { border: 2px solid var(--border); border-radius: 8px; padding: 10px 12px; cursor: pointer; transition: all .15s; text-align: center; }
-        .level-pill:hover { border-color: var(--gold); }
-        .level-pill.selected { border-color: var(--gold); background: #fffbf0; }
-        .level-pill .lp-code { font-size: .95rem; font-weight: 800; color: var(--navy); }
-        .level-pill .lp-name { font-size: .68rem; color: var(--muted); margin-top: 2px; }
-        .level-pill .lp-rate { font-size: .72rem; color: var(--gold); font-weight: 700; margin-top: 4px; }
+.pf-savings { background:#ecfdf5; border-left:3px solid var(--green); border-radius:6px; padding:9px 11px; margin-bottom:10px; font-size:.73rem; color:#065f46; line-height:1.5; }
+.pf-savings strong { display:block; margin-bottom:3px; color:var(--green); font-size:.76rem; }
 
-        /* ── BK SCOPE TABLE ────────────────────── */
-        .bk-full { grid-column: 1 / -1; }
-        .scope-toggle { background: none; border: 1px solid var(--border); border-radius: 7px; padding: 8px 14px; font-size: .8rem; color: var(--muted); cursor: pointer; margin-bottom: 14px; display: flex; align-items: center; gap: 6px; }
-        .scope-toggle:hover { border-color: var(--gold); color: var(--text); }
-        .scope-table { width: 100%; border-collapse: collapse; font-size: .8rem; }
-        .scope-table th { padding: 8px 10px; text-align: left; font-size: .68rem; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); border-bottom: 2px solid var(--border); white-space: nowrap; }
-        .scope-table th:first-child { width: 45%; }
-        .scope-table td { padding: 7px 10px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.35; }
-        .scope-table tr:last-child td { border-bottom: none; }
-        .s-yes { color: #059669; font-weight: 600; }
-        .s-part { color: #d97706; }
-        .s-no { color: #9ca3af; }
-        .scope-excl { margin-top: 16px; }
-        .scope-excl-title { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #9ca3af; margin-bottom: 8px; }
-        .excl-list { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
-        .excl-list li { font-size: .75rem; padding: 3px 9px; background: #fef2f2; color: #991b1b; border-radius: 4px; }
+.pf-applies { background:var(--bg); border-radius:6px; padding:7px 10px; font-size:.71rem; color:var(--muted); }
+.pf-applies strong { color:var(--text); }
 
-        /* ── BK UNIT BADGE ─────────────────────── */
-        .unit-badge { display: inline-block; background: var(--navy); color: var(--gold); font-size: .7rem; font-weight: 700; letter-spacing: 1px; padding: 2px 8px; border-radius: 4px; margin-left: 6px; vertical-align: middle; }
+/* ─── LEGALIZACIJA PAKETES ─────────────────── */
+#legalizacija-paketes { display:none; }
+#legalizacija-paketes.visible { display:block; }
 
-        /* ── TOOLTIP ───────────────────────────── */
-        .info-wrap { display: inline-flex; align-items: center; gap: 5px; position: relative; }
-        .info-icon { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; background: var(--gold); color: var(--navy); font-size: .65rem; font-weight: 800; cursor: pointer; flex-shrink: 0; user-select: none; }
-        .tooltip-box { display: none; position: absolute; left: 22px; top: -4px; z-index: 100; background: var(--navy); color: rgba(255,255,255,.88); font-size: .75rem; line-height: 1.5; padding: 10px 13px; border-radius: 8px; width: 260px; box-shadow: 0 6px 20px rgba(0,0,0,.25); }
-        .tooltip-box::before { content:''; position:absolute; left:-6px; top:8px; border:6px solid transparent; border-right-color: var(--navy); border-left: none; }
-        .info-wrap:hover .tooltip-box, .info-icon:focus + .tooltip-box { display: block; }
-        @media (max-width: 500px) { .tooltip-box { left: auto; right: 0; top: 22px; } .tooltip-box::before { display: none; } }
+.leg-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:22px; }
+@media (max-width:760px) { .leg-grid { grid-template-columns:1fr; } }
 
-        /* ── I GRUPAS FIKSĒTA CENA ─────────────── */
-        .fixed-price-box { background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 8px; padding: 14px 16px; margin-bottom: 10px; }
-        .fixed-price-lbl { font-size: .65rem; letter-spacing: 2px; text-transform: uppercase; color: #166534; margin-bottom: 4px; font-weight: 700; }
-        .fixed-price-val { font-size: 1.6rem; font-weight: 700; color: #166534; }
-        .fixed-price-note { font-size: .72rem; color: #4ade80; margin-top: 2px; color: #166534; opacity: .7; }
+.leg-card { border:2px solid var(--border); border-radius:12px; padding:18px; position:relative; }
+.leg-card.best { border-color:var(--gold); background:#fffbf0; }
+.leg-card.best::before { content:'IETEICAMS'; position:absolute; top:-11px; left:50%; transform:translateX(-50%); background:var(--gold); color:var(--navy); font-size:.6rem; font-weight:800; letter-spacing:2px; padding:3px 10px; border-radius:20px; white-space:nowrap; }
 
-        /* ── JAUNBŪVJU PAKETES ─────────────────── */
-        #paketes-block { grid-column: 1 / -1; }
-        .paketes-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-        @media (max-width: 640px) { .paketes-grid { grid-template-columns: 1fr; } }
-        .pakete-card { border: 2px solid var(--border); border-radius: 10px; padding: 16px; transition: border-color .15s; }
-        .pakete-card.best { border-color: var(--gold); background: #fffbf0; }
-        .pakete-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-        .pakete-code { font-size: 1rem; font-weight: 800; color: var(--navy); }
-        .pakete-badge { font-size: .65rem; background: var(--gold); color: var(--navy); padding: 2px 8px; border-radius: 4px; font-weight: 700; }
-        .pakete-name { font-size: .75rem; color: var(--muted); margin-bottom: 10px; }
-        .pakete-price { font-size: 1.3rem; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
-        .pakete-int { font-size: .72rem; color: var(--muted); margin-bottom: 10px; }
-        .pakete-items { font-size: .75rem; color: var(--muted); line-height: 1.6; }
+.leg-pack-code { font-size:.68rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:3px; }
+.leg-pack-name { font-size:1rem; font-weight:800; color:var(--navy); margin-bottom:2px; }
+.leg-pack-sub { font-size:.72rem; color:var(--muted); margin-bottom:12px; }
 
-        /* ── AI CHAT ───────────────────────────── */
-        #tab-ai { display: none; }
-        #tab-ai.active { display: block; }
-        .ai-wrap { max-width: 800px; margin: 0 auto; padding: 24px 20px; display: flex; flex-direction: column; height: calc(100vh - 110px); }
-        .ai-api-row { display: flex; gap: 8px; margin-bottom: 14px; align-items: center; }
-        .ai-api-row input { flex: 1; padding: 8px 12px; border: 1px solid var(--border); border-radius: 7px; font-size: .85rem; color: var(--text); background: #fafaf8; outline: none; }
-        .ai-api-row input:focus { border-color: var(--gold); }
-        .ai-api-toggle { padding: 8px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 7px; font-size: .78rem; color: var(--muted); cursor: pointer; white-space: nowrap; }
-        .ai-api-toggle:hover { border-color: var(--gold); }
-        .ai-messages { flex: 1; overflow-y: auto; border: 1px solid var(--border); border-radius: 10px; background: var(--card); padding: 16px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; }
-        .msg { max-width: 85%; display: flex; flex-direction: column; gap: 3px; }
-        .msg.user { align-self: flex-end; }
-        .msg.ai { align-self: flex-start; }
-        .msg-bubble { padding: 10px 14px; border-radius: 12px; font-size: .88rem; line-height: 1.55; white-space: pre-wrap; word-break: break-word; }
-        .msg.user .msg-bubble { background: var(--navy); color: rgba(255,255,255,.92); border-bottom-right-radius: 4px; }
-        .msg.ai .msg-bubble { background: var(--bg); color: var(--text); border-bottom-left-radius: 4px; border: 1px solid var(--border); }
-        .msg-time { font-size: .67rem; color: var(--muted); }
-        .msg.user .msg-time { text-align: right; }
-        .ai-quick-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
-        .ai-qbtn { padding: 6px 12px; background: var(--card); border: 1px solid var(--border); border-radius: 20px; font-size: .75rem; color: var(--text); cursor: pointer; transition: all .15s; }
-        .ai-qbtn:hover { border-color: var(--gold); color: var(--navy); background: #fffbf0; }
-        .ai-input-row { display: flex; gap: 8px; }
-        .ai-input-row textarea { flex: 1; padding: 10px 13px; border: 1px solid var(--border); border-radius: 8px; font-size: .9rem; color: var(--text); background: #fafaf8; outline: none; resize: none; height: 48px; max-height: 120px; font-family: inherit; transition: border-color .2s; }
-        .ai-input-row textarea:focus { border-color: var(--gold); background: #fff; }
-        .ai-send { padding: 0 18px; background: var(--gold); color: var(--navy); border: none; border-radius: 8px; font-weight: 700; font-size: .88rem; cursor: pointer; transition: opacity .15s; white-space: nowrap; }
-        .ai-send:hover { opacity: .88; }
-        .ai-send:disabled { opacity: .4; cursor: not-allowed; }
-        .ai-loading { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: var(--bg); border-radius: 12px; border: 1px solid var(--border); font-size: .82rem; color: var(--muted); border-bottom-left-radius: 4px; max-width: 85%; }
-        .dots { display: flex; gap: 4px; }
-        .dots span { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); animation: blink 1.2s infinite; }
-        .dots span:nth-child(2) { animation-delay: .2s; }
-        .dots span:nth-child(3) { animation-delay: .4s; }
-        @keyframes blink { 0%,80%,100%{opacity:.2} 40%{opacity:1} }
-        .ai-empty { text-align: center; color: var(--muted); font-size: .85rem; margin: auto; }
-        .ai-empty .p-icon { font-size: 2.5rem; margin-bottom: 10px; }
-        .ai-empty p { max-width: 300px; line-height: 1.5; }
-    </style>
+.leg-price-box { background:var(--navy); border-radius:8px; padding:11px 13px; margin-bottom:11px; }
+.leg-price-lbl { font-size:.58rem; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,.4); margin-bottom:2px; }
+.leg-price-val { font-size:1.25rem; font-weight:700; color:var(--gold); }
+.leg-price-note { font-size:.68rem; color:rgba(255,255,255,.3); margin-top:2px; }
+
+.leg-includes { list-style:none; margin-bottom:10px; }
+.leg-includes li { font-size:.76rem; padding:3px 0; border-bottom:1px solid var(--border); display:flex; gap:7px; align-items:flex-start; line-height:1.4; }
+.leg-includes li:last-child { border-bottom:none; }
+
+.leg-risk { background:#fef2f2; border-left:3px solid var(--red); border-radius:6px; padding:9px 11px; margin-bottom:9px; font-size:.72rem; color:#991b1b; line-height:1.5; }
+.leg-risk strong { display:block; margin-bottom:3px; color:var(--red); font-size:.75rem; }
+.leg-risk .ri { margin-top:4px; display:flex; gap:5px; }
+.leg-risk .ri::before { content:'⚠'; flex-shrink:0; }
+
+.leg-adv { background:#ecfdf5; border-left:3px solid var(--green); border-radius:6px; padding:9px 11px; margin-bottom:9px; font-size:.72rem; color:#065f46; line-height:1.5; }
+.leg-adv strong { display:block; margin-bottom:3px; color:var(--green); font-size:.75rem; }
+
+.leg-when { background:var(--bg); border-radius:6px; padding:7px 10px; font-size:.71rem; color:var(--muted); margin-bottom:9px; }
+.leg-when strong { color:var(--text); }
+
+/* Timeline */
+.tl-wrap { background:var(--bg); border-radius:10px; padding:14px 16px; margin-bottom:18px; overflow-x:auto; }
+.tl-title { font-size:.65rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:12px; }
+.tl { display:flex; align-items:center; gap:0; min-width:600px; }
+.tl-node { display:flex; flex-direction:column; align-items:center; }
+.tl-label { font-size:.66rem; font-weight:700; color:var(--navy); background:var(--card); border:1.5px solid var(--gold); border-radius:5px; padding:3px 7px; white-space:nowrap; }
+.tl-month { font-size:.6rem; color:var(--muted); margin-top:3px; white-space:nowrap; text-align:center; }
+.tl-conn { display:flex; flex-direction:column; align-items:center; padding:0 3px; }
+.tl-dur { font-size:.58rem; color:var(--muted); white-space:nowrap; margin-bottom:1px; }
+.tl-arr { color:var(--gold); font-weight:700; font-size:.9rem; line-height:1; margin-bottom:14px; }
+
+/* Normativi */
+.normativi { background:var(--navy); border-radius:10px; padding:18px 20px; }
+.normativi-title { font-size:.65rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--gold); margin-bottom:12px; }
+.normativi h4 { font-size:.8rem; font-weight:700; color:rgba(255,255,255,.88); margin-bottom:6px; }
+.normativi ul { list-style:none; margin-bottom:12px; }
+.normativi ul li { font-size:.75rem; color:rgba(255,255,255,.6); padding:2.5px 0; display:flex; gap:7px; line-height:1.4; }
+.normativi ul li::before { content:'•'; color:var(--gold); flex-shrink:0; }
+.normativi hr { border:none; border-top:1px solid rgba(255,255,255,.1); margin:10px 0; }
+
+/* ─── AUTO-IETEIKUMI ───────────────────────── */
+#auto-ieteikumi { display:none; }
+#auto-ieteikumi.visible { display:block; }
+
+.urg-group { margin-bottom:16px; }
+.urg-label { font-size:.63rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; padding:3px 9px; border-radius:4px; display:inline-block; margin-bottom:8px; }
+.urg-label.critical { background:#fef2f2; color:var(--red); }
+.urg-label.recommended { background:#fffbf0; color:#92400e; }
+.urg-label.if_needed { background:#f3f4f6; color:var(--muted); }
+
+.rec-items { display:flex; flex-direction:column; gap:7px; }
+.rec-item { border:1.5px solid var(--border); border-radius:8px; padding:11px 13px; display:flex; gap:11px; align-items:flex-start; transition:border-color .15s; }
+.rec-item.critical { border-color:#fca5a5; background:#fff7f7; }
+.rec-item.recommended { border-color:#fde68a; background:#fffdf7; }
+.rec-item:hover { border-color:var(--gold); }
+
+.rec-cb { margin-top:2px; width:15px; height:15px; accent-color:var(--gold); cursor:pointer; flex-shrink:0; }
+.rec-name { font-size:.84rem; font-weight:700; color:var(--navy); margin-bottom:2px; }
+.rec-price { font-size:.76rem; color:var(--gold); font-weight:700; margin-bottom:3px; }
+.rec-why { font-size:.73rem; color:var(--muted); line-height:1.45; }
+.rec-when { font-size:.67rem; color:var(--muted); margin-top:3px; font-style:italic; }
+.rec-when strong { font-style:normal; color:var(--text); }
+
+.rec-tot { background:var(--navy); border-radius:8px; padding:11px 15px; display:flex; justify-content:space-between; align-items:center; margin-top:12px; }
+.rec-tot-lbl { font-size:.65rem; letter-spacing:1.5px; text-transform:uppercase; color:rgba(255,255,255,.4); }
+.rec-tot-val { font-size:1.05rem; font-weight:700; color:var(--gold); }
+
+/* Tooltip */
+.iw { display:inline-flex; align-items:center; gap:4px; position:relative; }
+.ii { display:inline-flex; align-items:center; justify-content:center; width:14px; height:14px; border-radius:50%; background:var(--gold); color:var(--navy); font-size:.6rem; font-weight:800; cursor:pointer; flex-shrink:0; }
+.tb { display:none; position:absolute; left:18px; top:-4px; z-index:100; background:var(--navy); color:rgba(255,255,255,.88); font-size:.73rem; line-height:1.5; padding:9px 12px; border-radius:8px; width:230px; box-shadow:0 6px 20px rgba(0,0,0,.25); pointer-events:none; }
+.tb::before { content:''; position:absolute; left:-5px; top:8px; border:5px solid transparent; border-right-color:var(--navy); border-left:none; }
+.iw:hover .tb { display:block; }
+
+
+    /* ---- BK specifiskais CSS ---- */
+    .bk-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media(max-width:700px){ .bk-grid{grid-template-columns:1fr;} }
+
+    .bk-card { background:#fff; border:1px solid var(--border); border-radius:10px; padding:16px; }
+    .bk-card h3 { margin:0 0 4px; font-size:.95rem; color:var(--navy); }
+    .bk-card .hint { font-size:.78rem; color:#888; margin:0 0 10px; font-style:italic; }
+
+    .bk-sys-select { width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:7px;
+                     font-size:.88rem; outline:none; }
+    .bk-sys-select:focus { border-color:var(--gold); }
+
+    .bk-input { width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:7px;
+                font-size:.88rem; outline:none; box-sizing:border-box; }
+    .bk-input:focus { border-color:var(--gold); }
+
+    .level-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+    .level-btn { padding:10px 6px; border:2px solid var(--border); border-radius:8px;
+                 background:#fff; cursor:pointer; text-align:center; transition:all .15s; }
+    .level-btn:hover { border-color:var(--gold); }
+    .level-btn.active { border-color:var(--navy); background:var(--navy); color:#fff; }
+    .level-btn .lb-name { font-weight:700; font-size:.88rem; }
+    .level-btn .lb-sub  { font-size:.72rem; margin-top:3px; opacity:.75; }
+
+    .level-explain { font-size:.78rem; background:#f9f7f2; border-left:3px solid var(--gold);
+                     border-radius:0 6px 6px 0; padding:8px 12px; margin-top:8px; color:#555;
+                     line-height:1.45; }
+    .level-explain strong { color:var(--navy); }
+
+    .coef-row { display:flex; align-items:center; justify-content:space-between;
+                margin-bottom:8px; font-size:.85rem; }
+    .coef-row label { color:var(--text); }
+    .coef-val { font-weight:700; color:var(--navy); min-width:40px; text-align:right; }
+
+    .bk-mezgli { display:flex; align-items:center; gap:10px; }
+    .bk-mezgli input[type=number] { width:80px; }
+
+    .bk-result-box { background:var(--navy); color:#fff; border-radius:10px;
+                     padding:18px 20px; margin-top:14px; }
+    .bk-result-box .res-label { font-size:.82rem; opacity:.7; margin-bottom:4px; }
+    .bk-result-box .res-price { font-size:1.6rem; font-weight:700; color:var(--gold); }
+    .bk-result-box .res-formula { font-size:.72rem; opacity:.6; margin-top:6px; }
+    .bk-result-box .res-note { font-size:.78rem; margin-top:6px; opacity:.8; }
+
+    .bk-items-table { width:100%; border-collapse:collapse; font-size:.82rem; margin-top:10px; }
+    .bk-items-table th { background:#f4f2ed; color:var(--navy); padding:6px 8px;
+                          text-align:left; border-bottom:2px solid var(--border); }
+    .bk-items-table td { padding:6px 8px; border-bottom:1px solid var(--border); vertical-align:top; }
+    .bk-items-table tr:last-child td { border-bottom:none; }
+    .bk-items-table .td-price { font-weight:700; color:var(--navy); text-align:right; }
+    .bk-add-btn { padding:8px 16px; background:var(--gold); color:var(--navy);
+                  border:none; border-radius:7px; font-weight:700; cursor:pointer;
+                  font-size:.85rem; margin-top:4px; }
+    .bk-add-btn:hover { opacity:.85; }
+    .bk-clear-btn { padding:6px 12px; background:#fff; color:#c00; border:1px solid #fca;
+                    border-radius:7px; font-size:.78rem; cursor:pointer; margin-left:8px; }
+    .bk-remove-btn { color:#c00; background:none; border:none; cursor:pointer;
+                     font-size:.9rem; padding:0 4px; }
+    .cat-badge { display:inline-block; font-size:.7rem; padding:1px 7px;
+                 border-radius:10px; background:#f0ede6; color:#666; margin-left:4px; }
+  
+
+    /* ---- AI Chat CSS ---- */
+    .chat-window {
+      height: 450px; overflow-y: auto; border: 1px solid var(--border);
+      border-radius: 10px; padding: 16px; background: #fafaf8;
+    }
+    .msg { max-width: 80%; margin-bottom: 12px; }
+    .msg.user {
+      margin-left: auto; background: var(--navy); color: white;
+      padding: 10px 14px; border-radius: 14px 14px 4px 14px; font-size: .9rem;
+    }
+    .msg.ai {
+      background: white; border: 1px solid var(--border);
+      padding: 12px 14px; border-radius: 14px 14px 14px 4px;
+      font-size: .88rem; line-height: 1.55;
+    }
+    .msg.ai strong { color: var(--navy); }
+    .msg.error {
+      background: #fff5f5; border: 1px solid #fca5a5;
+      padding: 10px 14px; border-radius: 8px; font-size: .84rem; color: #c00;
+    }
+    .loading-dots { display: inline-flex; gap: 4px; align-items:center; }
+    .loading-dots span {
+      width: 6px; height: 6px; background: var(--gold);
+      border-radius: 50%; animation: bounce 1.2s infinite;
+    }
+    .loading-dots span:nth-child(2) { animation-delay: .2s; }
+    .loading-dots span:nth-child(3) { animation-delay: .4s; }
+    @keyframes bounce {
+      0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-6px)}
+    }
+    .quick-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .qbtn {
+      font-size: .75rem; padding: 5px 11px; background: white;
+      border: 1px solid var(--border); border-radius: 20px;
+      cursor: pointer; color: var(--text); transition: all .15s;
+    }
+    .qbtn:hover { border-color: var(--gold); background: #fffbf0; }
+    .chat-input-row { display: flex; gap: 8px; margin-top: 10px; }
+    .chat-input {
+      flex: 1; padding: 10px 14px; border: 1px solid var(--border);
+      border-radius: 8px; font-size: .9rem; outline: none;
+      resize: none; height: 44px; box-sizing: border-box;
+      font-family: inherit;
+    }
+    .chat-input:focus { border-color: var(--gold); }
+    .send-btn {
+      padding: 10px 18px; background: var(--navy); color: var(--gold);
+      border: none; border-radius: 8px; font-weight: 700;
+      cursor: pointer; font-size: .85rem; white-space: nowrap;
+    }
+    .send-btn:hover { opacity: .88; }
+    .send-btn:disabled { opacity: .45; cursor: not-allowed; }
+    .api-key-section {
+      background: #fffbf0; border: 1px solid #fde68a;
+      border-radius: 8px; padding: 14px; margin-bottom: 14px;
+    }
+    .api-key-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 8px; cursor: pointer;
+    }
+    .api-key-header h4 { margin:0; font-size:.88rem; color:var(--navy); }
+    .api-key-header .toggle-icon { font-size:.8rem; color:#888; }
+    .api-key-body { }
+    .api-key-row { display: flex; gap: 8px; }
+    .api-input {
+      flex: 1; padding: 8px 12px; border: 1px solid var(--border);
+      border-radius: 7px; font-size: .88rem; outline: none;
+      font-family: monospace;
+    }
+    .api-input:focus { border-color: var(--gold); }
+    .api-save-btn {
+      padding: 8px 14px; background: var(--gold); color: var(--navy);
+      border: none; border-radius: 7px; font-weight: 700;
+      cursor: pointer; font-size: .82rem;
+    }
+    .api-save-btn:hover { opacity:.85; }
+    .api-status { font-size:.75rem; margin-top:5px; color:#666; }
+    .api-status.ok { color:#2d8a4e; }
+    .api-status.err { color:#c00; }
+    .chat-container { background:#fff; border:1px solid var(--border); border-radius:10px; padding:16px; }
+    .ai-header { margin-bottom:14px; }
+    .ai-header h2 { margin:0 0 2px; font-size:1.1rem; color:var(--navy); }
+    .ai-header p { margin:0; font-size:.82rem; color:#888; }
+    .clear-chat-btn {
+      font-size:.72rem; padding:3px 10px; background:none;
+      border:1px solid var(--border); border-radius:20px;
+      cursor:pointer; color:#888; margin-left:8px;
+    }
+    .clear-chat-btn:hover { color:#c00; border-color:#fca; }
+  
+</style>
 </head>
 <body>
 
-<!-- PASSWORD -->
 <div id="lock">
-    <div class="brand">VOLKO</div>
-    <div class="brand-sub">Engineering</div>
-    <input type="password" id="pi" placeholder="Parole" autocomplete="off">
-    <button onclick="auth()">Ienākt</button>
-    <div class="lerr" id="pe"></div>
+<div class="lk-logo">
+<svg width="54" height="54" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><defs>
+<linearGradient id="lglk" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#f0d060"/>
+<stop offset="60%" stop-color="#c8a84b"/>
+<stop offset="100%" stop-color="#8b6200"/>
+</linearGradient>
+</defs><path d="M8 46 A24 24 0 1 1 52 46" stroke="url(#lglk)" stroke-width="3" fill="none" stroke-linecap="round"/><rect x="12" y="34" width="9" height="14" rx="1.5" fill="url(#lglk)"/><rect x="25" y="24" width="9" height="24" rx="1.5" fill="url(#lglk)"/><rect x="38" y="14" width="9" height="34" rx="1.5" fill="url(#lglk)"/></svg>
+<div class="lk-brand">VOLKO</div>
+</div>
+<div class="lk-sub">Engineering · Projektu kalkulators</div>
+<input type="password" id="pi" placeholder="Parole" autocomplete="off">
+<button onclick="auth()">Ienākt</button>
+<div class="lerr" id="pe"></div>
 </div>
 
-<!-- APP -->
 <div id="app" style="display:none">
-
 <header>
-    <div class="logo">VOLKO<span>Engineering</span></div>
-    <div class="logo-sub">Projektu kalkulators</div>
+<div class="h-logo">
+<svg width="30" height="30" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><defs>
+<linearGradient id="lghd" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#f0d060"/>
+<stop offset="60%" stop-color="#c8a84b"/>
+<stop offset="100%" stop-color="#8b6200"/>
+</linearGradient>
+</defs><path d="M8 46 A24 24 0 1 1 52 46" stroke="url(#lghd)" stroke-width="3" fill="none" stroke-linecap="round"/><rect x="12" y="34" width="9" height="14" rx="1.5" fill="url(#lghd)"/><rect x="25" y="24" width="9" height="24" rx="1.5" fill="url(#lghd)"/><rect x="38" y="14" width="9" height="34" rx="1.5" fill="url(#lghd)"/></svg>
+<div class="h-brand">VOLKO<span>Engineering</span></div>
+</div>
+<div class="h-sub">Projektu kalkulators</div>
 </header>
 
 <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('ar',this)">AR — Arhitektūra</button>
-    <button class="tab-btn" onclick="switchTab('bk',this)">BK — Būvkonstrukcijas</button>
-    <button class="tab-btn" onclick="switchTab('ai',this)">🤖 AI Konsultants</button>
+<button class="tab-btn active" onclick="switchTab('ar',this)">🏗 AR — Arhitektūra</button>
+<button class="tab-btn" onclick="switchTab('bk',this)">⚙️ BK — Būvkonstrukcijas</button>
+<button class="tab-btn" onclick="switchTab('ai',this)">🤖 AI Konsultants</button>
 </div>
 
-<!-- ═══════════════ AR TAB ═══════════════ -->
-<div id="tab-ar" class="tab-content active">
-<main>
+<div id="tab-ar" class="tab-panel active">
+<div class="mw">
+<div class="two-col">
+<div>
+<div class="card">
+<div class="card-title">Ēkas parametri</div>
+<div class="field"><label class="lbl">Projekta tips</label>
+<select id="ar-type" onchange="calcAR()">
+<option value="">— izvēlēties —</option>
+<optgroup label="Jauns projekts">
+<option value="jaunbuve">Jaunbūve</option>
+<option value="izmaiņu">Izmaiņu projekts</option>
+<option value="rekonstrukcija">Rekonstrukcija / pārbūve</option>
+<option value="vienk">Vienkāršota atjaunošana</option>
+<option value="nojaukšana">Nojaukšanas projekts</option>
+<option value="tipveida">Tipveida projekts</option>
+</optgroup>
+<optgroup label="Legalizācija">
+<option value="la">Patvaļīga būvniecība</option>
+<option value="lbv">Nereģistrētas izmaiņas — vienkāršotas</option>
+<option value="lbp">Nereģistrētas izmaiņas — pilnas</option>
+<option value="lc">Funkcijas maiņa</option>
+</optgroup>
+</select>
+<div class="info-card" id="ar-info-card"></div>
+</div>
+<div class="field"><label class="lbl">Platība (m²)</label>
+<input type="number" id="ar-area" placeholder="piem. 120" min="1" oninput="calcAR()"></div>
+<div class="field"><label class="lbl">Stāvu skaits</label>
+<select id="ar-floors" onchange="calcAR()">
+<option value="1">1 stāvs</option><option value="2">2 stāvi</option>
+<option value="3">3 stāvi</option><option value="4">4+ stāvi</option>
+</select></div>
+<div class="field"><label class="lbl">Ēkas funkcija</label>
+<select id="ar-func" onchange="calcAR()">
+<option value="1.00">Individuālā dzīvojamā māja</option>
+<option value="1.05">Dvīņu māja</option><option value="1.10">Rindu māja</option>
+<option value="1.30">Daudzdzīvokļu māja</option>
+<option value="0.85">Vasarnīca / dārza māja</option>
+<option value="0.70">Saimniecības ēka</option><option value="0.60">Garāža</option>
+<option value="0.65">Noliktava</option><option value="1.20">Biroja ēka</option>
+<option value="1.25">Tirdzniecības ēka</option>
+<option value="1.15">Jaukta lietojuma ēka</option>
+<option value="0.50">Inženierbūve / žogs</option>
+</select></div>
+<div class="field"><label class="lbl">Pašvaldība</label>
+<select id="ar-muni" onchange="calcAR()">
+<option value='{"p":1.00,"s":1.10}'>— izvēlēties —</option>
+<option value='{"p":1.20,"s":1.05}'>Rīga</option>
+<option value='{"p":1.10,"s":1.05}'>Mārupes novads</option>
+<option value='{"p":1.10,"s":1.05}'>Ķekavas novads</option>
+<option value='{"p":1.10,"s":1.05}'>Salaspils novads</option>
+<option value='{"p":1.10,"s":1.05}'>Ādažu / Ropažu / Olaines novads</option>
+<option value='{"p":1.10,"s":1.05}'>Stopiņu / Garkalnes / Babītes novads</option>
+<option value='{"p":1.00,"s":1.10}'>Jūrmala</option>
+<option value='{"p":1.00,"s":1.10}'>Siguldas novads</option>
+<option value='{"p":1.00,"s":1.10}'>Jelgava / Jelgavas novads</option>
+<option value='{"p":1.00,"s":1.10}'>Ogres novads</option>
+<option value='{"p":1.00,"s":1.10}'>Saulkrastu / Limbažu novads</option>
+<option value='{"p":1.00,"s":1.10}'>Tukuma / Cēsu novads</option>
+<option value='{"p":1.00,"s":1.10}'>Dobeles / Bauskas / Kandavas novads</option>
+<option value='{"p":1.02,"s":1.15}'>Valmieras novads</option>
+<option value='{"p":1.02,"s":1.15}'>Talsu novads</option>
+<option value='{"p":1.02,"s":1.15}'>Saldus / Kuldīgas novads</option>
+<option value='{"p":1.02,"s":1.15}'>Jēkabpils / Madonas novads</option>
+<option value='{"p":1.05,"s":1.20}'>Liepāja</option>
+<option value='{"p":1.05,"s":1.20}'>Ventspils</option>
+<option value='{"p":1.05,"s":1.20}'>Daugavpils</option>
+<option value='{"p":1.05,"s":1.20}'>Rēzekne</option>
+<option value='{"p":1.00,"s":1.10}'>Cits novads</option>
+</select></div>
+<div class="field"><label class="lbl">Apgrūtinājumi (+10% katrs)</label>
+<div class="checks">
+<label class="chk"><input type="checkbox" id="c1" onchange="calcAR()"> Kultūras piemineklis / NKMP</label>
+<div class="risk-box" id="rb1"><strong>NKMP saskaņošana</strong>Katrai izmaiņai darba uzdevums. Ilgs process. +10% + 2–6 mēneši.</div>
+<label class="chk"><input type="checkbox" id="c2" onchange="calcAR()"> Patvaļīga būvniecība / legalizācija</label>
+<div class="risk-box" id="rb2"><strong>Legalizācija</strong>RISKS: pašvaldība var atteikt. Bieži 12–36 mēneši.</div>
+<label class="chk"><input type="checkbox" id="c3" onchange="calcAR()"> Kopīpašums (līdzīpašnieki)</label>
+<div class="risk-box" id="rb3"><strong>Kopīpašums</strong>VISU līdzīpašnieku rakstiska piekrišana obligāta.</div>
+<label class="chk"><input type="checkbox" id="c4" onchange="calcAR()"> Ēka robežai tuvāk par 4m</label>
+<div class="risk-box" id="rb4"><strong>Robeža &lt;4m</strong>Kaimiņa saskaņojums obligāts. Bez tā — atļauju neizsniedz.</div>
+<label class="chk"><input type="checkbox" id="c5" onchange="calcAR()"> Steidzams termiņš</label>
+<div class="risk-box" id="rb5"><strong>Steidzamība</strong>Mūsu darbu var paātrināt. Pašvaldības 30 dienas — nemainās.</div>
+</div></div>
+</div>
+</div>
+<div>
+<div class="card" style="margin-bottom:16px">
+<div class="card-title">Būves grupa</div>
+<div class="grp-row">
+<div class="grp-badge" id="ar-grp-badge">—</div>
+<div class="grp-desc" id="ar-grp-desc">Ievadi platību un stāvu skaitu</div>
+</div>
+</div>
+<div class="card">
+<div class="card-title">Cenas aprēķins</div>
+<div id="ar-p-empty" class="p-empty">🏗 Izvēlies tipu un ievadi platību</div>
+<div id="ar-p-result" style="display:none">
+<div class="p-box">
+<div class="p-box-lbl">Klientam piedāvāt</div>
+<div class="p-box-val" id="ar-p-client">—</div>
+<div class="p-box-note">bez PVN · ar 20% rezervi tirgošanai</div>
+</div>
+<div class="p-int"><span>Iekšējā cena (minimums)</span><strong id="ar-p-int">—</strong></div>
+<div class="brkd" id="ar-brkd"></div>
+<div class="hint-box" id="ar-hint"></div>
+</div>
+<div id="ar-p-fixed" style="display:none">
+<div class="fp-box">
+<div class="fp-lbl">Klientam (I grupas mazēka)</div>
+<div class="fp-val" id="ar-fp-val">—</div>
+<div class="fp-int">Iekšējā: <span id="ar-fp-int">—</span></div>
+<div class="fp-note" id="ar-fp-note">—</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div style="margin-top:16px">
+<div class="section-wrap">
 
-    <!-- FORM -->
-    <div class="card">
-        <div class="card-title">Ēkas parametri</div>
-        <div class="field">
-            <label class="lbl">Projekta tips</label>
-            <div class="info-wrap" style="display:block">
-                <select id="type" onchange="calc()">
-                    <option value="">— izvēlēties —</option>
-                    <optgroup label="Jauns projekts">
-                        <option value="jaunbuve">Jaunbūve</option>
-                        <option value="izmaiņu">Izmaiņu projekts</option>
-                        <option value="rekonstrukcija">Rekonstrukcija / pārbūve</option>
-                        <option value="vienk">Vienkāršota atjaunošana</option>
-                        <option value="nojaukšana">Nojaukšanas projekts</option>
-                        <option value="tipveida">Tipveida projekts</option>
-                    </optgroup>
-                    <optgroup label="Legalizācija">
-                        <option value="la">Patvaļīga būvniecība</option>
-                        <option value="lbv">Nereģistrētas izmaiņas — vienkāršotas</option>
-                        <option value="lbp">Nereģistrētas izmaiņas — pilnas</option>
-                        <option value="lc">Funkcijas maiņa</option>
-                    </optgroup>
-                </select>
-            </div>
-            <div id="type-info-box" style="display:none; margin-top:8px; padding:9px 12px; background:#f8f9ff; border-left:3px solid var(--gold); border-radius:6px; font-size:.78rem; color:#374151; line-height:1.5;"></div>
-        </div>
-        <div class="field">
-            <label class="lbl">Platība (m²)</label>
-            <input type="number" id="area" placeholder="piem. 120" min="1" oninput="calc()">
-        </div>
-        <div class="field">
-            <label class="lbl">Stāvu skaits</label>
-            <select id="floors" onchange="calc()">
-                <option value="1">1 stāvs</option><option value="2">2 stāvi</option><option value="3">3 stāvi</option><option value="4">4+ stāvi</option>
-            </select>
-        </div>
-        <div class="field">
-            <label class="lbl">Ēkas funkcija</label>
-            <select id="func" onchange="calc()">
-                <option value="1.00">Individuālā dzīvojamā māja</option>
-                <option value="1.05">Dvīņu māja</option>
-                <option value="1.10">Rindu māja</option>
-                <option value="1.30">Daudzdzīvokļu māja</option>
-                <option value="0.85">Vasarnīca / dārza māja</option>
-                <option value="0.70">Saimniecības ēka</option>
-                <option value="0.60">Garāža</option>
-                <option value="0.65">Noliktava</option>
-                <option value="1.20">Biroja ēka</option>
-                <option value="1.25">Tirdzniecības ēka</option>
-                <option value="1.15">Jaukta lietojuma ēka</option>
-                <option value="0.50">Inženierbūve / žogs</option>
-            </select>
-        </div>
-        <div class="field">
-            <label class="lbl">Pašvaldība</label>
-            <select id="muni" onchange="calc()">
-                <option value='{"proj":1.00,"svc":1.00}'>— izvēlēties —</option>
-                <option value='{"proj":1.20,"svc":1.05}'>Rīga</option>
-                <option value='{"proj":1.10,"svc":1.05}'>Mārupes novads</option>
-                <option value='{"proj":1.10,"svc":1.05}'>Ķekavas novads</option>
-                <option value='{"proj":1.10,"svc":1.05}'>Salaspils novads</option>
-                <option value='{"proj":1.10,"svc":1.05}'>Ādažu novads</option>
-                <option value='{"proj":1.10,"svc":1.05}'>Ropažu novads</option>
-                <option value='{"proj":1.10,"svc":1.05}'>Olaines novads</option>
-                <option value='{"proj":1.10,"svc":1.05}'>Stopiņu / Garkalnes / Babītes / Carnikavas novads</option>
-                <option value='{"proj":1.00,"svc":1.10}'>Jūrmala</option>
-                <option value='{"proj":1.00,"svc":1.10}'>Siguldas novads</option>
-                <option value='{"proj":1.00,"svc":1.10}'>Jelgava</option>
-                <option value='{"proj":1.00,"svc":1.10}'>Ogres novads</option>
-                <option value='{"proj":1.00,"svc":1.10}'>Saulkrastu novads</option>
-                <option value='{"proj":1.00,"svc":1.10}'>Limbažu novads</option>
-                <option value='{"proj":1.00,"svc":1.10}'>Tukuma novads</option>
-                <option value='{"proj":1.00,"svc":1.10}'>Cēsu novads</option>
-                <option value='{"proj":1.00,"svc":1.10}'>Dobeles / Bauskas / Kandavas novads</option>
-                <option value='{"proj":1.02,"svc":1.15}'>Valmieras novads</option>
-                <option value='{"proj":1.02,"svc":1.15}'>Talsu novads</option>
-                <option value='{"proj":1.02,"svc":1.15}'>Saldus / Kuldīgas novads</option>
-                <option value='{"proj":1.02,"svc":1.15}'>Jēkabpils / Madonas / Gulbenes novads</option>
-                <option value='{"proj":1.02,"svc":1.15}'>Preiļu novads</option>
-                <option value='{"proj":1.05,"svc":1.20}'>Liepāja</option>
-                <option value='{"proj":1.05,"svc":1.20}'>Ventspils</option>
-                <option value='{"proj":1.05,"svc":1.20}'>Rēzekne</option>
-                <option value='{"proj":1.05,"svc":1.20}'>Daugavpils</option>
-                <option value='{"proj":1.05,"svc":1.20}'>Alūksnes / Balvu novads</option>
-                <option value='{"proj":1.00,"svc":1.10}'>Cits novads</option>
-            </select>
-        </div>
-        <div class="field">
-            <label class="lbl">Apgrūtinājumi (+10% katrs)</label>
-            <div class="checks">
-                <label class="check"><input type="checkbox" id="c1" onchange="calc()"> Kultūras piemineklis / NKMP</label>
-                <label class="check"><input type="checkbox" id="c2" onchange="calc()"> Patvaļīga būvniecība / legalizācija</label>
-                <label class="check"><input type="checkbox" id="c3" onchange="calc()"> Kopīpašums (līdzīpašnieki)</label>
-                <label class="check"><input type="checkbox" id="c4" onchange="calc()"> Ēka robežai tuvāk par 4m</label>
-                <label class="check"><input type="checkbox" id="c5" onchange="calc()"> Steidzams termiņš</label>
-            </div>
-        </div>
+<!-- ══════════════════════════════════════════
+     1. JAUNBŪVES PAKETES
+     ══════════════════════════════════════════ -->
+<div id="jaunbuve-paketes" class="card">
+    <div class="card-title">Jaunbūvju paketes — Detalizēts salīdzinājums</div>
+    <div class="paketes-header">
+        <h2>Izvēlies piemērotāko paketi savai mājai</h2>
+        <p>Platība: <span id="pb-area">—</span> m² &nbsp;·&nbsp; Visas cenas bez PVN, klientam (ar 20% rezervi)</p>
     </div>
+    <div class="paketes-full-grid">
 
-    <!-- RESULTS -->
-    <div>
-        <div class="card" style="margin-bottom:16px">
-            <div class="card-title">Būves grupa</div>
-            <div class="grp-row">
-                <div class="grp-badge" id="gb">—</div>
-                <div class="grp-desc" id="gd">Ievadi platību un stāvu skaitu</div>
+        <!-- L1 -->
+        <div class="pf-card">
+            <div class="pf-code">L1</div>
+            <div class="pf-name">Standarta</div>
+            <div class="pf-tagline">Pamata dokumentācija</div>
+            <div class="pf-price-box">
+                <div class="pf-price-lbl">Klientam</div>
+                <div class="pf-price-val" id="pf-l1-cli">—</div>
+                <div class="pf-price-int">Iekšējā: <span id="pf-l1-int">—</span></div>
+            </div>
+            <ul class="pf-includes">
+                <li><span class="pf-check-g">✓</span><span>1× 2D skice (pamata plāns — redzēsi kur atradīsies telpas)</span></li>
+                <li><span class="pf-check-g">✓</span><span>1× 3D vizualizācija (kā ēka izskatīsies no ārpuses)</span></li>
+                <li><span class="pf-check-g">✓</span><span>VR tūre (360° apskate telefonā vai datorā)</span></li>
+                <li><span class="pf-check-g">✓</span><span>Arhitektūras projekts: plāni, fasādes, 1 griezums</span></li>
+                <li><span class="pf-check-g">✓</span><span>Galvenais plāns + situācijas apliecinājums</span></li>
+                <li><span class="pf-check-g">✓</span><span>BK 2D — pamata konstruktīvie aprēķini</span></li>
+                <li><span class="pf-check-g">✓</span><span>Energosertifikāts (bāzes novērtējums)</span></li>
+                <li><span class="pf-check-g">✓</span><span>1 korekciju kārta</span></li>
+            </ul>
+            <div class="pf-risk">
+                <strong>Risks</strong>
+                Bez detalizētiem mezgliem būvniekam var rasties jautājumi būvlaikā — papildu izmaksas par skaidrojumiem un izmaiņām.
+            </div>
+            <div class="pf-applies">
+                <strong>Piemērojams:</strong> Vienkāršākai privātmājai līdz 100 m², kad nav sarežģītību.
             </div>
         </div>
-        <div class="card">
-            <div class="card-title">Cenas aprēķins</div>
-            <div class="p-empty" id="pe2"><div class="p-icon">🏗</div>Izvēlies projekta tipu un ievadi platību</div>
-            <div id="pr" style="display:none">
-                <!-- Fixed price for I grupas mazēkas -->
-                <div id="fixed-price-wrap" style="display:none">
-                    <div class="fixed-price-box">
-                        <div class="fixed-price-lbl">Fiksētā cena klientam (I grupa)</div>
-                        <div class="fixed-price-val" id="fixed-price-val">—</div>
-                        <div class="fixed-price-note">bez PVN · vienkāršota procedūra · ar 20% rezervi</div>
-                    </div>
-                    <div class="hint" id="fixed-hint"></div>
-                </div>
-                <!-- Regular price -->
-                <div id="regular-price-wrap">
-                    <div class="p-box"><div class="p-box-lbl">Klientam piedāvāt</div><div class="p-box-val" id="pvc">—</div><div class="p-box-note">bez PVN · ar 20% rezervi tirgošanai</div></div>
-                    <div class="p-int"><span>Iekšējā cena (minimums)</span><strong id="pvi">—</strong></div>
-                    <div class="brkd" id="brkd"></div>
-                    <div class="hint" id="hint"></div>
-                </div>
+
+        <!-- L2 -->
+        <div class="pf-card best">
+            <div class="pf-code">L2 ⭐</div>
+            <div class="pf-name">Uzlabots</div>
+            <div class="pf-tagline">90% privātmāju vajadzīgs šis</div>
+            <div class="pf-price-box">
+                <div class="pf-price-lbl">Klientam</div>
+                <div class="pf-price-val" id="pf-l2-cli">—</div>
+                <div class="pf-price-int">Iekšējā: <span id="pf-l2-int">—</span></div>
+            </div>
+            <ul class="pf-includes">
+                <li><span class="pf-check-g">✓</span><span>2× 3D vizualizāciju varianti</span></li>
+                <li><span class="pf-check-g">✓</span><span>VR tūre (360° apskate)</span></li>
+                <li><span class="pf-check-g">✓</span><span>Orientējoša celtniecības izmaksu prognoze</span></li>
+                <li><span class="pf-check-g">✓</span><span>Arhitektūras projekts: plāni, fasādes, 4 griezumi, 4 mezgli</span></li>
+                <li><span class="pf-check-g">✓</span><span>Galvenais plāns ar vertikālo plānojumu + žogs</span></li>
+                <li><span class="pf-check-g">✓</span><span>BK 3D LOD200 — detalizētāki konstrukciju rasējumi</span></li>
+                <li><span class="pf-check-g">✓</span><span>Energosertifikāts (bāzes novērtējums)</span></li>
+                <li><span class="pf-check-g">✓</span><span>2 korekciju kārtas</span></li>
+            </ul>
+            <div class="pf-savings">
+                <strong>Ietaupa naudu</strong>
+                Precīzāka dokumentācija = mazāk jautājumu no būvnieka = mazāk papildu izmaksu būvlaikā. Samazina pārsteigumus būvlaukumā.
+            </div>
+            <div class="pf-applies">
+                <strong>Ieteicams:</strong> Standarta privātmājai 80–220 m².
             </div>
         </div>
-        <div class="card" id="svc-card" style="display:none; margin-top:16px">
-            <div class="card-title">Iekļautie pakalpojumi</div>
-            <ul class="svc-list" id="svc-list"></ul>
-            <div class="svc-tot"><span>Kopā (iekšējā)</span><span id="svc-tot-v">—</span></div>
+
+        <!-- L3 -->
+        <div class="pf-card">
+            <div class="pf-code">L3</div>
+            <div class="pf-name">Premium</div>
+            <div class="pf-tagline">Pilna dokumentācija · gatavs ražošanai</div>
+            <div class="pf-price-box">
+                <div class="pf-price-lbl">Klientam</div>
+                <div class="pf-price-val" id="pf-l3-cli">—</div>
+                <div class="pf-price-int">Iekšējā: <span id="pf-l3-int">—</span></div>
+            </div>
+            <ul class="pf-includes">
+                <li><span class="pf-check-g">✓</span><span>3× 3D varianti</span></li>
+                <li><span class="pf-check-g">✓</span><span>2× VR tūres (interjers + eksterjers)</span></li>
+                <li><span class="pf-check-g">✓</span><span>Izmaksu prognoze ar papildinājumiem</span></li>
+                <li><span class="pf-check-g">✓</span><span>Arhitektūras projekts: plāni, fasādes, 7 griezumi, kāpnes, 8 mezgli</span></li>
+                <li><span class="pf-check-g">✓</span><span>Būvapjomu saraksts (precīzs materiālu daudzums — var iegūt tāmi)</span></li>
+                <li><span class="pf-check-g">✓</span><span>BK 3D LOD300 — pilnīgi detalizētas konstrukcijas, gatavs ražošanai</span></li>
+                <li><span class="pf-check-g">✓</span><span>Gandrīz nulles enerģijas sertifikāts (augstākā klase)</span></li>
+                <li><span class="pf-check-g">✓</span><span>3 korekciju kārtas</span></li>
+            </ul>
+            <div class="pf-risk" style="background:#ecfdf5; border-left-color:var(--green);">
+                <strong style="color:var(--green);">LOD300 priekšrocība</strong>
+                <span style="color:#065f46;">Precīzi ražošanas rasējumi. Kļūdu risks ražošanā samazināts līdz minimumam.</span>
+            </div>
+            <div class="pf-applies">
+                <strong>Piemērojams:</strong> Lielām ēkām &gt;220 m². Ja plāno CLT vai koka karkasu — vajag šo.
+            </div>
         </div>
-    </div>
 
-    <!-- JAUNBŪVJU PAKETES -->
-    <div class="card steps-wrap" id="paketes-block" style="display:none">
-        <div class="card-title">Jaunbūvju paketes — AR + BK + 3D</div>
-        <div class="paketes-grid" id="paketes-grid"></div>
     </div>
-
-    <!-- STEPS -->
-    <div class="card steps-wrap" id="steps-card" style="display:none">
-        <div class="card-title" id="steps-title">Legalizācijas soļi</div>
-        <div class="steps-grid">
-            <div><div class="steps-sub">Darba secība</div><div id="steps-list"></div></div>
-            <div><div class="steps-sub">Klientam jāsagatavo</div><ul class="docs" id="docs-list"></ul></div>
-        </div>
-    </div>
-
-</main>
 </div>
 
-<!-- ═══════════════ BK TAB ═══════════════ -->
-<div id="tab-bk" class="tab-content">
-<main>
 
-    <!-- BK FORM -->
-    <div class="card">
-        <div class="card-title">BK — Konstruktīvā sistēma</div>
+<!-- ══════════════════════════════════════════
+     2. LEGALIZĀCIJAS PAKETES
+     ══════════════════════════════════════════ -->
+<div id="legalizacija-paketes" class="card">
+    <div class="card-title">Legalizācijas varianti — Izvēlies drošo ceļu</div>
 
-        <div class="field">
-            <label class="lbl">Konstruktīvā sistēma</label>
-            <select id="bk-sys" onchange="calcBK()">
-                <option value="">— izvēlēties —</option>
-                <optgroup label="Sienas">
-                    <option value="Siena – vieglbetona bloki">Siena – vieglbetona bloki</option>
-                    <option value="Siena – koka karkass">Siena – koka karkass</option>
-                    <option value="Siena – CLT">Siena – CLT</option>
-                </optgroup>
-                <optgroup label="Jumts">
-                    <option value="Jumts – koka spāres">Jumts – koka spāres</option>
-                    <option value="Jumts – koka kopnes">Jumts – koka kopnes</option>
-                    <option value="Jumts – CLT paneļi">Jumts – CLT paneļi</option>
-                </optgroup>
-                <optgroup label="Pārsegumi">
-                    <option value="Grīda/Pārsegums – koka sijas">Grīda/Pārsegums – koka sijas</option>
-                    <option value="Grīda/Pārsegums – CLT paneļi">Grīda/Pārsegums – CLT paneļi</option>
-                    <option value="Pārsegums – dobie paneļi">Pārsegums – dobie paneļi</option>
-                    <option value="Pārsegums – monolītais betons">Pārsegums – monolītais betons</option>
-                </optgroup>
-                <optgroup label="Pamati">
-                    <option value="Pamati – lentveidīgi">Pamati – lentveidīgi</option>
-                    <option value="Pamati – plāksne">Pamati – plāksne</option>
-                    <option value="Pamati – punktveida">Pamati – punktveida</option>
-                </optgroup>
-                <optgroup label="Sijas (garums metros)">
-                    <option value="Sijas – līmsijas">Sijas – līmsijas</option>
-                    <option value="Sijas – tērauda sijas">Sijas – tērauda sijas</option>
-                </optgroup>
-                <optgroup label="Aiļu pārsedzes">
-                    <option value="Aiļu pārsedze – gatavā">Aiļu pārsedze – gatavā</option>
-                    <option value="Aiļu pārsedze – monolītā">Aiļu pārsedze – monolītā</option>
-                </optgroup>
-                <optgroup label="Ražotāja rasējumi">
-                    <option value="Ražotājs – koka karkasi">Ražotājs – koka karkasi</option>
-                    <option value="Ražotājs – CLT paneļi">Ražotājs – CLT paneļi</option>
-                    <option value="Ražotājs – betona sendvičpaneļi">Ražotājs – betona sendvičpaneļi</option>
-                </optgroup>
-            </select>
-        </div>
+    <div class="leg-grid">
 
-        <div class="field">
-            <label class="lbl">Ēkas kopējā platība (m²)</label>
-            <input type="number" id="bk-ekas" placeholder="piem. 180" min="1" oninput="calcBK()">
-            <div class="field-note">Nosaka apjomatlaidē koeficientu</div>
-        </div>
-
-        <div class="field">
-            <label class="lbl">Elementa daudzums <span class="unit-badge" id="bk-unit-badge">m²</span></label>
-            <input type="number" id="bk-daudzums" placeholder="piem. 45" min="0.1" step="0.1" oninput="calcBK()">
-            <div class="field-note" id="bk-unit-note">m² — sienas, jumts, pārsegums, pamati</div>
-        </div>
-
-        <div class="field">
-            <label class="lbl">Pakalpojuma līmenis</label>
-            <div class="level-pills">
-                <div class="level-pill" id="pill-L1" onclick="selectLevel('L1')">
-                    <div class="lp-code">L1</div>
-                    <div class="lp-name">Standarta</div>
-                    <div class="lp-rate">0.5 vien/m²</div>
-                </div>
-                <div class="level-pill selected" id="pill-L2" onclick="selectLevel('L2')">
-                    <div class="lp-code">L2 ⭐</div>
-                    <div class="lp-name">Build Ready</div>
-                    <div class="lp-rate">0.96 vien/m²</div>
-                </div>
-                <div class="level-pill" id="pill-L3" onclick="selectLevel('L3')">
-                    <div class="lp-code">L3</div>
-                    <div class="lp-name">Pro / Factory</div>
-                    <div class="lp-rate">1.8 vien/m²</div>
-                </div>
+        <!-- Pakete A -->
+        <div class="leg-card">
+            <div class="leg-pack-code">Pakete A</div>
+            <div class="leg-pack-name">Ātrā / Lētā</div>
+            <div class="leg-pack-sub">Tikai obligātais minimum</div>
+            <div class="leg-price-box">
+                <div class="leg-price-lbl">Aptuveni no</div>
+                <div class="leg-price-val" id="leg-a-price">—</div>
+                <div class="leg-price-note">tikai AR projekts + BIS</div>
+            </div>
+            <ul class="leg-includes">
+                <li><span class="pf-check-g">✓</span><span>Uzmērīšana (esošais stāvoklis)</span></li>
+                <li><span class="pf-check-g">✓</span><span>AR projekts (legalizācijai)</span></li>
+                <li><span class="pf-check-g">✓</span><span>BIS iesniegums (apliecinājuma karte)</span></li>
+            </ul>
+            <div class="leg-risk">
+                <strong>RISKI</strong>
+                <div class="ri">BEZ ESI — var izrādīties ka legalizācija nav iespējama. Iztērēsi 2000–5000 EUR uz projektu kas tiks noraidīts.</div>
+                <div class="ri">BEZ TAA — pašvaldība var pieprasīt nojaukšanu ja ēka ir konstruktīvi bīstama.</div>
+                <div class="ri">BEZ NOD — ēka paliek "nepabeigta". Banka nedos kredītu pret šo īpašumu.</div>
+            </div>
+            <div class="leg-when">
+                <strong>Tikai ja:</strong> I grupas mazēka (≤25 m²) un zona NOTEIKTI atļauj būvniecību. Konsultējies pirms!
             </div>
         </div>
 
-        <div class="field">
-            <label class="lbl">Sarežğītība</label>
-            <select id="bk-sarezg" onchange="calcBK()">
-                <option value="1.00">Vienkāršs ×1.00</option>
-                <option value="1.10" selected>Vidējs ×1.10</option>
-                <option value="1.25">Sarežğīts ×1.25</option>
-            </select>
-        </div>
-
-        <div class="field">
-            <label class="lbl">Steidzamība</label>
-            <select id="bk-steidz" onchange="calcBK()">
-                <option value="1.00" selected>Standarta ×1.00</option>
-                <option value="1.15">Steidzams ×1.15</option>
-                <option value="1.30">Ļoti steidzams ×1.30</option>
-            </select>
-        </div>
-
-        <div class="field">
-            <label class="lbl">Segments</label>
-            <select id="bk-seg" onchange="calcBK()">
-                <option value="1.00" selected>Privātie klienti ×1.00</option>
-                <option value="1.30">Ražotāji ×1.30</option>
-            </select>
-        </div>
-
-        <div class="field" id="bk-slani-field" style="display:none">
-            <label class="lbl">Slāņu skaits (L3)</label>
-            <select id="bk-slani" onchange="calcBK()">
-                <option value="0">0 — nav piemērojams ×1.00</option>
-                <option value="1">1 slānis ×0.80</option>
-                <option value="2">2 slāņi ×1.00</option>
-                <option value="3" selected>3 slāņi ×1.10</option>
-                <option value="4">4 slāņi ×1.15</option>
-                <option value="5">5 slāņi ×1.20</option>
-                <option value="6">6+ slāņi ×1.25</option>
-            </select>
-        </div>
-
-        <div class="field">
-            <label class="lbl">Papildu mezgli (virs bāzes)</label>
-            <input type="number" id="bk-mezgli" placeholder="0" min="0" value="0" oninput="calcBK()">
-            <div class="field-note">Katrs papildu mezgls = 25 EUR</div>
-        </div>
-    </div>
-
-    <!-- BK RESULTS -->
-    <div>
-        <div class="card" style="margin-bottom:16px">
-            <div class="card-title">Atlaide pēc apjoma</div>
-            <div class="grp-row">
-                <div class="grp-badge" id="bk-area-badge">—</div>
-                <div class="grp-desc" id="bk-area-desc">Ievadi ēkas kopējo platību</div>
+        <!-- Pakete B -->
+        <div class="leg-card best">
+            <div class="leg-pack-code">Pakete B</div>
+            <div class="leg-pack-name">Ieteicamā</div>
+            <div class="leg-pack-sub">Pilnā drošā ceļa pakete</div>
+            <div class="leg-price-box">
+                <div class="leg-price-lbl">Klientam (aprēķināts)</div>
+                <div class="leg-price-val" id="leg-b-price">—</div>
+                <div class="leg-price-note">ESI + TAA + AR + BIS + NOD + Kadastra</div>
+            </div>
+            <ul class="leg-includes">
+                <li><span class="pf-check-g">✓</span><span>ESI — Juridiskā esošās situācijas izpēte</span></li>
+                <li><span class="pf-check-g">✓</span><span>TAA — Tehniskā apsekošana</span></li>
+                <li><span class="pf-check-g">✓</span><span>Uzmērīšana (esošais stāvoklis)</span></li>
+                <li><span class="pf-check-g">✓</span><span>AR projekts (legalizācijai)</span></li>
+                <li><span class="pf-check-g">✓</span><span>BIS iesniegums + pašvaldības saskaņošana</span></li>
+                <li><span class="pf-check-g">✓</span><span>NOD — Nodošana ekspluatācijā</span></li>
+                <li><span class="pf-check-g">✓</span><span>Kadastra uzmērīšana + ZG nostiprināšana</span></li>
+            </ul>
+            <div class="leg-adv">
+                <strong>Pilna aizsardzība</strong>
+                Pēc procesa ēka ir 100% legāla. Juridiskā bāze: EBN 7.2, EBN 159.1, BL 22.pants.
+            </div>
+            <div class="leg-when">
+                <strong>Ieteicams vienmēr</strong> II–III grupas ēkām. Samazina risku līdz nullei.
             </div>
         </div>
 
-        <div class="card">
-            <div class="card-title">BK cenas aprēķins</div>
-            <div class="p-empty" id="bk-pe"><div class="p-icon">⚙️</div>Izvēlies sistēmu un ievadi platību</div>
-            <div id="bk-pr" style="display:none">
-                <div class="p-box"><div class="p-box-lbl">Klientam piedāvāt</div><div class="p-box-val" id="bk-pvc">—</div><div class="p-box-note">bez PVN · ar 20% rezervi tirgošanai</div></div>
-                <div class="p-int"><span>Iekšējā cena (minimums)</span><strong id="bk-pvi">—</strong></div>
-                <div class="brkd" id="bk-brkd"></div>
-                <div class="hint" id="bk-hint"></div>
+        <!-- Pakete C -->
+        <div class="leg-card">
+            <div class="leg-pack-code">Pakete C</div>
+            <div class="leg-pack-name">Premium / Paātrināta</div>
+            <div class="leg-pack-sub">Viss + prioritāra apstrāde</div>
+            <div class="leg-price-box">
+                <div class="leg-price-lbl">Klientam (ar prioritāti)</div>
+                <div class="leg-price-val" id="leg-c-price">—</div>
+                <div class="leg-price-note">Pakete B + EPS + steidzamība ×1.15</div>
+            </div>
+            <ul class="leg-includes">
+                <li><span class="pf-check-g">✓</span><span>Viss kā Pakete B</span></li>
+                <li><span class="pf-check-g">✓</span><span>EPS — Energoefektivitātes pārskats</span></li>
+                <li><span class="pf-check-g">✓</span><span>Prioritāra apstrāde (termiņi saīsināti ~30%)</span></li>
+                <li><span class="pf-check-g">✓</span><span>Juridiskie komentāri par katru BIS lēmumu</span></li>
+                <li><span class="pf-check-g">✓</span><span>Dedikēts kontaktpunkts visos soļos</span></li>
+            </ul>
+            <div class="leg-adv">
+                <strong>Maksimālais komforts</strong>
+                Visātrākais ceļš. Piemērojams ja ir steidzamība (pārdošana, mantojums, kredīts) vai sarežģīts objekts.
+            </div>
+            <div class="leg-when">
+                <strong>Izvēlies ja:</strong> Steidzama pārdošana vai vēlies minimālu iesaistīšanos procesā.
             </div>
         </div>
 
-        <!-- Level description -->
-        <div class="card" id="bk-level-card" style="margin-top:16px">
-            <div class="card-title">Izvēlētais līmenis</div>
-            <div id="bk-level-desc" style="font-size:.85rem;line-height:1.6;color:var(--muted)">Izvēlies līmeni augstāk</div>
+    </div>
+
+    <!-- PROCESA LAIKA JOSLA -->
+    <div class="tl-wrap">
+        <div class="tl-title">Paketes B — Aptuvenais procesa laiks</div>
+        <div class="tl">
+            <div class="tl-node"><div class="tl-label">ESI</div><div class="tl-month">1. mēn.</div></div>
+            <div class="tl-conn"><div class="tl-dur">~2 ned.</div><div class="tl-arr">──►</div></div>
+            <div class="tl-node"><div class="tl-label">TAA</div><div class="tl-month">2. mēn.</div></div>
+            <div class="tl-conn"><div class="tl-dur">~2 ned.</div><div class="tl-arr">──►</div></div>
+            <div class="tl-node"><div class="tl-label">Uzmērīšana</div><div class="tl-month">2–3. mēn.</div></div>
+            <div class="tl-conn"><div class="tl-dur">~3 ned.</div><div class="tl-arr">──►</div></div>
+            <div class="tl-node"><div class="tl-label">Projekts</div><div class="tl-month">3–4. mēn.</div></div>
+            <div class="tl-conn"><div class="tl-dur">~4 ned.</div><div class="tl-arr">──►</div></div>
+            <div class="tl-node"><div class="tl-label">BIS</div><div class="tl-month">4–5. mēn.</div></div>
+            <div class="tl-conn"><div class="tl-dur">~4 ned.</div><div class="tl-arr">──►</div></div>
+            <div class="tl-node"><div class="tl-label">NOD</div><div class="tl-month">6–7. mēn.</div></div>
+            <div class="tl-conn"><div class="tl-dur">~3 ned.</div><div class="tl-arr">──►</div></div>
+            <div class="tl-node"><div class="tl-label">Kadastra</div><div class="tl-month">8. mēn.</div></div>
         </div>
     </div>
 
-    <!-- BK SCOPE (full width) -->
-    <div class="bk-full">
-        <div class="card">
-            <div class="card-title">Pakalpojuma saturs — Ko iekļauj katrs līmenis</div>
-            <button class="scope-toggle" onclick="toggleScope()">
-                <span id="scope-arrow">▼</span> Rādīt / slēpt detalizētu sarakstu
-            </button>
-            <div id="scope-table-wrap" style="display:none">
-                <table class="scope-table">
-                    <thead>
-                        <tr>
-                            <th>Nodevums / Saturs</th>
-                            <th>L1 Standarta</th>
-                            <th>L2 Build Ready ⭐</th>
-                            <th>L3 Pro / Factory</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>Slodžu analīze (sniega, vēja, EC)</td><td class="s-part">Kopsavilkums</td><td class="s-yes">Pilnā apjomā</td><td class="s-yes">+ aprēķinu izvilkumi</td></tr>
-                        <tr><td>Ēkas telpiskās noturības analīze</td><td class="s-part">Vienkāršota shēma</td><td class="s-yes">Iekļauts</td><td class="s-yes">Detalizēti</td></tr>
-                        <tr><td>Pamatu dimensionēšana</td><td class="s-yes">Standarta</td><td class="s-yes">Iekļauts</td><td class="s-yes">Detalizēti</td></tr>
-                        <tr><td>Nesošo elementu aprēķins</td><td class="s-part">Galvenie elementi</td><td class="s-yes">Pilnā apjomā</td><td class="s-yes">+ optimizācija</td></tr>
-                        <tr><td>Statisko aprēķinu kopsavilkums</td><td class="s-yes">Iekļauts</td><td class="s-yes">+ izvilkumi</td><td class="s-yes">Detalizēti</td></tr>
-                        <tr><td>Kondensācijas riska analīze (U-vērtības)</td><td class="s-no">Nav</td><td class="s-part">Kritiskajiem pīrāgiem</td><td class="s-yes">Pilnam kompleksam</td></tr>
-                        <tr><td>Konstrukciju plāni un griezumi</td><td class="s-yes">Iekļauts</td><td class="s-yes">Iekļauts</td><td class="s-yes">Iekļauts</td></tr>
-                        <tr><td>Detalizēti mezglu rasējumi</td><td class="s-no">Nav</td><td class="s-part">Max 5 mezgli</td><td class="s-yes">Max 8 mezgli</td></tr>
-                        <tr><td>Pārseguma / jumta konstrukciju plāns</td><td class="s-part">Kopsavilkums</td><td class="s-yes">Iekļauts</td><td class="s-yes">Detalizēti</td></tr>
-                        <tr><td>Koka kopņu aprēķins</td><td class="s-no">Nav</td><td class="s-yes">Iekļauts</td><td class="s-yes">Iekļauts</td></tr>
-                        <tr><td>Ražošanas rasējumi (koks / CLT / metāls)</td><td class="s-no">Nav</td><td class="s-no">Nav (atsevišķi)</td><td class="s-yes">Iekļauts</td></tr>
-                        <tr><td>Montāžas plāni un secības shēma</td><td class="s-no">Nav</td><td class="s-no">Nav</td><td class="s-yes">Iekļauts</td></tr>
-                        <tr><td>OpenCutList (zāğmateriālu optim.)</td><td class="s-no">Nav</td><td class="s-part">Galvenajiem elem.</td><td class="s-yes">Pilns + ražošanas garumi</td></tr>
-                        <tr><td>Atbildīgā projektētāja apliecinājums</td><td class="s-yes">Iekļauts</td><td class="s-yes">Iekļauts</td><td class="s-yes">Iekļauts</td></tr>
-                        <tr><td>BIM modelis</td><td class="s-part">Vienkāršota 3D shēma</td><td class="s-part">Kritiskās zonas</td><td class="s-yes">Pilns LOD 350+</td></tr>
-                        <tr><td>Piegādes formāts</td><td>PDF</td><td>PDF + IFC</td><td>PDF + IFC (ražošanai)</td></tr>
-                        <tr><td>Koordinācija ar arhitektu</td><td class="s-part">Ierobežota (e-pasts)</td><td class="s-part">1–2 sanāksmes</td><td class="s-yes">Regulārā režīmā</td></tr>
-                        <tr><td>Atbildes uz būvvaldes komentāriem</td><td class="s-yes">Iekļauts</td><td class="s-yes">Iekļauts</td><td class="s-yes">Iekļauts</td></tr>
-                        <tr><td>Autoruzraudzības konsultācijas</td><td class="s-no">Nav</td><td class="s-part">1 konsultācija</td><td class="s-part">2 konsultācijas</td></tr>
-                    </tbody>
-                </table>
-                <div class="scope-excl">
-                    <div class="scope-excl-title">Nav iekļauts nevienā līmenī</div>
-                    <ul class="excl-list">
-                        <li>Ğeotehniskā izpēte</li>
-                        <li>Topogrāfija / uzmērīšana</li>
-                        <li>Ārējo tīklu inženierija</li>
-                        <li>Ražotāja KMD (tērauda savienojumi)</li>
-                        <li>Projekta pārstrāde pēc arhitektūras izmaiņām</li>
-                        <li>Autoruzraudzības vizītes objektā</li>
-                        <li>Veidņu / stutēšanas aprēķini</li>
-                        <li>Tiesu ekspertīze</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
+    <!-- NORMATĪVAIS REGULĒJUMS -->
+    <div class="normativi">
+        <div class="normativi-title">Normatīvais regulējums</div>
+        <h4>Galvenie tiesību akti</h4>
+        <ul>
+            <li>Ēku būvnoteikumi (EBN) — MK not. Nr. 529, 02.09.2014. (ar grozījumiem)</li>
+            <li>Būvniecības likums — 09.07.2013. (ar grozījumiem)</li>
+            <li>Vispārīgie būvnoteikumi — MK not. Nr. 500, 19.08.2014.</li>
+        </ul>
+        <hr>
+        <h4>II grupas ēkas legalizācijai piemērojamie punkti</h4>
+        <ul>
+            <li>EBN 7.2 — Pārbūves projekts (Paskaidrojuma raksts) esošai ēkai</li>
+            <li>EBN 71 — Būvprojekts (Būvatļauja) sarežģītākām pārbūvēm</li>
+            <li>EBN 159.1 — Esošo ēku tehniskā apsekošana pirms pārbūves</li>
+            <li>BL 22. pants — Patvaļīgā būvniecība un tās seku novēršana</li>
+        </ul>
+        <hr>
+        <h4>Termiņi (BL un EBN)</h4>
+        <ul>
+            <li>Pašvaldībai jāsniedz atbilde BIS: 30 darba dienas</li>
+            <li>Būvatļauja derīga darbu uzsākšanai: 5 gadi</li>
+            <li>Būvatļauja derīga darbu pabeigšanai: 8 gadi</li>
+            <li>Pagarināšana: jā (būvatļaujai) · nē (paskaidrojuma rakstam)</li>
+            <li>Apliecinājuma karte spēkā: 2 gadi no izsniegšanas</li>
+        </ul>
     </div>
 
-</main>
-</div><!-- end tab-bk -->
+</div>
 
-<!-- ═══════════════ AI TAB ═══════════════ -->
-<div id="tab-ai" class="tab-content">
-<div class="ai-wrap">
-    <div class="ai-api-row">
-        <input type="password" id="ai-key" placeholder="Gemini API atslēga (saglabājas sesijā)" oninput="saveKey()">
-        <button class="ai-api-toggle" onclick="toggleKeyVisibility()">Rādīt</button>
+
+<!-- ══════════════════════════════════════════
+     3. AUTO-IETEIKUMI
+     ══════════════════════════════════════════ -->
+<div id="auto-ieteikumi" class="card">
+    <div class="card-title">Ieteicamie papildu pakalpojumi</div>
+    <p style="font-size:.8rem;color:var(--muted);margin-bottom:16px;">Izvēlies ko iekļaut piedāvājumā. Cenas ar pašvaldības koeficientu un 20% rezervi.</p>
+
+    <div id="urg-critical" class="urg-group" style="display:none">
+        <div class="urg-label critical">🔴 KRITISKI — obligāti iesaka</div>
+        <div class="rec-items" id="urg-critical-list"></div>
     </div>
-    <div class="ai-quick-btns">
-        <button class="ai-qbtn" onclick="quickAsk('Cik maksā 120m² jaunbūve Rīgā?')">Cik maksā 120m² jaunbūve Rīgā?</button>
-        <button class="ai-qbtn" onclick="quickAsk('Kā notiek legalizācija?')">Kā legalizēt?</button>
-        <button class="ai-qbtn" onclick="quickAsk('Kas ir BK projekts un ko tas ietver?')">Kas ir BK?</button>
-        <button class="ai-qbtn" onclick="quickAsk('Kādi apgrūtinājumi var ietekmēt projekta cenu?')">Kādi apgrūtinājumi?</button>
-        <button class="ai-qbtn" onclick="quickAsk('Kāda atšķirība starp L1, L2 un L3 paketi?')">L1 vs L2 vs L3?</button>
-        <button class="ai-qbtn" onclick="quickAsk('Ko nozīmē ESI, TAA un NOD?')">ESI / TAA / NOD?</button>
+
+    <div id="urg-recommended" class="urg-group" style="display:none">
+        <div class="urg-label recommended">🟡 IETEICAMS — lielākajai daļai</div>
+        <div class="rec-items" id="urg-recommended-list"></div>
     </div>
-    <div class="ai-messages" id="ai-messages">
-        <div class="ai-empty">
-            <div class="p-icon">🤖</div>
-            <p>Volko Engineering AI konsultants. Jautā par cenām, procedūrām vai pakalpojumiem.</p>
-        </div>
+
+    <div id="urg-if_needed" class="urg-group" style="display:none">
+        <div class="urg-label if_needed">⚪ NEPIECIEŠAMS JA — atkarīgs no situācijas</div>
+        <div class="rec-items" id="urg-if_needed-list"></div>
     </div>
-    <div class="ai-input-row">
-        <textarea id="ai-input" placeholder="Raksti jautājumu..." rows="1" onkeydown="aiKeydown(event)" oninput="autoResize(this)"></textarea>
-        <button class="ai-send" id="ai-send-btn" onclick="sendAI()">Sūtīt</button>
+
+    <div class="rec-tot">
+        <div class="rec-tot-lbl">Papildu pakalpojumi (klientam)</div>
+        <div class="rec-tot-val" id="rec-total">0 EUR</div>
     </div>
 </div>
-</div><!-- end tab-ai -->
 
-</div><!-- end app -->
+</div><!-- /section-wrap -->
+<div id="legalizacija-steps" class="card">
+<div class="card-title" id="steps-title">Legalizācijas soļi</div>
+<div class="steps-grid">
+<div><div class="steps-hdr">Darba secība — solis pa solim</div><div id="steps-list"></div></div>
+<div><div class="steps-hdr">Ko klients sagādā</div><ul class="docs-list" id="docs-list"></ul></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="tab-bk" class="tab-panel">
+<div class="mw">
+
+
+  <style>
+    /* ---- BK specifiskais CSS ---- */
+    .bk-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media(max-width:700px){ .bk-grid{grid-template-columns:1fr;} }
+
+    .bk-card { background:#fff; border:1px solid var(--border); border-radius:10px; padding:16px; }
+    .bk-card h3 { margin:0 0 4px; font-size:.95rem; color:var(--navy); }
+    .bk-card .hint { font-size:.78rem; color:#888; margin:0 0 10px; font-style:italic; }
+
+    .bk-sys-select { width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:7px;
+                     font-size:.88rem; outline:none; }
+    .bk-sys-select:focus { border-color:var(--gold); }
+
+    .bk-input { width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:7px;
+                font-size:.88rem; outline:none; box-sizing:border-box; }
+    .bk-input:focus { border-color:var(--gold); }
+
+    .level-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+    .level-btn { padding:10px 6px; border:2px solid var(--border); border-radius:8px;
+                 background:#fff; cursor:pointer; text-align:center; transition:all .15s; }
+    .level-btn:hover { border-color:var(--gold); }
+    .level-btn.active { border-color:var(--navy); background:var(--navy); color:#fff; }
+    .level-btn .lb-name { font-weight:700; font-size:.88rem; }
+    .level-btn .lb-sub  { font-size:.72rem; margin-top:3px; opacity:.75; }
+
+    .level-explain { font-size:.78rem; background:#f9f7f2; border-left:3px solid var(--gold);
+                     border-radius:0 6px 6px 0; padding:8px 12px; margin-top:8px; color:#555;
+                     line-height:1.45; }
+    .level-explain strong { color:var(--navy); }
+
+    .coef-row { display:flex; align-items:center; justify-content:space-between;
+                margin-bottom:8px; font-size:.85rem; }
+    .coef-row label { color:var(--text); }
+    .coef-val { font-weight:700; color:var(--navy); min-width:40px; text-align:right; }
+
+    .bk-mezgli { display:flex; align-items:center; gap:10px; }
+    .bk-mezgli input[type=number] { width:80px; }
+
+    .bk-result-box { background:var(--navy); color:#fff; border-radius:10px;
+                     padding:18px 20px; margin-top:14px; }
+    .bk-result-box .res-label { font-size:.82rem; opacity:.7; margin-bottom:4px; }
+    .bk-result-box .res-price { font-size:1.6rem; font-weight:700; color:var(--gold); }
+    .bk-result-box .res-formula { font-size:.72rem; opacity:.6; margin-top:6px; }
+    .bk-result-box .res-note { font-size:.78rem; margin-top:6px; opacity:.8; }
+
+    .bk-items-table { width:100%; border-collapse:collapse; font-size:.82rem; margin-top:10px; }
+    .bk-items-table th { background:#f4f2ed; color:var(--navy); padding:6px 8px;
+                          text-align:left; border-bottom:2px solid var(--border); }
+    .bk-items-table td { padding:6px 8px; border-bottom:1px solid var(--border); vertical-align:top; }
+    .bk-items-table tr:last-child td { border-bottom:none; }
+    .bk-items-table .td-price { font-weight:700; color:var(--navy); text-align:right; }
+    .bk-add-btn { padding:8px 16px; background:var(--gold); color:var(--navy);
+                  border:none; border-radius:7px; font-weight:700; cursor:pointer;
+                  font-size:.85rem; margin-top:4px; }
+    .bk-add-btn:hover { opacity:.85; }
+    .bk-clear-btn { padding:6px 12px; background:#fff; color:#c00; border:1px solid #fca;
+                    border-radius:7px; font-size:.78rem; cursor:pointer; margin-left:8px; }
+    .bk-remove-btn { color:#c00; background:none; border:none; cursor:pointer;
+                     font-size:.9rem; padding:0 4px; }
+    .cat-badge { display:inline-block; font-size:.7rem; padding:1px 7px;
+                 border-radius:10px; background:#f0ede6; color:#666; margin-left:4px; }
+  </style>
+
+  <!-- ROW 1: Sistēma + Parametri -->
+  <div class="bk-grid">
+
+    <!-- Kreisais: Sistēma -->
+    <div class="bk-card">
+      <h3>Konstrukciju sistēma</h3>
+      <p class="hint">Izvēlies materiālu/sistēmu — katrai savs sarežģītības koeficients</p>
+
+      <!-- Kategorija hint -->
+      <div id="bk-cat-hint" style="font-size:.78rem;color:#888;margin-bottom:6px;min-height:18px;"></div>
+
+      <select class="bk-sys-select" id="bk-sys">
+        <optgroup label="🧱 Sienas — vertikālās nesošās konstrukcijas">
+          <option value="Siena – vieglbetona bloki">Vieglbetona bloki (visvienkāršākais)</option>
+          <option value="Siena – koka karkass">Koka karkass</option>
+          <option value="Siena – CLT">CLT paneļi (sarežģītākais)</option>
+        </optgroup>
+        <optgroup label="🏠 Jumts — nesošās jumta konstrukcijas">
+          <option value="Jumts – koka spāres">Koka spāres (roku darbs)</option>
+          <option value="Jumts – koka kopnes">Koka kopnes (fabrikā gatavotas, ekonomiskāks)</option>
+          <option value="Jumts – CLT paneļi">CLT paneļi</option>
+        </optgroup>
+        <optgroup label="🏗️ Grīda/Pārsegums">
+          <option value="Grīda/Pārsegums – koka sijas">Koka sijas</option>
+          <option value="Grīda/Pārsegums – CLT paneļi">CLT paneļi</option>
+          <option value="Pārsegums – dobie paneļi">Dobie paneļi</option>
+          <option value="Pārsegums – monolītais betons">Monolītais betons</option>
+        </optgroup>
+        <optgroup label="🏛️ Pamati — atkarīgi no augsnes un slodzēm">
+          <option value="Pamati – lentveidīgi">Lentveidīgi pamati</option>
+          <option value="Pamati – plāksne">Plāksne (dārgāka, stabilāka)</option>
+          <option value="Pamati – punktveida">Punktveida pamati</option>
+        </optgroup>
+        <optgroup label="📏 Sijas — mērvienība METRI (garums!)">
+          <option value="Sijas – līmsijas">Līmsijas</option>
+          <option value="Sijas – tērauda sijas">Tērauda sijas</option>
+        </optgroup>
+        <optgroup label="🔲 Aiļu pārsedze">
+          <option value="Aiļu pārsedze – gatavā">Gatavā pārsedze</option>
+          <option value="Aiļu pārsedze – monolītā">Monolītā pārsedze</option>
+        </optgroup>
+        <optgroup label="🏭 Ražotāja dokumentācija">
+          <option value="Ražotājs – koka karkasi">Koka karkasi (ražotājam)</option>
+          <option value="Ražotājs – CLT paneļi">CLT paneļi (ražotājam)</option>
+          <option value="Ražotājs – betona sendvičpaneļi">Betona sendvičpaneļi (ražotājam)</option>
+        </optgroup>
+      </select>
+
+      <div style="margin-top:10px;">
+        <label style="font-size:.82rem;color:#666;display:block;margin-bottom:4px;">
+          Daudzums (<span id="bk-unit-lbl">m²</span>)
+        </label>
+        <input class="bk-input" type="number" id="bk-qty" min="1" value="120" placeholder="120">
+      </div>
+    </div>
+
+    <!-- Labais: Detalizācijas līmenis -->
+    <div class="bk-card">
+      <h3>Detalizācijas līmenis</h3>
+      <p class="hint">Kāda dokumentācija nepieciešama</p>
+
+      <div class="level-grid">
+        <button class="level-btn" id="lvl-L1" onclick="bkSetLevel('L1')">
+          <div class="lb-name">L1</div>
+          <div class="lb-sub">Basic</div>
+        </button>
+        <button class="level-btn active" id="lvl-L2" onclick="bkSetLevel('L2')">
+          <div class="lb-name">L2 ⭐</div>
+          <div class="lb-sub">Build Ready</div>
+        </button>
+        <button class="level-btn" id="lvl-L3" onclick="bkSetLevel('L3')">
+          <div class="lb-name">L3</div>
+          <div class="lb-sub">Pro/Factory</div>
+        </button>
+      </div>
+
+      <div class="level-explain" id="bk-level-explain">
+        <strong>L2 ⭐ — Optimālais variants.</strong>
+        Pietiekami detalizēts lai būvniecība noritētu bez pārsteigumiem.
+        90% projektu ieteicams tieši šis.
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 2: Koeficienti + Sarežģītība -->
+  <div class="bk-grid" style="margin-top:14px;">
+
+    <!-- Kreisais: Koeficienti -->
+    <div class="bk-card">
+      <h3>Koeficienti</h3>
+      <p class="hint">Tiek piemēroti automātiski pēc ievadītajiem datiem</p>
+
+      <div class="coef-row">
+        <label>Platības koef. (pēc m²):</label>
+        <span class="coef-val" id="bk-c-area">1.00</span>
+      </div>
+      <div style="font-size:.75rem;color:#aaa;margin:-4px 0 8px;text-align:right;">
+        &lt;25→×1.20 | 60→×1.10 | 100→×1.05 | 120→×1.00 | 180→×0.95 | 250→×0.90 | &gt;400→×0.85
+      </div>
+
+      <div class="coef-row">
+        <label>Slāņu skaits / stāvi:</label>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input class="bk-input" type="number" id="bk-slani" min="1" max="6" value="1"
+                 style="width:60px;" oninput="bkCalc()">
+          <span class="coef-val" id="bk-c-slani">1.00</span>
+        </div>
+      </div>
+      <div style="font-size:.75rem;color:#aaa;margin:-4px 0 8px;">
+        1=×1.0 | 2=×0.8 | 3=×1.0 | 4=×1.1 | 5=×1.15 | 6=×1.2 | 7+=×1.25
+      </div>
+
+      <div class="coef-row">
+        <label>Sarežģītība:</label>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <select class="bk-sys-select" id="bk-sarezg" onchange="bkCalc()" style="width:auto;font-size:.82rem;padding:5px 8px;">
+            <option value="0.8">Vienkārša (×0.8)</option>
+            <option value="1.0" selected>Standarta (×1.0)</option>
+            <option value="1.2">Sarežģīta (×1.2)</option>
+            <option value="1.5">Ļoti sarežģīta (×1.5)</option>
+          </select>
+          <span class="coef-val" id="bk-c-sarezg">1.00</span>
+        </div>
+      </div>
+
+      <div class="coef-row">
+        <label>Steidzamība:</label>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <select class="bk-sys-select" id="bk-steidz" onchange="bkCalc()" style="width:auto;font-size:.82rem;padding:5px 8px;">
+            <option value="1.0" selected>Standarta (×1.0)</option>
+            <option value="1.25">Steidzami (×1.25)</option>
+            <option value="1.5">Ļoti steidzami (×1.5)</option>
+          </select>
+          <span class="coef-val" id="bk-c-steidz">1.00</span>
+        </div>
+      </div>
+
+      <div class="coef-row" style="margin-top:4px;">
+        <label>Sistēmas koef. (Sis):</label>
+        <span class="coef-val" id="bk-c-sys">1.00</span>
+      </div>
+      <div class="coef-row">
+        <label>Segšana (Seg):</label>
+        <input class="bk-input" type="number" id="bk-seg" min="0.1" max="2" step="0.05" value="1.0"
+               style="width:70px;" oninput="bkCalc()">
+        <span class="coef-val" id="bk-c-seg">1.00</span>
+      </div>
+
+      <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
+        <div class="bk-mezgli">
+          <label style="font-size:.82rem;flex:1;">Mezgli / specpozīcijas (×25€/gab.):</label>
+          <input class="bk-input" type="number" id="bk-mezgli" min="0" value="0"
+                 style="width:60px;" oninput="bkCalc()">
+        </div>
+      </div>
+    </div>
+
+    <!-- Labais: Rezultāts -->
+    <div class="bk-card" style="display:flex;flex-direction:column;justify-content:space-between;">
+      <div>
+        <h3>Aprēķins</h3>
+        <p class="hint">5 × (Likme × Daudzums × Seg × Sis × AreaCoef × Slāni × Sarežģ × Steidz) + Mezgli×25</p>
+
+        <div id="bk-result-box" class="bk-result-box">
+          <div class="res-label">BK projekta cena (bez PVN)</div>
+          <div class="res-price" id="bk-price">0 €</div>
+          <div class="res-formula" id="bk-formula-str">—</div>
+          <div class="res-note" id="bk-res-note"></div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="bk-add-btn" onclick="bkAddItem()">+ Pievienot pozīcijai</button>
+        <button class="bk-clear-btn" onclick="bkClearItems()">Notīrīt sarakstu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 3: Pozīciju saraksts -->
+  <div id="bk-items-section" style="display:none;margin-top:14px;">
+    <div class="bk-card">
+      <h3>Pozīciju saraksts</h3>
+      <p class="hint">Vairākas konstrukciju sistēmas vienam projektam</p>
+      <table class="bk-items-table">
+        <thead>
+          <tr>
+            <th>Sistēma</th>
+            <th>Daudzums</th>
+            <th>Līmenis</th>
+            <th style="text-align:right">Cena (€)</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="bk-items-tbody"></tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3" style="font-weight:700;padding:8px;font-size:.88rem;">KOPĀ (bez PVN)</td>
+            <td class="td-price" id="bk-total-price">0 €</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td colspan="3" style="color:#666;padding:4px 8px;font-size:.8rem;">Ar PVN (20%)</td>
+            <td class="td-price" style="color:#666;font-size:.85rem;" id="bk-total-pvn">0 €</td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+</div>
+<!-- ═══ END BK TAB ═══ -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     2. AI KONSULTANTS TAB
+     ═══════════════════════════════════════════════════════════ -->
+</div>
+</div>
+
+<div id="tab-ai" class="tab-panel">
+<div class="mw">
+
+
+  <style>
+    /* ---- AI Chat CSS ---- */
+    .chat-window {
+      height: 450px; overflow-y: auto; border: 1px solid var(--border);
+      border-radius: 10px; padding: 16px; background: #fafaf8;
+    }
+    .msg { max-width: 80%; margin-bottom: 12px; }
+    .msg.user {
+      margin-left: auto; background: var(--navy); color: white;
+      padding: 10px 14px; border-radius: 14px 14px 4px 14px; font-size: .9rem;
+    }
+    .msg.ai {
+      background: white; border: 1px solid var(--border);
+      padding: 12px 14px; border-radius: 14px 14px 14px 4px;
+      font-size: .88rem; line-height: 1.55;
+    }
+    .msg.ai strong { color: var(--navy); }
+    .msg.error {
+      background: #fff5f5; border: 1px solid #fca5a5;
+      padding: 10px 14px; border-radius: 8px; font-size: .84rem; color: #c00;
+    }
+    .loading-dots { display: inline-flex; gap: 4px; align-items:center; }
+    .loading-dots span {
+      width: 6px; height: 6px; background: var(--gold);
+      border-radius: 50%; animation: bounce 1.2s infinite;
+    }
+    .loading-dots span:nth-child(2) { animation-delay: .2s; }
+    .loading-dots span:nth-child(3) { animation-delay: .4s; }
+    @keyframes bounce {
+      0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-6px)}
+    }
+    .quick-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .qbtn {
+      font-size: .75rem; padding: 5px 11px; background: white;
+      border: 1px solid var(--border); border-radius: 20px;
+      cursor: pointer; color: var(--text); transition: all .15s;
+    }
+    .qbtn:hover { border-color: var(--gold); background: #fffbf0; }
+    .chat-input-row { display: flex; gap: 8px; margin-top: 10px; }
+    .chat-input {
+      flex: 1; padding: 10px 14px; border: 1px solid var(--border);
+      border-radius: 8px; font-size: .9rem; outline: none;
+      resize: none; height: 44px; box-sizing: border-box;
+      font-family: inherit;
+    }
+    .chat-input:focus { border-color: var(--gold); }
+    .send-btn {
+      padding: 10px 18px; background: var(--navy); color: var(--gold);
+      border: none; border-radius: 8px; font-weight: 700;
+      cursor: pointer; font-size: .85rem; white-space: nowrap;
+    }
+    .send-btn:hover { opacity: .88; }
+    .send-btn:disabled { opacity: .45; cursor: not-allowed; }
+    .api-key-section {
+      background: #fffbf0; border: 1px solid #fde68a;
+      border-radius: 8px; padding: 14px; margin-bottom: 14px;
+    }
+    .api-key-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 8px; cursor: pointer;
+    }
+    .api-key-header h4 { margin:0; font-size:.88rem; color:var(--navy); }
+    .api-key-header .toggle-icon { font-size:.8rem; color:#888; }
+    .api-key-body { }
+    .api-key-row { display: flex; gap: 8px; }
+    .api-input {
+      flex: 1; padding: 8px 12px; border: 1px solid var(--border);
+      border-radius: 7px; font-size: .88rem; outline: none;
+      font-family: monospace;
+    }
+    .api-input:focus { border-color: var(--gold); }
+    .api-save-btn {
+      padding: 8px 14px; background: var(--gold); color: var(--navy);
+      border: none; border-radius: 7px; font-weight: 700;
+      cursor: pointer; font-size: .82rem;
+    }
+    .api-save-btn:hover { opacity:.85; }
+    .api-status { font-size:.75rem; margin-top:5px; color:#666; }
+    .api-status.ok { color:#2d8a4e; }
+    .api-status.err { color:#c00; }
+    .chat-container { background:#fff; border:1px solid var(--border); border-radius:10px; padding:16px; }
+    .ai-header { margin-bottom:14px; }
+    .ai-header h2 { margin:0 0 2px; font-size:1.1rem; color:var(--navy); }
+    .ai-header p { margin:0; font-size:.82rem; color:#888; }
+    .clear-chat-btn {
+      font-size:.72rem; padding:3px 10px; background:none;
+      border:1px solid var(--border); border-radius:20px;
+      cursor:pointer; color:#888; margin-left:8px;
+    }
+    .clear-chat-btn:hover { color:#c00; border-color:#fca; }
+  </style>
+
+  <!-- Header -->
+  <div class="chat-container">
+    <div class="ai-header">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <h2>🤖 AI Konsultants</h2>
+          <p>Uzdod jautājumu par projektu, cenu vai procesu</p>
+        </div>
+        <button class="clear-chat-btn" onclick="aiClearChat()">Notīrīt sarunu</button>
+      </div>
+    </div>
+
+    <!-- API Key josla -->
+    <div class="api-key-section" id="ai-api-section">
+      <div class="api-key-header" onclick="aiToggleApiSection()">
+        <h4>🔑 Gemini API atslēga</h4>
+        <span class="toggle-icon" id="ai-api-toggle-icon">▲ sakļaut</span>
+      </div>
+      <div class="api-key-body" id="ai-api-body">
+        <div style="font-size:.78rem;color:#666;margin-bottom:8px;">
+          Bezmaksas atslēga: <a href="https://aistudio.google.com/apikey" target="_blank"
+          style="color:var(--navy)">aistudio.google.com/apikey</a>. Tiek saglabāta tikai pārlūkā (sessionStorage).
+        </div>
+        <div class="api-key-row">
+          <input class="api-input" type="password" id="ai-api-input"
+                 placeholder="AIza..." autocomplete="off">
+          <button class="api-save-btn" onclick="aiSaveKey()">Saglabāt</button>
+        </div>
+        <div class="api-status" id="ai-api-status">Nav ievadīta atslēga</div>
+      </div>
+    </div>
+
+    <!-- Ātrās pogas -->
+    <div class="quick-btns">
+      <button class="qbtn" onclick="aiQuick('Cik maksā 120m² jaunbūve Rīgā?')">💰 120m² jaunbūve Rīgā?</button>
+      <button class="qbtn" onclick="aiQuick('Kā legalizēt patvaļīgi celtu ēku?')">🏚️ Legalizācija</button>
+      <button class="qbtn" onclick="aiQuick('Kas ir ESI un vai tā vajadzīga?')">📋 Kas ir ESI?</button>
+      <button class="qbtn" onclick="aiQuick('Kāda atšķirība L1 vs L2 vs L3 BK detalizācijā?')">📐 L1 vs L2 vs L3</button>
+      <button class="qbtn" onclick="aiQuick('Ko nozīmē II grupas ēka?')">🏠 II grupas ēka</button>
+      <button class="qbtn" onclick="aiQuick('Cik ilgi aizņem legalizācija?')">⏱️ Legalizācijas laiks</button>
+      <button class="qbtn" onclick="aiQuick('Kāpēc vajag TAA apsekošanu?')">🔍 Kāpēc TAA?</button>
+      <button class="qbtn" onclick="aiQuick('Kādi dokumenti vajadzīgi no klienta?')">📁 Klienta dokumenti</button>
+    </div>
+
+    <!-- Chat window -->
+    <div class="chat-window" id="ai-chat-window">
+      <div class="msg ai">
+        Sveiki! Es esmu Volko Engineering AI konsultants. Varu palīdzēt ar jautājumiem par
+        arhitektūras projektiem, cenām, BK dokumentāciju un būvniecības procesiem Latvijā.<br><br>
+        Uzdodi jautājumu vai izmanto ātrās pogas augšā! ⬆️
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div class="chat-input-row">
+      <textarea class="chat-input" id="ai-input"
+                placeholder="Uzdod jautājumu..." rows="1"
+                onkeydown="aiKeydown(event)"></textarea>
+      <button class="send-btn" id="ai-send-btn" onclick="aiSend()">Sūtīt ▶</button>
+    </div>
+  </div>
+
+</div>
+<!-- ═══ END AI TAB ═══ -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     3. JAVASCRIPT — BK + AI funkcijas
+     Iekļauj pirms </body> vai apvienot ar galveno skriptu.
+     ═══════════════════════════════════════════════════════════ -->
+</div>
+</div>
+
+</div>
 
 <script>
-// ── AUTH ─────────────────────────────────────────────────────
-const PWD = '22!Deamontools';
-function auth() {
-    if (document.getElementById('pi').value === PWD) {
-        document.getElementById('lock').style.display = 'none';
-        document.getElementById('app').style.display = 'block';
-        sessionStorage.setItem('va', '1');
-    } else {
-        document.getElementById('pe').textContent = 'Nepareiza parole';
-        document.getElementById('pi').value = '';
-    }
+const PWD="22!Deamontools";
+function auth(){if(document.getElementById("pi").value===PWD){document.getElementById("lock").style.display="none";document.getElementById("app").style.display="block";sessionStorage.setItem("va","1");}else{document.getElementById("pe").textContent="Nepareiza parole";document.getElementById("pi").value="";}}
+document.getElementById("pi").addEventListener("keydown",e=>{if(e.key==="Enter")auth();document.getElementById("pe").textContent="";});
+if(sessionStorage.getItem("va")){document.getElementById("lock").style.display="none";document.getElementById("app").style.display="block";}
+function switchTab(id,btn){document.querySelectorAll(".tab-panel").forEach(t=>t.classList.remove("active"));document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));document.getElementById("tab-"+id).classList.add("active");btn.classList.add("active");}
+
+const AR_RATES={jaunbuve:[32,30,28,26,24,22,21,20,19,18,16],"izmaiņu":[22,20,18,16,15,14,13,12,11,10,9],rekonstrukcija:[30,28,26,24,22,20,19,18,17,16,14],vienk:[21,19,17,15,14,13,12,11,10,9,8],"nojaukšana":[10,9,8,7,6,5,5,5,4,4,4],tipveida:[14,12,11,10,9,8,7,6,6,6,5]};
+const AR_BRACKS=[30,60,90,120,150,180,210,240,270,300,Infinity];
+const AR_MINS={jaunbuve:[1700,2100],"izmaiņu":[1700,2100],rekonstrukcija:[2500,2900],la:[2500,2900],lbp:[2500,2900]};
+const GC={I:0.75,II:1.20,III:1.80};
+const LEGAL_RATE={la:"rekonstrukcija",lbv:"vienk",lbp:"rekonstrukcija",lc:"rekonstrukcija"};
+const LEGAL_SVC={la:{I:[],II:[["ESI",950],["TAA",400],["NOD",950]],III:[["ESI",950],["TAA",400],["NOD",950]]},lbv:{I:[],II:[],III:[]},lbp:{I:[["TAA",400]],II:[["TAA",400],["NOD",950]],III:[["TAA",400],["NOD",950]]},lc:{I:[["ESI",950],["NOD",950]],II:[["ESI",950],["NOD",950]],III:[["ESI",950],["NOD",950]]}};
+const I_FIXED=[{max:10,int:667,cli:800},{max:15,int:833,cli:1000},{max:20,int:1000,cli:1200},{max:25,int:1167,cli:1400}];
+const SVC_BASE={esi:950,taa:400,nod:950,bk_s:1400,bk_m:2000,bk_l:3000,ti:400,eps:370,elt:350,dv:350};
+const TYPE_INFO={jaunbuve:{icon:"🏗",title:"Jaunbūve",what:"Pilnīgi jauna ēka uz brīvas zemes.",permit:"Paskaidrojuma raksts (<200m²) vai Būvatļauja (≥200m²)",time:"6–18 mēneši",risks:"Pārbaudi TIAN — vai zonā drīkst celt! Inženiertīklu pieslēgumi.",tip:"Pirms sāc — pasūti zemes robežu plānu un TIAN no pašvaldības."},"izmaiņu":{icon:"✏️",title:"Izmaiņu projekts",what:"Esošas ēkas daļējas izmaiņas. Apjoms nemainās.",permit:"Paskaidrojuma raksts vai Apliecinājuma karte",time:"3–9 mēneši",risks:"Kultūrvēsturiska ēka → NKMP obligāta!",tip:"Izmanto fasādes atjaunošanai vai logu maiņai."},rekonstrukcija:{icon:"🔨",title:"Rekonstrukcija",what:"Pilna pārbūve — var mainīt apjomu, stāvus, funkciju.",permit:"Būvatļauja (sarežģītākai) vai Paskaidrojuma raksts",time:"6–18 mēneši",risks:"Pārbaudi patvaļīgu būvniecību! Kopīpašumā — visu piekrišana.",tip:"I grupas mazēkā (≤25m²) — rekonstrukcija vienkāršāka."},vienk:{icon:"🎨",title:"Vienkāršota atjaunošana",what:"Fasādes siltināšana, pārplānošana BEZ nesošo konstrukciju skaršanas.",permit:"Paskaidrojuma raksts",time:"2–6 mēneši",risks:"Nedrīkst skart nesošās konstrukcijas!",tip:"Lētākais veids kā legāli uzlabot ēku."},"nojaukšana":{icon:"🏚",title:"Nojaukšanas projekts",what:"Reģistrētas ēkas likumīga nojaukšana.",permit:"Apliecinājuma karte",time:"2–6 mēneši",risks:"Pārbaudi inženiertīklus pirms nojaukšanas!",tip:"Pēc nojaukšanas — obligāti jāatjaunina kadastra dati."},tipveida:{icon:"📋",title:"Tipveida projekts",what:"Atkārtoti izmantojams projekts vairākām ēkām.",permit:"Atkarīgs no ēkas",time:"3–9 mēneši (1.reizei)",risks:"Katrai izmantošanai vajag pielāgojumu.",tip:"Ekonomisks ja plāno vairākas vienādas ēkas."},la:{icon:"⚠️",title:"Legalizācija — Patvaļīga būvniecība",what:"Ēka uzcelta BEZ atļaujas. Dokumentācija jāsakārto PĒC.",permit:"Apliecinājuma karte (I gr.) vai Būvatļauja (II/III gr.)",time:"12–36 mēneši",risks:"RISKS: pašvaldība VAR ATTEIKT — tad ēka jānojauc!",tip:"OBLIGĀTI sāc ar ESI — bez tās var iztērēt 3000€ projektā kas tiks noraidīts."},lbv:{icon:"📝",title:"Legalizācija — Nereģistrētas izmaiņas (vienkāršotas)",what:"Nelielas izmaiņas veiktas, bet BIS nav reģistrētas.",permit:"Paskaidrojuma raksts",time:"2–6 mēneši",risks:"Pārbaudi vai izmaiņas neskar nesošās konstrukcijas.",tip:"Vienkāršākais legalizācijas veids."},lbp:{icon:"🔧",title:"Legalizācija — Nereģistrētas izmaiņas (pilnas)",what:"Nozīmīgas izmaiņas nav reģistrētas BIS.",permit:"Pārbūves atļauja vai Apliecinājuma karte",time:"6–18 mēneši",risks:"TAA var atklāt konstruktīvus trūkumus!",tip:"Atšķirībā no vienkāršotajām — vajag pilnu projektu."},lc:{icon:"🔄",title:"Legalizācija — Funkcijas maiņa",what:"Lietošanas veids mainās (piem. saimniecības → dzīvojamā).",permit:"Pārbūves atļauja ar funkcijas maiņu",time:"9–18 mēneši",risks:"ESI KRITISKA — ja zona neatļauj jauno funkciju, process apstājas!",tip:"Vienmēr sāc ar ESI."}};
+const STEPS_DATA={la:{I:[{t:"Uzmērīšana",d:"Precīzi izmēri dokumentiem.",who:"Volko",time:"1–2 ned."},{t:"Apliecinājuma karte (BIS)",d:"Oficiālā atzīšana.",who:"Volko",time:"1–2 mēn."},{t:"Kadastra → ZG",d:"Dati valsts reģistros.",who:"VZD",time:"2–4 ned."}],II:[{t:"ESI — Juridiskā esošās situācijas izpēte",price:"950€",d:"Pārbauda vai legalizācija VAR notikt — zona, robežas, ZG. BEZ ESI var iztērēt 5000€ projektā kas tiks noraidīts.",who:"Volko",time:"2–4 ned.",docs:"Zemesgrāmatas izraksts, kadastra izziņa, robežu plāns"},{t:"TAA — Tehniskā apsekošana",price:"400€",d:"Pārbauda konstruktīvo drošību. BEZ TAA pašvaldība var pieprasīt nojaukšanu.",who:"Volko",time:"1–3 ned.",docs:"Piekļuve ēkai"},{t:"Uzmērīšana un rasējumi",d:"Precīzi plāni, šķērsgriezumi, fasādes.",who:"Volko",time:"2–3 ned."},{t:"AR projekts (legalizācijai)",d:"Oficālā dokumentācija normatīvu atbilstībai.",who:"Volko",time:"3–5 ned."},{t:"BIS iesniegums",d:"Formāls pieteikums. Pašvaldībai 30 darba dienas atbildei.",who:"Volko",time:"1–3 mēn."},{t:"Pašvaldības saskaņošana",d:"Arhitekts izvērtē. Var pieprasīt izmaiņas.",who:"Volko",time:"1–3 mēn."},{t:"NOD — Nodošana ekspluatācijā",price:"950€",d:"BEZ NOD ēka juridiski nepabeigta. Banka nedos kredītu pret šo īpašumu!",who:"Volko",time:"2–4 ned."},{t:"Kadastra → ZG",d:"Dati jāatjaunina visos reģistros.",who:"VZD",time:"2–4 ned."}],III:[{t:"ESI",price:"950€",d:"Detalizēta zona un tiesību analīze.",who:"Volko",time:"3–4 ned.",docs:"ZG, kadastra izziņa"},{t:"TAA",price:"400€",d:"Sarežğīta — sertificēts konstruktors.",who:"Volko",time:"2–4 ned."},{t:"Uzmērīšana",d:"Pilna dokumentācija.",who:"Volko",time:"3–4 ned."},{t:"AR + BK projekts",d:"Obligāti abi III grupai.",who:"Volko",time:"5–8 ned."},{t:"BIS — Būvatļauja",d:"III grupai apliecinājuma karte nav pietiekama.",who:"Volko",time:"2–4 mēn."},{t:"NOD",price:"950€",d:"Pilna komisija.",who:"Volko",time:"3–5 ned."},{t:"Kadastra → ZG",d:"Obligāta.",who:"VZD",time:"3–4 ned."}]},lbv:{I:[{t:"Paskaidrojuma raksts (BIS)",d:"",who:"Volko",time:"2–4 ned."},{t:"Rasējumi — izmainītais stāvoklis",d:"",who:"Volko",time:""},{t:"Kadastra datu atjaunošana",d:"",who:"VZD",time:""}],II:[{t:"Paskaidrojuma raksts (BIS)",d:"",who:"Volko",time:"2–4 ned."},{t:"Rasējumi",d:"",who:"Volko",time:""},{t:"BIS akcepts",d:"",who:"",time:""},{t:"Kadastra atjaunošana",d:"",who:"VZD",time:""}],III:[{t:"TAA",price:"400€",d:"",who:"Volko",time:""},{t:"Rasējumi",d:"Pilna dokumentācija.",who:"Volko",time:""},{t:"BIS — Pārbūves atļauja",d:"",who:"Volko",time:""},{t:"Kadastra",d:"",who:"VZD",time:""}]},lbp:{I:[{t:"TAA",price:"400€",d:"Nesošo konstrukciju pārbaude.",who:"Volko",time:""},{t:"Uzmērīšana",d:"",who:"Volko",time:""},{t:"AR projekts",d:"",who:"Volko",time:""},{t:"BIS — Apliecinājuma karte",d:"",who:"Volko",time:""},{t:"Kadastra",d:"",who:"VZD",time:""}],II:[{t:"TAA",price:"400€",d:"Nesošo konstrukciju pārbaude.",who:"Volko",time:""},{t:"Uzmērīšana",d:"",who:"Volko",time:""},{t:"AR projekts",d:"Izmainītais stāvoklis + normatīvi.",who:"Volko",time:""},{t:"BIS atļauja",d:"",who:"Volko",time:""},{t:"NOD (ja vajag)",price:"950€",d:"",who:"Volko",time:""},{t:"Kadastra",d:"",who:"VZD",time:""}],III:[{t:"TAA",price:"400€",d:"",who:"Volko",time:""},{t:"AR + BK projekts",d:"Obligāti abi.",who:"Volko",time:""},{t:"BIS atļauja",d:"",who:"Volko",time:""},{t:"NOD",price:"950€",d:"",who:"Volko",time:""},{t:"Kadastra",d:"",who:"VZD",time:""}]},lc:{I:[{t:"ESI",price:"950€",d:"Vai zonā ļauj jauno funkciju.",who:"Volko",time:"",docs:"Pašv. TIN, ZG"},{t:"AR projekts",d:"",who:"Volko",time:""},{t:"BIS atļauja",d:"",who:"Volko",time:""},{t:"NOD",price:"950€",d:"",who:"Volko",time:""},{t:"Kadastra → ZG",d:"Bieži vajag notāru.",who:"VZD",time:""}],II:[{t:"ESI",price:"950€",d:"SVARĪGI: vai zonā ļauj jauno funkciju.",who:"Volko",time:"2–4 ned.",docs:"Pašvaldības TIN, ZG izraksts"},{t:"AR projekts (jaunai funkcijai)",d:"Plānojums, sanitārie mezgli, ugunsdrošība, energoefektivitāte.",who:"Volko",time:"4–6 ned."},{t:"BIS atļauja",d:"",who:"Volko",time:""},{t:"NOD",price:"950€",d:"Ar jauno funkciju.",who:"Volko",time:""},{t:"Kadastra → ZG",d:"Bieži vajag notāru.",who:"VZD",time:""}],III:[{t:"ESI",price:"950€",d:"Detalizēta.",who:"Volko",time:""},{t:"AR + BK projekts",d:"",who:"Volko",time:""},{t:"BIS atļauja",d:"",who:"Volko",time:""},{t:"NOD",price:"950€",d:"",who:"Volko",time:""},{t:"Kadastra → ZG",d:"",who:"VZD",time:""}]}};
+const DOCS_DATA={la:["Zemesgrāmatas izraksts (zemesgramata.lv)","Kadastra izziņa (kadastrs.lv)","Robežu plāns (VZD)","Pašvaldības TIN","Kaimiņu piekrišana (robeža <4m)","Kopīpašnieku piekrišana (ja ir)","Esošie projekti (ja ir)"],lbv:["Zemesgrāmatas izraksts","Esošie projekti / plāni","Kopīpašnieku piekrišana"],lbp:["Zemesgrāmatas izraksts","Kadastra izziņa","Esošie projekti","Kopīpašnieku piekrišana"],lc:["Zemesgrāmatas izraksts","Kadastra izziņa","Pašvaldības TIN — vai zonā ļauj jauno funkciju","Esošie projekti","Kopīpašnieku piekrišana"]};
+
+function grp(a,f){if(a<=25&&f<=1)return"I";if(a>1500||f>=4)return"III";return"II";}
+function bi(a){for(let i=0;i<AR_BRACKS.length;i++)if(a<=AR_BRACKS[i])return i;return AR_BRACKS.length-1;}
+function r50(n){return Math.round(n/50)*50;}
+function eur(n){return n.toLocaleString("lv-LV")+" EUR";}
+function isLegal(t){return["la","lbv","lbp","lc"].includes(t);}
+
+function calcAR(){
+  const type=document.getElementById("ar-type").value;
+  const area=parseFloat(document.getElementById("ar-area").value)||0;
+  const floors=parseInt(document.getElementById("ar-floors").value)||1;
+  const fCoef=parseFloat(document.getElementById("ar-func").value)||1;
+  let muni={p:1.00,s:1.10};
+  try{muni=JSON.parse(document.getElementById("ar-muni").value);}catch(e){}
+  const encs=["c1","c2","c3","c4","c5"].filter(id=>document.getElementById(id).checked).length;
+  const eCoef=encs>0?+(1+encs*0.10).toFixed(2):1.00;
+  ["1","2","3","4","5"].forEach(n=>{const rb=document.getElementById("rb"+n);const cb=document.getElementById("c"+n);if(rb&&cb)rb.classList.toggle("visible",cb.checked);});
+  const ic=document.getElementById("ar-info-card");
+  if(type&&TYPE_INFO[type]){
+    const ti=TYPE_INFO[type];ic.classList.add("visible");
+    ic.innerHTML=`<div class="ic-title">${ti.icon} ${ti.title}</div><div>${ti.what}</div><span class="ic-permit">📋 ${ti.permit}</span><span style="display:inline-flex;align-items:center;gap:3px;font-size:.72rem;color:#2563eb;margin-left:6px">⏱ ${ti.time}</span>${ti.risks?`<div class="ic-risk">⚠ ${ti.risks}</div>`:""}${ti.tip?`<div style="margin-top:4px;font-size:.71rem;color:#2563eb">💡 ${ti.tip}</div>`:""}`;
+  }else{ic.classList.remove("visible");}
+  if(area>0){
+    const g=grp(area,floors);document.getElementById("ar-grp-badge").textContent=g+" grupa";
+    const gd={I:"≤25m² un 1 stāvs — vienkāršota procedūra (apliecinājuma karte)",II:"26–1500m², līdz 3 stāviem — standarta procedūra",III:">1500m² vai 4+ stāvi — sarežğīta procedūra (būvatļauja)"};
+    document.getElementById("ar-grp-desc").textContent=gd[g];
+  }else{document.getElementById("ar-grp-badge").textContent="—";document.getElementById("ar-grp-desc").textContent="Ievadi platību un stāvu skaitu";}
+  const isLeg=isLegal(type);
+  document.getElementById("legalizacija-steps").classList.toggle("visible",isLeg&&area>0);
+  if(isLeg&&area>0)renderSteps(type,grp(area,floors),muni.s);
+  if(!type||area<=0){
+    document.getElementById("ar-p-empty").style.display="block";
+    document.getElementById("ar-p-result").style.display="none";
+    document.getElementById("ar-p-fixed").style.display="none";
+    ["jaunbuve-paketes","legalizacija-paketes","auto-ieteikumi"].forEach(id=>{document.getElementById(id).classList.remove("visible");});
+    return;
+  }
+  const g=grp(area,floors);const gCoef=GC[g];
+  if(g==="I"&&!isLeg){
+    const fp=I_FIXED.find(x=>area<=x.max)||I_FIXED[I_FIXED.length-1];
+    document.getElementById("ar-p-empty").style.display="none";
+    document.getElementById("ar-p-result").style.display="none";
+    document.getElementById("ar-p-fixed").style.display="block";
+    document.getElementById("ar-fp-val").textContent=eur(fp.cli);
+    document.getElementById("ar-fp-int").textContent=eur(fp.int);
+    document.getElementById("ar-fp-note").textContent="Fiksētā cena I grupas mazēkai (≤25m², 1 stāvs). Iekļauj apliecinājuma karte + uzmērīšana.";
+    renderARPanels(type,area,muni.s);return;
+  }
+  const rKey=isLeg?(LEGAL_RATE[type]||"rekonstrukcija"):type;
+  const rates=AR_RATES[rKey];if(!rates)return;
+  const rate=rates[bi(area)];
+  const base=area*rate*fCoef*gCoef*muni.p*eCoef;
+  const minA=AR_MINS[isLeg?type:rKey];
+  const minV=minA?(area<=60?minA[0]:minA[1]):0;
+  const arInt=r50(Math.max(base,minV));
+  const svcs=isLeg?(LEGAL_SVC[type]?.[g]||LEGAL_SVC[type]?.["II"]||[]):[];
+  const svcTot=svcs.reduce((acc,s)=>acc+s[1]*muni.s,0);
+  const totInt=arInt+svcTot;const totCli=r50(totInt*1.20);
+  document.getElementById("ar-p-empty").style.display="none";
+  document.getElementById("ar-p-result").style.display="block";
+  document.getElementById("ar-p-fixed").style.display="none";
+  document.getElementById("ar-p-client").textContent=eur(totCli);
+  document.getElementById("ar-p-int").textContent=eur(totInt);
+  let bh=`<div class="br"><span>Likme (${rKey})</span><span>${rate} €/m²</span></div><div class="br"><span>Platība</span><span>${area} m²</span></div><div class="br"><span>Funkcija</span><span>×${fCoef.toFixed(2)}</span></div><div class="br"><span>Grupa (${g})</span><span>×${gCoef.toFixed(2)}</span></div><div class="br"><span>Pašvaldība</span><span>×${muni.p.toFixed(2)}</span></div>${encs>0?`<div class="br"><span>Apgrūtinājumi (${encs}×10%)</span><span>×${eCoef.toFixed(2)}</span></div>`:""}<div class="br tot"><span>AR projekts</span><span>${eur(arInt)}</span></div>`;
+  if(svcTot>0){svcs.forEach(s=>{bh+=`<div class="br"><span>+ ${s[0]}</span><span>${eur(r50(s[1]*muni.s))}</span></div>`;});bh+=`<div class="br tot"><span>Kopā (iekšējā)</span><span>${eur(totInt)}</span></div>`;}
+  document.getElementById("ar-brkd").innerHTML=bh;
+  document.getElementById("ar-hint").innerHTML=`<strong>Piedāvājumā:</strong> "no <strong>${totCli.toLocaleString("lv-LV")}</strong> EUR + PVN" <span style="color:#a16207;margin-left:6px">(rezerve: ${eur(totCli-totInt)})</span>`;
+  renderARPanels(type,area,muni.s);
 }
-document.getElementById('pi').addEventListener('keydown', e => {
-    if (e.key === 'Enter') auth();
-    document.getElementById('pe').textContent = '';
-});
-if (sessionStorage.getItem('va')) {
-    document.getElementById('lock').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
+
+function renderSteps(type,g,svcCoef){
+  const tt={la:"Patvaļīga būvniecība",lbv:"Nereģistrētas izmaiņas (vienkāršotas)",lbp:"Nereģistrētas izmaiņas (pilnas)",lc:"Funkcijas maiņa"};
+  document.getElementById("steps-title").textContent=(tt[type]||type)+" · "+g+" grupa";
+  const sd=STEPS_DATA[type]?.[g]||STEPS_DATA[type]?.["II"]||[];
+  document.getElementById("steps-list").innerHTML=sd.map((s,i)=>`<div class="step-c"><div class="sn">${i+1}</div><div><div class="sc-title">${s.t}${s.price?` <span class="sc-price">${s.price}</span>`:""}</div>${s.d?`<div class="why-box">${s.d}</div>`:""}<div class="sc-who">${s.who?"Veic: "+s.who:""}${s.time?" · "+s.time:""}</div>${s.docs?`<div class="sc-docs"><strong>Klients sagādā:</strong> ${s.docs}</div>`:""}</div></div>`).join("");
+  document.getElementById("docs-list").innerHTML=(DOCS_DATA[type]||[]).map(d=>`<li>${d}</li>`).join("");
 }
 
-// ── TABS ─────────────────────────────────────────────────────
-function switchTab(id, btn) {
-    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('tab-' + id).classList.add('active');
-    btn.classList.add('active');
-}
-
-// ══════════════════════════════════════════════════════════════
-// AR CALCULATOR
-// ══════════════════════════════════════════════════════════════
-const R = {
-    jaunbuve:       [32,30,28,26,24,22,21,20,19,18,16],
-    'izmaiņu':      [22,20,18,16,15,14,13,12,11,10, 9],
-    rekonstrukcija: [30,28,26,24,22,20,19,18,17,16,14],
-    vienk:          [21,19,17,15,14,13,12,11,10, 9, 8],
-    'nojaukšana':   [10, 9, 8, 7, 6, 5, 5, 5, 4, 4, 4],
-    tipveida:       [14,12,11,10, 9, 8, 7, 6, 6, 6, 5],
-};
-const BRACKS = [30,60,90,120,150,180,210,240,270,300,Infinity];
-const MINS = { jaunbuve:[1700,2100],'izmaiņu':[1700,2100],rekonstrukcija:[2500,2900],la:[2500,2900],lbp:[2500,2900] };
-const GC = { I:0.75, II:1.20, III:1.80 };
-
-// I grupas fiksētās cenas (ar 20% rezervi — rāda klientam)
-const I_GRP_FIXED = [
-    { max:10,  int:667,  cli:800  },
-    { max:15,  int:833,  cli:1000 },
-    { max:20,  int:1000, cli:1200 },
-    { max:25,  int:1167, cli:1400 },
-];
-
-// Projekta tipu apraksti
-const TYPE_INFO = {
-    jaunbuve:       'Pilnīgi jauna ēka. Nepieciešama būvatļauja (lielākai) vai paskaidrojuma raksts (<200m²). Termiņš: 6–18 mēn. Risks: TIAN prasību pārbaude.',
-    'izmaiņu':      'Esošai ēkai — ailas, fasāde, daļēja pārbūve. Nemainās apjoms vai funkcija.',
-    rekonstrukcija: 'Pilna pārbūve — var mainīt apjomu, funkciju. Nepieciešama būvatļauja. Process 6–18 mēn.',
-    vienk:          'Fasādes siltināšana, iekšējo telpu pārplānošana BEZ nesošo konstrukciju skaršanas. Paskaidrojuma raksts.',
-    'nojaukšana':   'Reģistrētas ēkas nojaukšana. Nepieciešams nojaukšanas projekts.',
-    tipveida:       'Atkārtoti izmantojams projekts. Lētāks jo nav jāizstrādā no nulles.',
-    la:             '⚠ RISKS: var neatļaut! Viss jāsāk no nulles: uzmērīšana + TAA + projekts + BIS. Bieži 12–24 mēn.',
-    lbv:            'Veiktas izmaiņas bet nav BIS. Vienkāršota procedūra — paskaidrojuma raksts vai apliecinājuma karte.',
-    lbp:            'Veiktas izmaiņas bet nav BIS. Atkarīgs no apjoma — var būt TAA + pilns projekts + NOD.',
-    lc:             'Piemēram: saimniecības ēka → dzīvojamā. Pirms viss — ESI lai pārliecinātos ka zona ļauj!',
-};
-
-const LEGAL = {
-    la:  { r:'rekonstrukcija', svc:{ I:[], II:[['ESI',950],['TAA',400],['NOD',950]], III:[['ESI',950],['TAA',400],['NOD',950]] } },
-    lbv: { r:'vienk',          svc:{ I:[], II:[], III:[] } },
-    lbp: { r:'rekonstrukcija', svc:{ I:[['TAA',400]], II:[['TAA',400],['NOD',950]], III:[['TAA',400],['NOD',950]] } },
-    lc:  { r:'rekonstrukcija', svc:{ I:[['ESI',950],['NOD',950]], II:[['ESI',950],['NOD',950]], III:[['ESI',950],['NOD',950]] } },
-};
-const STEPS = {
-    la: {
-        I:[{t:'Uzmērīšana',d:'Plāni pēc esošā stāvokļa'},{t:'Apliecinājuma karte (BIS)',d:'Vienkāršota procedūra'},{t:'Kadastra uzmērīšana → ZG',d:'VZD + nostiprināšana'}],
-        II:[{t:'ESI — Juridiskā esošās situācijas izpēte',d:'Zona, robežas, ZG ieraksti, vai legalizācija iespējama'},{t:'TAA — Tehniskā apsekošana',d:'Konstruktīvā drošība, fotofiksācija, normatīvu atbilstība'},{t:'Uzmērīšana un rasējumi',d:'Plāni, šķērsgriezumi, fasādes pēc esošā stāvokļa'},{t:'AR projekts (legalizācijai)',d:'Rasējumi + paskaidrojuma raksts, normatīvu atbilstība'},{t:'BIS iesniegums',d:'Apliecinājuma karte vai Būvatļauja atkarā no gadījuma'},{t:'Pašvaldības saskaņošana',d:'Būvvalde; ja kultūrpiemineklis → NKMP'},{t:'NOD — Nodošana ekspluatācijā',d:'Komisija vai vienkāršota procedūra'},{t:'Kadastra uzmērīšana → ZG',d:'Platības atjaunošana, nostiprināšana'}],
-        III:[{t:'ESI — Juridiskā esošās situācijas izpēte',d:'Zona, robežas, ZG ieraksti'},{t:'TAA — Tehniskā apsekošana',d:'Sarežğīta — iesaistāms sertificēts konstruktors'},{t:'Uzmērīšana un rasējumi',d:'Pilna esošā stāvokļa dokumentācija'},{t:'AR + BK projekts',d:'Arhitektūra + būvkonstrukcijas (obligāti III grupai)'},{t:'BIS — Būvatļauja',d:'III grupai apliecinājuma karte nav pietiekama'},{t:'Pašvaldības saskaņošana',d:'Detālais saskaņošanas process'},{t:'NOD — Nodošana ekspluatācijā',d:'Pilna komisija'},{t:'Kadastra uzmērīšana → ZG',d:'Obligāta'}],
-    },
-    lbv:{
-        I:[{t:'Paskaidrojuma raksts vai Apliecinājuma karte',d:'BIS'},{t:'Rasējumi (izmainītais stāvoklis)',d:''},{t:'BIS akcepta saņemšana',d:''},{t:'Kadastra datu atjaunošana',d:'Ja mainījusies platība'}],
-        II:[{t:'Paskaidrojuma raksts vai Apliecinājuma karte',d:'BIS'},{t:'Rasējumi (izmainītais stāvoklis)',d:''},{t:'BIS akcepta saņemšana',d:''},{t:'Kadastra datu atjaunošana',d:''}],
-        III:[{t:'TAA — Tehniskā apsekošana',d:'Sarežğītu izmaiņu gadījumā'},{t:'Rasējumi (izmainītais stāvoklis)',d:'Pilna dokumentācija'},{t:'BIS — Pārbūves atļauja',d:'III grupai vienmēr pilna atļauja'},{t:'Kadastra datu atjaunošana',d:''}],
-    },
-    lbp:{
-        I:[{t:'TAA — Tehniskā apsekošana',d:'Nesošo konstrukciju pārbaude'},{t:'Uzmērīšana (esošais stāvoklis)',d:''},{t:'AR projekts',d:'Izmainītais stāvoklis + normatīvu atbilstība'},{t:'BIS — Apliecinājuma karte',d:''},{t:'Kadastra datu atjaunošana',d:''}],
-        II:[{t:'TAA — Tehniskā apsekošana',d:'Nesošo konstrukciju pārbaude'},{t:'Uzmērīšana (esošais stāvoklis)',d:''},{t:'AR projekts',d:'Izmainītais stāvoklis + normatīvu atbilstība'},{t:'BIS — Pārbūves atļauja vai Apliecinājuma karte',d:''},{t:'Pašvaldības saskaņošana',d:'Ja skar ārējo izskatu'},{t:'NOD (ja nepieciešams)',d:''},{t:'Kadastra datu atjaunošana',d:''}],
-        III:[{t:'TAA — Tehniskā apsekošana',d:''},{t:'Uzmērīšana',d:''},{t:'AR + BK projekts',d:'Obligāti abi'},{t:'BIS — Pārbūves atļauja',d:''},{t:'Pašvaldības saskaņošana',d:''},{t:'NOD',d:''},{t:'Kadastra datu atjaunošana',d:''}],
-    },
-    lc:{
-        I:[{t:'ESI — Juridiskā izpēte',d:'Vai zonā ļauj jauno funkciju'},{t:'AR projekts (jaunai funkcijai)',d:'Plānojums, sanitārie mezgli, ugunsdrošība'},{t:'BIS — Pārbūves atļauja ar funkcijas maiņu',d:''},{t:'NOD — ar jauno funkciju',d:''},{t:'Kadastra dati → ZG',d:'Funkcija mainās ierakstos'}],
-        II:[{t:'ESI — Juridiskā izpēte',d:'Svarīgi: vai zonā ļauj jauno funkciju'},{t:'AR projekts (jaunai funkcijai)',d:'Plānojums, sanitārie mezgli, ugunsdrošība, energoefektivitāte'},{t:'BIS — Pārbūves atļauja ar funkcijas maiņu',d:''},{t:'NOD — ar jauno funkciju',d:''},{t:'Kadastra dati → ZG',d:'Funkcija mainās ierakstos, bieži vajag notāru'}],
-        III:[{t:'ESI — Juridiskā izpēte',d:'Detalizēta zonējuma analīze'},{t:'AR + BK projekts',d:'Pilna projektēšana jaunajai funkcijai'},{t:'BIS — Pārbūves atļauja',d:''},{t:'Pašvaldības saskaņošana',d:''},{t:'NOD',d:''},{t:'Kadastra dati → ZG',d:''}],
-    },
-};
-const DOCS = {
-    la:['Zemesgrāmatas izraksts','Kadastra izziņa','Robežu plāns (VZD)','Pašvaldības TIN','Kaimiņu piekrišana (ja robežai tuvāk par 4m)','Kopīpašnieku piekrišana (ja ir)','Esošie projekti (ja ir)'],
-    lbv:['Zemesgrāmatas izraksts','Esošie projekti / plāni','Kopīpašnieku piekrišana (ja ir)'],
-    lbp:['Zemesgrāmatas izraksts','Kadastra izziņa','Esošie projekti','Kopīpašnieku piekrišana (ja ir)','Kaimiņu piekrišana (robežai tuvāk par 4m)'],
-    lc:['Zemesgrāmatas izraksts','Kadastra izziņa','Pašvaldības TIN — vai zonā ļauj jauno funkciju','Esošie projekti','Kopīpašnieku piekrišana (ja ir)'],
-};
-
-// Jaunbūvju pakešu cenas: [area_max, L1_int, L2_int, L3_int]
+// ─── DATI ────────────────────────────────────────────────────
 const PAKETES_BRACKS = [
     { max:60,  L1:3100, L2:3900,  L3:6100  },
     { max:100, L1:3550, L2:4450,  L3:6950  },
@@ -737,484 +1396,659 @@ const PAKETES_BRACKS = [
     { max:400, L1:5750, L2:7250,  L3:11300 },
     { max:Infinity, L1:8900, L2:11150, L3:17400 },
 ];
-const PAKETES_CONTENT = {
-    L1: '1×2D skice, 1×3D + VR tūre, AR projekts, BK 2D, ES bāze, 1 korekcija',
-    L2: '2×3D skices + VR, izmaksu aprēķins, AR projekts, BK 3D LOD200, 2 korekcijas',
-    L3: '3×3D skices, 2×VR, AR projekts, BK 3D LOD300, būvapjomi, gandrīz-nulles ES, 3 korekcijas',
+
+const SVC_BASE = {
+    esi:950, taa:400, nod:950, bk_small:1400, bk_mid:2000, bk_large:3000,
+    ti:400, eps:370, elt:350, dv:350,
 };
 
-function grp(a,f){if(a<=25&&f<=1)return'I';if(a>1500||f>=4)return'III';return'II';}
-function bi(a){for(let i=0;i<BRACKS.length;i++)if(a<=BRACKS[i])return i;return BRACKS.length-1;}
-function r50(n){return Math.round(n/50)*50;}
-function eur(n){return n.toLocaleString('lv-LV')+' EUR';}
+const RECS = {
+    jaunbuve: [
+        { id:'bk', name:'BK — Būvkonstrukcijas', urgency:'recommended',
+          why:'Vajadzīgs lai aprēķinātu pamatus, jumtu, pārsegumus. Bez BK būvnieks nevar droši celties.',
+          when_required:'Obligāts &gt;100 m² vai 2+ stāviem.',
+          priceFn:(a,s)=>r50c( (a<=100?SVC_BASE.bk_small:a<=250?SVC_BASE.bk_mid:SVC_BASE.bk_large)*s*1.20 ) },
+        { id:'eps', name:'EPS — Energoefektivitātes pārskats', urgency:'recommended',
+          why:'Nepieciešams jaunbūvei ar apkuri. Apliecina enerģijas patēriņu.',
+          when_required:'Obligāts jaunbūvēm ar apkuri.',
+          priceFn:(a,s)=>r50c(SVC_BASE.eps*s*1.20) },
+        { id:'ti', name:'TI — Topogrāfija', urgency:'if_needed',
+          why:'Vajadzīgs ja nav aktuāla topogrāfiskā plāna. Parāda precīzu zemes reljefa info.',
+          when_required:'Ja nav aktuāla topogrāfija (vecāka par 3 gadiem).',
+          priceFn:(a,s)=>r50c(SVC_BASE.ti*s*1.20) },
+    ],
+    izmaiņu: [
+        { id:'ti', name:'TI — Topogrāfija', urgency:'if_needed',
+          why:'Vajadzīgs ja projekts skar ārējo teritoriju vai fasādi.',
+          when_required:'Ja nav aktuāla topogrāfija.',
+          priceFn:(a,s)=>r50c(SVC_BASE.ti*s*1.20) },
+    ],
+    rekonstrukcija: [
+        { id:'taa', name:'TAA — Tehniskā apsekošana', urgency:'recommended',
+          why:'Pirms rekonstrukcijas jāzina ēkas faktiskais stāvoklis. Var atklāt slēptas problēmas.',
+          when_required:'Ieteicams vienmēr pirms rekonstrukcijas.',
+          priceFn:(a,s)=>r50c(SVC_BASE.taa*s*1.20) },
+        { id:'bk', name:'BK — Būvkonstrukcijas', urgency:'if_needed',
+          why:'Vajadzīgs ja mainās nesošās konstrukcijas vai apjoms.',
+          when_required:'Ja mainās nesošie elementi.',
+          priceFn:(a,s)=>r50c( (a<=100?SVC_BASE.bk_small:a<=250?SVC_BASE.bk_mid:SVC_BASE.bk_large)*s*1.20 ) },
+        { id:'eps', name:'EPS — Energoefektivitātes pārskats', urgency:'if_needed',
+          why:'Ja rekonstrukcija ietver siltināšanu — var pieprasīt EPS.',
+          when_required:'Ja mainās ēkas energoefektivitāte.',
+          priceFn:(a,s)=>r50c(SVC_BASE.eps*s*1.20) },
+    ],
+    vienk: [
+        { id:'eps', name:'EPS — Energoefektivitātes pārskats', urgency:'if_needed',
+          why:'Ja pilna ēkas siltināšana — var būt nepieciešams.',
+          when_required:'Ja pilna fasāžu siltināšana.',
+          priceFn:(a,s)=>r50c(SVC_BASE.eps*s*1.20) },
+    ],
+    la: [
+        { id:'esi', name:'ESI — Juridiskā esošās situācijas izpēte', urgency:'critical',
+          why:'KRITISKS. Bez ESI var iztērēt 5000 EUR uz projektu kas tiks noraidīts. ESI pārbauda vai legalizācija iespējama.',
+          when_required:'OBLIGĀTS pirms jebkura darba sākšanas.',
+          priceFn:(a,s)=>r50c(SVC_BASE.esi*s*1.20) },
+        { id:'taa', name:'TAA — Tehniskā apsekošana', urgency:'critical',
+          why:'Pašvaldība var pieprasīt nojaukšanu ja ēka ir konstruktīvi bīstama. TAA to novērš.',
+          when_required:'OBLIGĀTS II un III grupai.',
+          priceFn:(a,s)=>r50c(SVC_BASE.taa*s*1.20) },
+        { id:'nod', name:'NOD — Nodošana ekspluatācijā', urgency:'recommended',
+          why:'Bez NOD ēka ir "nepabeigta". Banka nedos kredītu! Pēc NOD ēka ir 100% legāla.',
+          when_required:'Ieteicams vienmēr — bez NOD process nav pabeigts.',
+          priceFn:(a,s)=>r50c(SVC_BASE.nod*s*1.20) },
+        { id:'eps', name:'EPS — Energoefektivitātes pārskats', urgency:'if_needed',
+          why:'Dažas pašvaldības pieprasa EPS legalizācijai. Rīgā bieži vajadzīgs II grupas ēkām.',
+          when_required:'Atkarīgs no pašvaldības prasībām.',
+          priceFn:(a,s)=>r50c(SVC_BASE.eps*s*1.20) },
+    ],
+    lbv: [
+        { id:'eps', name:'EPS — Energoefektivitātes pārskats', urgency:'if_needed',
+          why:'Atkarīgs no izmaiņu apjoma un pašvaldības.',
+          when_required:'Ja pašvaldība pieprasa.',
+          priceFn:(a,s)=>r50c(SVC_BASE.eps*s*1.20) },
+    ],
+    lbp: [
+        { id:'taa', name:'TAA — Tehniskā apsekošana', urgency:'recommended',
+          why:'Pilnu izmaiņu legalizācijai TAA parāda faktisko stāvokli un novērš turpmākus riskus.',
+          when_required:'Ieteicams vienmēr pirms pilnas legalizācijas.',
+          priceFn:(a,s)=>r50c(SVC_BASE.taa*s*1.20) },
+        { id:'nod', name:'NOD — Nodošana ekspluatācijā', urgency:'recommended',
+          why:'Bez NOD ēka paliek "nepabeigta". Svarīgi ja plāno pārdot vai ieķīlāt.',
+          when_required:'Ieteicams II un III grupai.',
+          priceFn:(a,s)=>r50c(SVC_BASE.nod*s*1.20) },
+        { id:'eps', name:'EPS — Energoefektivitātes pārskats', urgency:'if_needed',
+          why:'Atkarīgs no pašvaldības prasībām.',
+          when_required:'Ja pašvaldība pieprasa.',
+          priceFn:(a,s)=>r50c(SVC_BASE.eps*s*1.20) },
+    ],
+    lc: [
+        { id:'esi', name:'ESI — Juridiskā esošās situācijas izpēte', urgency:'critical',
+          why:'Funkcijas maiņai ESI ir KRITISKS — jāpārbauda vai jaunā funkcija atļauta šajā zonā. Bez ESI var tikt noraidīts.',
+          when_required:'OBLIGĀTS pirms funkcijas maiņas.',
+          priceFn:(a,s)=>r50c(SVC_BASE.esi*s*1.20) },
+        { id:'nod', name:'NOD — Nodošana ekspluatācijā', urgency:'recommended',
+          why:'Ar jauno funkciju NOD nostiprina izmaiņas ZG. Bez NOD banka neatzīs jauno funkciju.',
+          when_required:'Ieteicams vienmēr funkcijas maiņai.',
+          priceFn:(a,s)=>r50c(SVC_BASE.nod*s*1.20) },
+        { id:'eps', name:'EPS — Energoefektivitātes pārskats', urgency:'if_needed',
+          why:'Ja jaunā funkcija prasa apkuri (piem. saimniecība → dzīvoklis) — EPS var būt obligāts.',
+          when_required:'Ja jaunā funkcija prasa apkuri.',
+          priceFn:(a,s)=>r50c(SVC_BASE.eps*s*1.20) },
+    ],
+};
 
-function getMuniCoefs() {
-    const sel = document.getElementById('muni');
-    try {
-        return JSON.parse(sel.value);
-    } catch(e) {
-        return { proj: 1.00, svc: 1.00 };
-    }
+// ─── UTIL ─────────────────────────────────────────────────────
+function r50(n) { return Math.round(n / 50) * 50; }
+function r50c(n) { return Math.round(n / 50) * 50; }
+function eur(n) { return n.toLocaleString('lv-LV') + ' EUR'; }
+function isLegal(t) { return ['la','lbv','lbp','lc'].includes(t); }
+
+const R_REKON = [30,28,26,24,22,20,19,18,17,16,14];
+const BRACKS  = [30,60,90,120,150,180,210,240,270,300,Infinity];
+const GC = { I:0.75, II:1.20, III:1.80 };
+function grp(a,f){ if(a<=25&&f<=1)return'I'; if(a>1500||f>=4)return'III'; return'II'; }
+function bi(a){ for(let i=0;i<BRACKS.length;i++)if(a<=BRACKS[i])return i; return BRACKS.length-1; }
+function getPakete(a){ for(const b of PAKETES_BRACKS) if(a<=b.max) return b; return PAKETES_BRACKS[PAKETES_BRACKS.length-1]; }
+function calcLegAR(area, svc){
+    const g=grp(area,1), gC=GC[g], rate=R_REKON[bi(area)];
+    const base=area*rate*gC;
+    const minV=area<=60?2500:2900;
+    return r50(Math.max(base,minV));
 }
 
-function getFixedPrice(area) {
-    for (const t of I_GRP_FIXED) {
-        if (area <= t.max) return t;
-    }
-    return null;
-}
+// ─── MAIN RENDER ─────────────────────────────────────────────
+// Eksportēts uz index.html kā renderARSection(type, area, svcCoef)
+function renderARSection(type, area, svcCoef) {
+    svcCoef = svcCoef || 1.00;
 
-function getPakete(area) {
-    for (const b of PAKETES_BRACKS) {
-        if (area <= b.max) return b;
-    }
-    return PAKETES_BRACKS[PAKETES_BRACKS.length - 1];
-}
-
-function calc() {
-    const type = document.getElementById('type').value;
-    const area = parseFloat(document.getElementById('area').value) || 0;
-    const floors = parseInt(document.getElementById('floors').value) || 1;
-    const fCoef = parseFloat(document.getElementById('func').value) || 1;
-    const muniCoefs = getMuniCoefs();
-    const projCoef = muniCoefs.proj;
-    const svcCoef  = muniCoefs.svc;
-    const encs = ['c1','c2','c3','c4','c5'].filter(id => document.getElementById(id).checked).length;
-    const eCoef = encs > 0 ? +(1 + encs * 0.10).toFixed(2) : 1.00;
-
-    // Type info box
-    const infoBox = document.getElementById('type-info-box');
-    if (type && TYPE_INFO[type]) {
-        infoBox.textContent = TYPE_INFO[type];
-        infoBox.style.display = 'block';
-    } else {
-        infoBox.style.display = 'none';
-    }
-
-    if (area > 0) {
-        const g = grp(area, floors);
-        document.getElementById('gb').textContent = g + ' grupa';
-        const gd = {
-            I: '≤25 m² un 1 stāvs — vienkāršota procedūra',
-            II: '26–1500 m², līdz 3 stāviem — standarta procedūra',
-            III: '>1500 m² vai 4+ stāvi — sarežğīta procedūra'
-        };
-        document.getElementById('gd').textContent = gd[g];
-    } else {
-        document.getElementById('gb').textContent = '—';
-        document.getElementById('gd').textContent = 'Ievadi platību un stāvu skaitu';
-    }
-
-    const isL = ['la','lbv','lbp','lc'].includes(type);
-    const show = isL && area > 0;
-    document.getElementById('steps-card').style.display = show ? 'block' : 'none';
-    if (show) {
-        const g = grp(area, floors);
-        const tt = {la:'Patvaļīga būvniecība',lbv:'Nereģistrētas izmaiņas (vienkāršotas)',lbp:'Nereģistrētas izmaiņas (pilnas)',lc:'Funkcijas maiņa'};
-        document.getElementById('steps-title').textContent = tt[type] + ' · ' + g + ' grupa';
-        document.getElementById('steps-list').innerHTML = (STEPS[type][g] || STEPS[type]['II']).map((s,i) =>
-            `<div class="step"><div class="sn">${i+1}</div><div><div class="st">${s.t}</div>${s.d ? `<div class="sd">${s.d}</div>` : ''}</div></div>`).join('');
-        document.getElementById('docs-list').innerHTML = (DOCS[type] || []).map(d => `<li>${d}</li>`).join('');
-    }
-
-    // Jaunbūvju paketes
-    const showPaketes = type === 'jaunbuve' && area > 0;
-    document.getElementById('paketes-block').style.display = showPaketes ? 'block' : 'none';
-    if (showPaketes) {
+    // 1. Jaunbūves paketes
+    const jb = document.getElementById('jaunbuve-paketes');
+    if (type === 'jaunbuve' && area > 0) {
+        jb.classList.add('visible');
         const pb = getPakete(area);
-        const grid = document.getElementById('paketes-grid');
-        const levels = [
-            { code:'L1', name:'Standarta', int:pb.L1, cli:Math.round(pb.L1*1.20/50)*50, content: PAKETES_CONTENT.L1 },
-            { code:'L2', name:'Uzlabots', int:pb.L2, cli:Math.round(pb.L2*1.20/50)*50, content: PAKETES_CONTENT.L2, best:true },
-            { code:'L3', name:'Premium', int:pb.L3, cli:Math.round(pb.L3*1.20/50)*50, content: PAKETES_CONTENT.L3 },
-        ];
-        grid.innerHTML = levels.map(l => `
-            <div class="pakete-card${l.best?' best':''}">
-                <div class="pakete-head">
-                    <div class="pakete-code">${l.code} ${l.name}</div>
-                    ${l.best ? '<div class="pakete-badge">Ieteicams</div>' : ''}
-                </div>
-                <div class="pakete-price">${eur(l.cli)}</div>
-                <div class="pakete-int">Iekšējā: ${eur(l.int)}</div>
-                <div class="pakete-items">${l.content}</div>
-            </div>`).join('');
-    }
-
-    if (!type || area <= 0) {
-        document.getElementById('pe2').style.display = 'block';
-        document.getElementById('pr').style.display = 'none';
-        document.getElementById('svc-card').style.display = 'none';
-        return;
-    }
-
-    const g = grp(area, floors);
-    const gCoef = GC[g];
-
-    // I grupas fiksētā cena (tikai jaunbūve, izmaiņu, rekonstrukcija vai legalizācija)
-    const isFixedEligible = !isL && ['jaunbuve','izmaiņu','rekonstrukcija','vienk','nojaukšana'].includes(type);
-    if (g === 'I' && isFixedEligible) {
-        const fp = getFixedPrice(area);
-        if (fp) {
-            document.getElementById('pe2').style.display = 'none';
-            document.getElementById('pr').style.display = 'block';
-            document.getElementById('fixed-price-wrap').style.display = 'block';
-            document.getElementById('regular-price-wrap').style.display = 'none';
-            document.getElementById('fixed-price-val').textContent = eur(fp.cli);
-            document.getElementById('fixed-hint').innerHTML = `<strong>Piedāvājumā rakstīt:</strong> "no <strong>${fp.cli.toLocaleString('lv-LV')}</strong> EUR + PVN" <span style="margin-left:8px;color:#a16207">(iekšējā: ${eur(fp.int)})</span>`;
-            document.getElementById('svc-card').style.display = 'none';
-            return;
-        }
-    }
-
-    // Regular calculation
-    document.getElementById('fixed-price-wrap').style.display = 'none';
-    document.getElementById('regular-price-wrap').style.display = 'block';
-
-    const rKey = isL ? LEGAL[type].r : type;
-    const rates = R[rKey];
-    if (!rates) return;
-    const rate = rates[bi(area)];
-    const base = area * rate * fCoef * gCoef * projCoef * eCoef;
-    const minA = MINS[isL ? type : rKey];
-    const minV = minA ? (area <= 60 ? minA[0] : minA[1]) : 0;
-    const arInt = r50(Math.max(base, minV));
-
-    const svcs = isL ? (LEGAL[type].svc[g] || LEGAL[type].svc['II'] || []) : [];
-    // Apply svcCoef to ESI, TAA, NOD
-    const svcTot = svcs.reduce((a, s) => a + Math.round(s[1] * svcCoef / 50) * 50, 0);
-    const totInt = arInt + svcTot;
-    const totCli = r50(totInt * 1.20);
-
-    document.getElementById('pe2').style.display = 'none';
-    document.getElementById('pr').style.display = 'block';
-    document.getElementById('pvc').textContent = eur(totCli);
-    document.getElementById('pvi').textContent = eur(totInt);
-
-    let bh = `<div class="br"><span>Likme (${rKey})</span><span>${rate} €/m²</span></div>
-<div class="br"><span>Platība</span><span>${area} m²</span></div>
-<div class="br"><span>Funkcija</span><span>×${fCoef.toFixed(2)}</span></div>
-<div class="br"><span>Grupa (${g})</span><span>×${gCoef.toFixed(2)}</span></div>
-<div class="br"><span>Pašvaldība (projekts)</span><span>×${projCoef.toFixed(2)}</span></div>
-${encs > 0 ? `<div class="br"><span>Apgrūtinājumi (${encs}×10%)</span><span>×${eCoef.toFixed(2)}</span></div>` : ''}
-<div class="br tot"><span>AR projekts</span><span>${eur(arInt)}</span></div>`;
-
-    if (svcTot > 0) {
-        svcs.forEach(s => {
-            const sv = Math.round(s[1] * svcCoef / 50) * 50;
-            bh += `<div class="br"><span>+ ${s[0]} (×${svcCoef.toFixed(2)})</span><span>${eur(sv)}</span></div>`;
+        document.getElementById('pb-area').textContent = area;
+        [
+            ['l1', pb.L1],
+            ['l2', pb.L2],
+            ['l3', pb.L3],
+        ].forEach(([id, int]) => {
+            const cli = r50(int * 1.20);
+            document.getElementById('pf-' + id + '-cli').textContent = eur(cli);
+            document.getElementById('pf-' + id + '-int').textContent = eur(int);
         });
-        bh += `<div class="br tot"><span>Kopā (iekšējā)</span><span>${eur(totInt)}</span></div>`;
-    }
-    document.getElementById('brkd').innerHTML = bh;
-    document.getElementById('hint').innerHTML = `<strong>Piedāvājumā rakstīt:</strong> "no <strong>${totCli.toLocaleString('lv-LV')}</strong> EUR + PVN" <span style="margin-left:8px;color:#a16207">(rezerve: ${eur(totCli - totInt)})</span>`;
-
-    if (svcs.length > 0) {
-        document.getElementById('svc-card').style.display = 'block';
-        document.getElementById('svc-list').innerHTML = `<li><span>AR projekts</span><span style="font-weight:600">${eur(arInt)}</span></li>` +
-            svcs.map(s => {
-                const sv = Math.round(s[1] * svcCoef / 50) * 50;
-                return `<li><span>${s[0]}</span><span style="font-weight:600">${eur(sv)}</span></li>`;
-            }).join('');
-        document.getElementById('svc-tot-v').textContent = eur(totInt);
     } else {
-        document.getElementById('svc-card').style.display = 'none';
+        jb.classList.remove('visible');
+    }
+
+    // 2. Legalizācijas paketes
+    const lb = document.getElementById('legalizacija-paketes');
+    if (isLegal(type) && area > 0) {
+        lb.classList.add('visible');
+        const arInt = calcLegAR(area, svcCoef);
+        const arCli = r50(arInt * 1.20);
+        const esiCli = r50c(SVC_BASE.esi * svcCoef * 1.20);
+        const taaCli = r50c(SVC_BASE.taa * svcCoef * 1.20);
+        const nodCli = r50c(SVC_BASE.nod * svcCoef * 1.20);
+        const epsCli = r50c(SVC_BASE.eps * svcCoef * 1.20);
+
+        document.getElementById('leg-a-price').textContent = eur(arCli);
+
+        const bCli = r50((SVC_BASE.esi + SVC_BASE.taa + SVC_BASE.nod) * svcCoef * 1.20) + arCli;
+        document.getElementById('leg-b-price').textContent = eur(bCli);
+
+        const cBase = ((SVC_BASE.esi + SVC_BASE.taa + SVC_BASE.nod) * svcCoef + arInt) * 1.15;
+        const cCli  = r50(cBase * 1.20) + epsCli;
+        document.getElementById('leg-c-price').textContent = eur(cCli);
+    } else {
+        lb.classList.remove('visible');
+    }
+
+    // 3. Auto-ieteikumi
+    const ai = document.getElementById('auto-ieteikumi');
+    const recs = RECS[type];
+    if (recs && area > 0) {
+        ai.classList.add('visible');
+        renderRecs(recs, area, svcCoef);
+    } else {
+        ai.classList.remove('visible');
     }
 }
 
-// ══════════════════════════════════════════════════════════════
-// BK CALCULATOR
-// ══════════════════════════════════════════════════════════════
+function renderRecs(recs, area, svcCoef) {
+    const groups = { critical:[], recommended:[], if_needed:[] };
+    recs.forEach(r => { if(groups[r.urgency]) groups[r.urgency].push(r); });
+
+    Object.entries(groups).forEach(([urg, items]) => {
+        const grpEl  = document.getElementById('urg-' + urg);
+        const listEl = document.getElementById('urg-' + urg + '-list');
+        if (!items.length) { grpEl.style.display = 'none'; return; }
+        grpEl.style.display = 'block';
+        listEl.innerHTML = items.map(item => {
+            const price = item.priceFn ? item.priceFn(area, svcCoef) : 0;
+            const chk   = urg === 'critical' ? 'checked' : '';
+            return `<div class="rec-item ${urg}">
+                <input type="checkbox" class="rec-cb" ${chk} data-price="${price}" onchange="updRecTot()">
+                <div>
+                    <div class="rec-name">${item.name} <span class="iw"><span class="ii">?</span><span class="tb">${item.why}</span></span></div>
+                    <div class="rec-price">${price > 0 ? eur(price) + ' + PVN' : 'pēc aprēķina'}</div>
+                    <div class="rec-why">${item.why}</div>
+                    <div class="rec-when"><strong>Kad:</strong> ${item.when_required}</div>
+                </div>
+            </div>`;
+        }).join('');
+    });
+    updRecTot();
+}
+
+function updRecTot() {
+    let t = 0;
+    document.querySelectorAll('.rec-cb:checked').forEach(cb => { t += parseInt(cb.dataset.price)||0; });
+    document.getElementById('rec-total').textContent = eur(t);
+}
+
+/* ─────────────────────────────────────────────
+   BK DATI
+───────────────────────────────────────────── */
 const BK_SYS = {
-    'Siena – vieglbetona bloki':        { c:1.00, u:'m2' },
-    'Siena – koka karkass':             { c:1.10, u:'m2' },
-    'Siena – CLT':                      { c:1.25, u:'m2' },
-    'Jumts – koka spāres':              { c:1.00, u:'m2' },
-    'Jumts – koka kopnes':              { c:1.10, u:'m2' },
-    'Jumts – CLT paneļi':               { c:1.30, u:'m2' },
-    'Grīda/Pārsegums – koka sijas':     { c:1.05, u:'m2' },
-    'Grīda/Pārsegums – CLT paneļi':     { c:0.84, u:'m2' },
-    'Pārsegums – dobie paneļi':         { c:1.10, u:'m2' },
-    'Pārsegums – monolītais betons':    { c:1.20, u:'m2' },
-    'Pamati – lentveidīgi':             { c:1.40, u:'m2' },
-    'Pamati – plāksne':                 { c:1.54, u:'m2' },
-    'Pamati – punktveida':              { c:1.26, u:'m2' },
-    'Sijas – līmsijas':                 { c:0.80, u:'m'  },
-    'Sijas – tērauda sijas':            { c:1.00, u:'m'  },
-    'Aiļu pārsedze – gatavā':           { c:0.50, u:'m2' },
-    'Aiļu pārsedze – monolītā':         { c:0.90, u:'m2' },
-    'Ražotājs – koka karkasi':          { c:1.15, u:'m2' },
-    'Ražotājs – CLT paneļi':            { c:1.25, u:'m2' },
-    'Ražotājs – betona sendvičpaneļi':  { c:1.30, u:'m2' },
+    'Siena – vieglbetona bloki':         { c:1.00, u:'m2' },
+    'Siena – koka karkass':              { c:1.10, u:'m2' },
+    'Siena – CLT':                       { c:1.25, u:'m2' },
+    'Jumts – koka spāres':               { c:1.00, u:'m2' },
+    'Jumts – koka kopnes':               { c:1.10, u:'m2' },
+    'Jumts – CLT paneļi':                { c:1.30, u:'m2' },
+    'Grīda/Pārsegums – koka sijas':      { c:1.05, u:'m2' },
+    'Grīda/Pārsegums – CLT paneļi':      { c:0.84, u:'m2' },
+    'Pārsegums – dobie paneļi':          { c:1.10, u:'m2' },
+    'Pārsegums – monolītais betons':     { c:1.20, u:'m2' },
+    'Pamati – lentveidīgi':              { c:1.40, u:'m2' },
+    'Pamati – plāksne':                  { c:1.54, u:'m2' },
+    'Pamati – punktveida':               { c:1.26, u:'m2' },
+    'Sijas – līmsijas':                  { c:0.80, u:'m'  },
+    'Sijas – tērauda sijas':             { c:1.00, u:'m'  },
+    'Aiļu pārsedze – gatavā':            { c:0.50, u:'m2' },
+    'Aiļu pārsedze – monolītā':          { c:0.90, u:'m2' },
+    'Ražotājs – koka karkasi':           { c:1.15, u:'m2' },
+    'Ražotājs – CLT paneļi':             { c:1.25, u:'m2' },
+    'Ražotājs – betona sendvičpaneļi':   { c:1.30, u:'m2' },
 };
-const BK_RATES = { m2:{ L1:0.5, L2:0.96, L3:1.8 }, m:{ L1:0.3, L2:0.6, L3:1.1 } };
-const BK_AREA_COEF = [[25,1.20],[60,1.10],[100,1.05],[120,1.00],[180,0.95],[250,0.90],[400,0.85]];
+
+const BK_RATES = {
+    m2: { L1:0.5, L2:0.96, L3:1.8 },
+    m:  { L1:0.3, L2:0.6,  L3:1.1 }
+};
+
+// [platības_robeža, koeficients] — pirmā robeža kas >= qty piemērojas
+const BK_AREA_COEF = [
+    [25,  1.20],
+    [60,  1.10],
+    [100, 1.05],
+    [120, 1.00],
+    [180, 0.95],
+    [250, 0.90],
+    [400, 0.85],
+];
+
+// Indekss = slāņu skaits - 1 (maks 6+)
 const BK_SLANI_COEF = [1.0, 0.8, 1.0, 1.1, 1.15, 1.2, 1.25];
-const BK_LEVEL_DESC = {
-    L1: '<strong>L1 BASIC — Standarta BK</strong> (LOD 200–300)<br>Kam: privātmāja vai neliels objekts, minimālais apjoms būvatļaujai.<br>Ietver: slodžu analīze, pamati, nesošo elementu aprēķins, konstrukciju plāni.<br>⚠ Bez detalizētiem mezgliem — būvlaikā var rasties papildu izmaksas.',
-    L2: '<strong>L2 BUILD READY ⭐ — Detalizēts BK</strong> (LOD 300–350)<br>Kam: standarta līmenis reālai būvniecībai. Samazina kļūdu risku būvlaukumā.<br>Ietver: visa L1 + max 5 mezgli, kondensācijas analīze, IFC fails, 1 autoruzraudzības konsultācija.<br>✓ Ieteicams lielākai privātbūvei vai mazam ražošanas objektam.',
-    L3: '<strong>L3 PRO / FACTORY — Pilns BK</strong> (LOD 350–400)<br>Kam: CLT, koka karkasa vai tērauda ražošana, sarežğīti daudzstāvu objekti.<br>Ietver: visa L2 + max 8 mezgli, ražošanas rasējumi, montāžas plāni, OpenCutList, BIM LOD 350+, 2 konsultācijas.',
+
+const BK_LEVEL_EXPLAIN = {
+    L1: '<strong>L1 — Minimālā dokumentācija būvatļaujai.</strong> Klients ietaupa tagad, bet bieži maksā vairāk būvlaikā — jo detaļas nav precizētas.',
+    L2: '<strong>L2 ⭐ — Optimālais variants.</strong> Pietiekami detalizēts lai būvniecība noritētu bez pārsteigumiem. 90% projektu ieteicams tieši šis.',
+    L3: '<strong>L3 — Ražošanas līmeņa dokumentācija.</strong> CLT paneļus, koka karkasas un metāla konstrukcijas taisīt BEZ šī ir riskanti — ražotājam vajag precīzus mērus.',
+};
+
+const BK_CAT_HINTS = {
+    'Siena':      'Vertikālās nesošās konstrukcijas. Cena atkarīga no materiāla sarežģītības (vieglbetona bloki = vienkāršāks, CLT = sarežģītāks).',
+    'Jumts':      'Nesošās jumta konstrukcijas. Kopnes (fabrikā gatavotas) ir lētākas par spārēm (roku darbs).',
+    'Grīda':      'Starpstāvu vai grunts pārseguma konstrukcijas.',
+    'Pārsegums':  'Starpstāvu pārseguma konstrukcijas.',
+    'Pamati':     'Pamatu veids atkarīgs no augsnes un slodzēm. Plāksne ir dārgāka bet stabilāka.',
+    'Sijas':      '⚠️ Mērvienība — METRI (garums), nevis m². Ievadi sijas garumu metros.',
+    'Aiļu':       'Logu/durvju aiļu pārsedze.',
+    'Ražotājs':   'Dokumentācija ražotājam — detalizētākas rasējumu prasības.',
 };
 
 let bkLevel = 'L2';
+let bkItems = [];
 
-function selectLevel(l) {
-    bkLevel = l;
-    ['L1','L2','L3'].forEach(x => {
-        document.getElementById('pill-'+x).classList.toggle('selected', x===l);
-    });
-    document.getElementById('bk-level-desc').innerHTML = BK_LEVEL_DESC[l] || '';
-    document.getElementById('bk-slani-field').style.display = l==='L3' ? 'block' : 'none';
-    calcBK();
-}
-
-function getAreaCoef(a) {
-    for(const[max,c] of BK_AREA_COEF) if(a<=max) return c;
+function bkGetAreaCoef(qty) {
+    for (const [limit, coef] of BK_AREA_COEF) {
+        if (qty <= limit) return coef;
+    }
     return 0.85;
 }
 
-function calcBK() {
-    const sys = document.getElementById('bk-sys').value;
-    const ekasArea = parseFloat(document.getElementById('bk-ekas').value)||0;
-    const daudzums = parseFloat(document.getElementById('bk-daudzums').value)||0;
-    const sarezg = parseFloat(document.getElementById('bk-sarezg').value)||1.10;
-    const steidz = parseFloat(document.getElementById('bk-steidz').value)||1.00;
-    const seg = parseFloat(document.getElementById('bk-seg').value)||1.00;
-    const slani = parseInt(document.getElementById('bk-slani').value)||0;
-    const mezgli = parseInt(document.getElementById('bk-mezgli').value)||0;
+function bkGetSlaniCoef(n) {
+    const idx = Math.min(n - 1, BK_SLANI_COEF.length - 1);
+    return BK_SLANI_COEF[Math.max(0, idx)];
+}
 
-    if(sys && BK_SYS[sys]) {
-        const u = BK_SYS[sys].u;
-        document.getElementById('bk-unit-badge').textContent = u;
-        document.getElementById('bk-unit-note').textContent = u==='m' ? 'm — garums (sijas)' : 'm² — sienas, jumts, pārsegums, pamati';
+function bkSetLevel(lvl) {
+    bkLevel = lvl;
+    ['L1','L2','L3'].forEach(l => {
+        document.getElementById('lvl-'+l).classList.toggle('active', l === lvl);
+    });
+    document.getElementById('bk-level-explain').innerHTML = BK_LEVEL_EXPLAIN[lvl];
+    bkCalc();
+}
+
+function bkGetSysKey() {
+    const sel = document.getElementById('bk-sys');
+    const opt = sel.options[sel.selectedIndex];
+    return opt ? opt.value : null;
+}
+
+function bkCalc() {
+    const sysKey  = bkGetSysKey();
+    const sys     = sysKey ? BK_SYS[sysKey] : null;
+    const qty     = parseFloat(document.getElementById('bk-qty').value) || 0;
+    const slani   = parseInt(document.getElementById('bk-slani').value) || 1;
+    const sarezg  = parseFloat(document.getElementById('bk-sarezg').value) || 1.0;
+    const steidz  = parseFloat(document.getElementById('bk-steidz').value) || 1.0;
+    const seg     = parseFloat(document.getElementById('bk-seg').value) || 1.0;
+    const mezgli  = parseInt(document.getElementById('bk-mezgli').value) || 0;
+
+    if (!sys) return;
+
+    const unit      = sys.u;
+    const sysC      = sys.c;
+    const likme     = BK_RATES[unit][bkLevel];
+    const areaCoef  = (unit === 'm2') ? bkGetAreaCoef(qty) : 1.0;
+    const slaniCoef = bkGetSlaniCoef(slani);
+
+    const cena = 5 * (likme * qty * seg * sysC * areaCoef * slaniCoef * sarezg * steidz) + mezgli * 25;
+
+    // Atjaunina koeficientu displejs
+    document.getElementById('bk-c-area').textContent  = areaCoef.toFixed(2);
+    document.getElementById('bk-c-slani').textContent = slaniCoef.toFixed(2);
+    document.getElementById('bk-c-sarezg').textContent= sarezg.toFixed(2);
+    document.getElementById('bk-c-steidz').textContent= steidz.toFixed(2);
+    document.getElementById('bk-c-sys').textContent   = sysC.toFixed(2);
+    document.getElementById('bk-c-seg').textContent   = seg.toFixed(2);
+    document.getElementById('bk-unit-lbl').textContent= unit;
+
+    // Rezultātu displejs
+    document.getElementById('bk-price').textContent =
+        Math.round(cena).toLocaleString('lv-LV') + ' €';
+    document.getElementById('bk-formula-str').textContent =
+        `5 × (${likme} × ${qty} × ${seg} × ${sysC} × ${areaCoef} × ${slaniCoef} × ${sarezg} × ${steidz}) + ${mezgli}×25`;
+
+    // Piezīme par līmeni
+    const notes = {
+        L1: 'Minimāla dokumentācija — zemākā cena, mazāk detaļu.',
+        L2: '⭐ Ieteicamais variants — optimāls balanss.',
+        L3: 'Ražošanas precizitāte — nepieciešams CLT/karkasu ražotājiem.',
+    };
+    document.getElementById('bk-res-note').textContent = notes[bkLevel];
+
+    // Cat hint
+    const firstWord = sysKey.split('–')[0].trim().split('/')[0].trim().split(' ')[0];
+    let hintText = '';
+    for (const [key, val] of Object.entries(BK_CAT_HINTS)) {
+        if (sysKey.startsWith(key) || firstWord === key) { hintText = val; break; }
     }
-
-    if(ekasArea>0) {
-        const ac = getAreaCoef(ekasArea);
-        const labels = [[25,'0–25 m²'],[60,'26–60 m²'],[100,'61–100 m²'],[120,'101–120 m²'],[180,'121–180 m²'],[250,'181–250 m²'],[400,'251–400 m²']];
-        let lbl = '251–400 m²';
-        for(const[max,l] of labels) if(ekasArea<=max){lbl=l;break;}
-        document.getElementById('bk-area-badge').textContent = '×'+ac.toFixed(2);
-        document.getElementById('bk-area-desc').textContent = lbl+' — apjomatlaide koef. ×'+ac.toFixed(2);
+    if (!hintText) {
+        // Fallback — meklē pēc pirmā vārda
+        for (const [key, val] of Object.entries(BK_CAT_HINTS)) {
+            if (sysKey.includes(key)) { hintText = val; break; }
+        }
     }
+    document.getElementById('bk-cat-hint').textContent = hintText;
+}
 
-    if(!sys||ekasArea<=0||daudzums<=0) {
-        document.getElementById('bk-pe').style.display='block';
-        document.getElementById('bk-pr').style.display='none';
+function bkAddItem() {
+    const sysKey = bkGetSysKey();
+    const sys    = sysKey ? BK_SYS[sysKey] : null;
+    if (!sys) return;
+
+    const qty    = parseFloat(document.getElementById('bk-qty').value) || 0;
+    const slani  = parseInt(document.getElementById('bk-slani').value) || 1;
+    const sarezg = parseFloat(document.getElementById('bk-sarezg').value) || 1.0;
+    const steidz = parseFloat(document.getElementById('bk-steidz').value) || 1.0;
+    const seg    = parseFloat(document.getElementById('bk-seg').value) || 1.0;
+    const mezgli = parseInt(document.getElementById('bk-mezgli').value) || 0;
+
+    const unit      = sys.u;
+    const likme     = BK_RATES[unit][bkLevel];
+    const areaCoef  = (unit === 'm2') ? bkGetAreaCoef(qty) : 1.0;
+    const slaniCoef = bkGetSlaniCoef(slani);
+    const cena      = 5 * (likme * qty * seg * sys.c * areaCoef * slaniCoef * sarezg * steidz) + mezgli * 25;
+
+    bkItems.push({ sysKey, qty, unit, level: bkLevel, cena: Math.round(cena) });
+    bkRenderItems();
+}
+
+function bkRenderItems() {
+    const section = document.getElementById('bk-items-section');
+    const tbody   = document.getElementById('bk-items-tbody');
+    if (!bkItems.length) { section.style.display = 'none'; return; }
+    section.style.display = 'block';
+
+    tbody.innerHTML = bkItems.map((item, i) => `
+        <tr>
+          <td>${item.sysKey}</td>
+          <td>${item.qty} ${item.unit}</td>
+          <td>${item.level}</td>
+          <td class="td-price">${item.cena.toLocaleString('lv-LV')} €</td>
+          <td><button class="bk-remove-btn" onclick="bkRemoveItem(${i})" title="Dzēst">✕</button></td>
+        </tr>
+    `).join('');
+
+    const total = bkItems.reduce((s, it) => s + it.cena, 0);
+    document.getElementById('bk-total-price').textContent =
+        total.toLocaleString('lv-LV') + ' €';
+    document.getElementById('bk-total-pvn').textContent =
+        Math.round(total * 1.20).toLocaleString('lv-LV') + ' €';
+}
+
+function bkRemoveItem(idx) {
+    bkItems.splice(idx, 1);
+    bkRenderItems();
+}
+
+function bkClearItems() {
+    bkItems = [];
+    bkRenderItems();
+}
+
+// Init BK
+document.getElementById('bk-sys').addEventListener('change', bkCalc);
+document.getElementById('bk-qty').addEventListener('input', bkCalc);
+bkCalc();
+
+
+/* ─────────────────────────────────────────────
+   AI KONSULTANTS
+───────────────────────────────────────────── */
+let aiChatHistory = [];
+let aiTyping = false;
+
+const AI_SYSTEM = `Tu esi Volko Engineering projektu konsultants. Toms izmanto šo rīku tikšanās laikā ar klientiem Latvijā. Atbildi LATVISKI, kodolīgi, praktiski. Izmanto punktu sarakstus.
+
+VOLKO PAKALPOJUMI UN CENAS (bez PVN; klientam vienmēr rāda ar 20% uzcenojumu):
+
+AR — ARHITEKTŪRAS PROJEKTS (Toms):
+Bāzes likmes €/m²: Jaunbūve 16-32 | Izmaiņu projekts 9-22 | Rekonstrukcija 14-30 | Vienkāršota atjaunošana 8-21 | Nojaukšana 4-10
+Minimālās: Jaunbūve/Izmaiņu ≤60m²=1700€, 61-100m²=2100€; Rekonstrukcija ≤60m²=2500€, 61-100m²=2900€
+Grupas: I(≤25m²,1st)=koef.×0.75 | II(26-1500m²,≤3st)=×1.20 | III(>1500m² vai ≥4st)=×1.80
+I grupas mazēkas FIKSĒTI: 1-10m²=800€ | 11-15m²=1000€ | 16-20m²=1200€ | 21-25m²=1400€
+Apgrūtinājumi: +10% katrs (NKMP, legalizācija, kopīpašums, robeža<4m, steidzamība)
+Pašvaldību koef. (projekts/pakalpojumi): Rīga=1.20/1.05 | Mārupes u.c.=1.10/1.05 | Jūrmala/Sigulda u.c.=1.00/1.10 | Valmiera u.c.=1.02/1.15 | Liepāja/Ventspils/Daugavpils=1.05/1.20
+
+JAUNBŪVJU PAKETES:
+L1 Standarta: 3100-8900€ — 1×2D+1×3D skice+VR, AR projekts, BK 2D, 1 korekcija
+L2 Uzlabots: 3900-11150€ — 2×3D+VR+izmaksu aprēķins, AR projekts, BK 3D LOD200, 2 korekcijas
+L3 Premium: 6100-17400€ — 3×3D+2×VR, AR projekts, BK 3D LOD300, gandrīz-nulles ES, 3 korekcijas
+
+PAPILDU PAKALPOJUMI (reizina ar pašvaldības svc koef.):
+ESI=950€ | TAA=400€ | NOD=950€ | BK≤100m²=1400€ | BK101-250m²=2000€ | BK251-450m²=3000€ | TI=400€ | EPS=370€ | ELT=350€ | D/V=350€
+
+LEGALIZĀCIJA (patvaļīga, II gr.):
+1. ESI 950€ — pārbauda vai legalizācija vispār iespējama
+2. TAA 400€ — konstruktīvā drošība
+3. Uzmērīšana + rasējumi — precīzi plāni
+4. AR projekts — dokumentācija pašvaldībai
+5. BIS iesniegums — formāls pieteikums
+6. Pašvaldības saskaņošana — 1-3 mēneši
+7. NOD 950€ — nodošana ekspluatācijā
+8. Kadastra/ZG — valsts reģistru atjaunošana
+Kopā II gr. leģ. parasti: 5000-12000€ + 12-36 mēneši. RISKS: atteikums iespējams!
+
+BK — BŪVKONSTRUKCIJAS (Vladimirs):
+Formula: 5 × (likme × daudzums × koeficienti). L1=0.5 vien/m², L2=0.96, L3=1.8
+L1 Basic — minimāli dokumenti | L2 Build Ready ⭐ — ieteicams | L3 Pro/Factory — ražošanai
+
+APGRŪTINĀJUMI:
+NKMP: jāsaskaņo kultūras mantojuma pārvalde — ilgs process, katrai izmaiņai darba uzdevums
+Kopīpašums: VISU līdzīpašnieku rakstiska piekrišana OBLIGĀTA
+Robeža<4m: kaimiņa saskaņojums vai TIAN prasību atbilstība
+Meža zeme: atmežošanas atļauja 3-6 mēn. + kompensācija
+Detālplānojums: 1-3 gadi
+
+JAUTĀ ja nezini — labāk atzīt nezināšanu nekā sniegt neprecīzu info.`;
+
+function renderMd(text) {
+    return text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/^#### (.*)/gm, '<h5 style="margin:.4em 0 .15em;font-size:.85rem;color:var(--navy)">$1</h5>')
+        .replace(/^### (.*)/gm, '<strong style="display:block;margin:.5em 0 .15em">$1</strong>')
+        .replace(/^## (.*)/gm, '<h4 style="margin:.5em 0 .2em;font-size:.9rem;color:var(--navy)">$1</h4>')
+        .replace(/^- (.*)/gm, '<div style="padding:2px 0 2px 12px">• $1</div>')
+        .replace(/^\d+\. (.*)/gm, (m) => `<div style="padding:2px 0 2px 12px">${m}</div>`)
+        .replace(/\n\n/g, '<br><br>')
+        .replace(/\n/g, '<br>');
+}
+
+function aiAppendMsg(role, htmlContent, id) {
+    const win = document.getElementById('ai-chat-window');
+    const div = document.createElement('div');
+    div.className = 'msg ' + role;
+    if (id) div.id = id;
+    div.innerHTML = htmlContent;
+    win.appendChild(div);
+    win.scrollTop = win.scrollHeight;
+    return div;
+}
+
+function aiShowLoading() {
+    return aiAppendMsg('ai',
+        '<div class="loading-dots"><span></span><span></span><span></span></div>',
+        'ai-loading');
+}
+
+function aiRemoveLoading() {
+    const el = document.getElementById('ai-loading');
+    if (el) el.remove();
+}
+
+async function sendToGemini(userMessage) {
+    const apiKey = sessionStorage.getItem('gemini-key');
+    if (!apiKey) { aiShowApiPrompt(); return null; }
+
+    const contents = aiChatHistory.map(m => ({
+        role: m.role,
+        parts: [{ text: m.text }]
+    }));
+    contents.push({ role: 'user', parts: [{ text: userMessage }] });
+
+    const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                system_instruction: { parts: [{ text: AI_SYSTEM }] },
+                contents: contents,
+                generationConfig: { temperature: 0.7, maxOutputTokens: 1024 }
+            })
+        }
+    );
+
+    const data = await response.json();
+    if (data.error) throw new Error(data.error.message);
+    return data.candidates[0].content.parts[0].text;
+}
+
+async function aiSend() {
+    const input = document.getElementById('ai-input');
+    const msg   = input.value.trim();
+    if (!msg || aiTyping) return;
+
+    const apiKey = sessionStorage.getItem('gemini-key');
+    if (!apiKey) {
+        aiShowApiPrompt();
         return;
     }
 
-    const sysData = BK_SYS[sys];
-    const u = sysData.u;
-    const likme = BK_RATES[u][bkLevel];
-    const slaniCoef = BK_SLANI_COEF[Math.min(slani,6)];
-    const areaCoef = getAreaCoef(ekasArea);
+    input.value = '';
+    input.style.height = '44px';
+    aiTyping = true;
+    document.getElementById('ai-send-btn').disabled = true;
 
-    const units = likme * daudzums * seg * sysData.c * areaCoef * slaniCoef * sarezg * steidz;
-    const totalUnits = units + mezgli * 5;
-    const price = 5 * totalUnits;
+    aiAppendMsg('user', msg);
+    aiChatHistory.push({ role: 'user', text: msg });
 
-    const internal = Math.round(price/10)*10;
-    const client = Math.round(internal*1.20/10)*10;
+    aiShowLoading();
 
-    document.getElementById('bk-pe').style.display='none';
-    document.getElementById('bk-pr').style.display='block';
-    document.getElementById('bk-pvc').textContent=eur(client);
-    document.getElementById('bk-pvi').textContent=eur(internal);
+    try {
+        const reply = await sendToGemini(msg);
+        aiRemoveLoading();
+        if (reply) {
+            aiChatHistory.push({ role: 'model', text: reply });
+            aiAppendMsg('ai', renderMd(reply));
+        }
+    } catch(err) {
+        aiRemoveLoading();
+        let errMsg = 'Kļūda: ' + err.message;
+        if (err.message.toLowerCase().includes('api key') ||
+            err.message.toLowerCase().includes('invalid')) {
+            errMsg = '⚠️ Nepareiza API atslēga. Pārbaudi un ievadi atkārtoti.';
+            sessionStorage.removeItem('gemini-key');
+            aiUpdateApiStatus(false);
+            document.getElementById('ai-api-body').style.display = 'block';
+            document.getElementById('ai-api-toggle-icon').textContent = '▲ sakļaut';
+        }
+        aiAppendMsg('error', errMsg);
+    }
 
-    let bh=`<div class="br"><span>Bāzes likme</span><span>5 EUR/vien.</span></div>
-<div class="br"><span>Likme (${bkLevel})</span><span>${likme} vien/${u}</span></div>
-<div class="br"><span>Daudzums</span><span>${daudzums} ${u}</span></div>
-<div class="br"><span>Sistēmas koef.</span><span>×${sysData.c.toFixed(2)}</span></div>
-<div class="br"><span>Apjomatlaide</span><span>×${areaCoef.toFixed(2)}</span></div>
-${bkLevel==='L3'?`<div class="br"><span>Slāņi (${slani})</span><span>×${slaniCoef.toFixed(2)}</span></div>`:''}
-<div class="br"><span>Sarežğītība</span><span>×${sarezg.toFixed(2)}</span></div>
-<div class="br"><span>Steidzamība</span><span>×${steidz.toFixed(2)}</span></div>
-<div class="br"><span>Segments</span><span>×${seg.toFixed(2)}</span></div>
-${mezgli>0?`<div class="br"><span>Papildu mezgli (${mezgli}×25€)</span><span>+${mezgli*25} EUR</span></div>`:''}
-<div class="br tot"><span>Aprēķināts</span><span>${eur(internal)}</span></div>`;
-    document.getElementById('bk-brkd').innerHTML=bh;
-    document.getElementById('bk-hint').innerHTML=`<strong>Piedāvājumā rakstīt:</strong> "no <strong>${client.toLocaleString('lv-LV')}</strong> EUR + PVN" <span style="margin-left:8px;color:#a16207">(rezerve: ${eur(client-internal)})</span>`;
-    document.getElementById('bk-level-desc').innerHTML = BK_LEVEL_DESC[bkLevel]||'';
+    aiTyping = false;
+    document.getElementById('ai-send-btn').disabled = false;
 }
 
-document.getElementById('bk-level-desc').innerHTML = BK_LEVEL_DESC['L2'];
-
-// ── SCOPE TOGGLE ─────────────────────────────────────────────
-function toggleScope() {
-    const w = document.getElementById('scope-table-wrap');
-    const a = document.getElementById('scope-arrow');
-    const vis = w.style.display === 'none';
-    w.style.display = vis ? 'block' : 'none';
-    a.textContent = vis ? '▲' : '▼';
-}
-
-// ══════════════════════════════════════════════════════════════
-// AI KONSULTANTS
-// ══════════════════════════════════════════════════════════════
-const AI_SYSTEM = `Tu esi Volko Engineering projektu konsultants. Toms izmanto šo rīku tikšanās laikā ar klientiem Latvijā. Atbildi latviski, kodolīgi un praktiski.
-
-VOLKO PAKALPOJUMI UN CENAS (bez PVN, klientam rāda ar 20% rezervi):
-
-AR — ARHITEKTŪRAS PROJEKTS:
-Bāzes likmes (€/m²): Jaunbūve 16-32 | Izmaiņu projekts 9-22 | Rekonstrukcija 14-30 | Vienkāršota atj. 8-21 | Nojaukšana 4-10
-Minimālās cenas: Jaunbūve/Izmaiņu ≤60m²=1700€, 61-100m²=2100€; Rekonstrukcija ≤60m²=2500€, 61-100m²=2900€
-Grupas: I(≤25m²,1st)=×0.75, II(26-1500m²,≤3st)=×1.20, III(>1500m² vai ≥4st)=×1.80
-I grupas mazēkas (fiksēti): 1-10m²=800€, 11-15m²=1000€, 16-20m²=1200€, 21-25m²=1400€
-Apgrūtinājumi: +10% katrs (NKMP, legalizācija, kopīpašums, robeža<4m, steidzamība)
-
-JAUNBŪVJU PAKETES:
-L1 Standarta: 3100-8900€ | L2 Uzlabots: 3900-11150€ | L3 Premium: 6100-17400€
-L1: 1×2D+1×3D skice+VR, AR projekts, BK 2D, 1 korekcija
-L2: 2×3D+VR+izmaksu aprēķins, AR projekts, BK 3D LOD200, 2 korekcijas
-L3: 3×3D+2×VR+izmaksu aprēķins, AR projekts, BK 3D LOD300, gandrīz-nulles ES, 3 korekcijas
-
-PAPILDU PAKALPOJUMI (×pašvaldības svc koef.):
-ESI=950€ | TAA=400€ | NOD=950€ | BK≤100m²=1400€ | BK101-250m²=2000€ | BK251-450m²=3000€ | TI=400€ | EPS=370€ | ELT=350€ | D/V=350€
-
-PAŠVALDĪBU KOEF. (projekts / pakalpojumi):
-Rīga: 1.20/1.05 | Mārupes/Ķekavas/Ādažu u.c.: 1.10/1.05 | Jūrmala/Sigulda/Jelgava/Ogre u.c.: 1.00/1.10 | Valmiera/Talsi u.c.: 1.02/1.15 | Liepāja/Ventspils/Daugavpils: 1.05/1.20
-
-LEGALIZĀCIJA:
-Patvaļīga (II gr): ESI+TAA+AR(rekonstrukcija likme)+NOD+kadastra. RISKS: var neatļaut!
-Patvaļīga (I gr): tikai uzmērīšana+apliecinājuma karte+kadastra. ~1-2 mēneši.
-Nereģistrētas izmaiņas: TAA+AR (vai vienkāršotajām tikai paskaidrojuma raksts)
-Funkcijas maiņa: ESI (svarīgi!)+AR+NOD+ZG
-
-APGRŪTINĀJUMU DETAĻAS:
-NKMP: jāsaskaņo ar nacionālo kultūras mantojuma pārvaldi, katrai izmaiņai darba uzdevums
-Kopīpašums: VISU līdzīpašnieku rakstiska piekrišana obligāta
-Robeža<4m: kaimiņa saskaņojums vai TIAN
-Meža zeme: atmežošanas atļauja, 3-6 mēneši
-Detālplānojums: process var ilgt 1-3 gadus
-Legalizācija: risks - var neatļaut, VIENMĒR sākt ar ESI
-
-BK — BŪVKONSTRUKCIJU INŽENIERPROJEKTĒŠANA (Vladimirs):
-L1 Basic: min. dokumentācija būvatļaujai | L2 Build Ready ⭐: ieteicams reālai būvniecībai | L3 Pro/Factory: ražošanai
-Sistēmas: sienas, jumts, pārsegumi, pamati, sijas, aiļu pārsedzes, ražotāja rasējumi
-Nav iekļauts: ģeotehnika, topogrāfija, ražotāja KMD, projekta pārstrāde arhitektūras izmaiņu dēļ`;
-
-let aiHistory = [];
-
-function saveKey() {
-    const k = document.getElementById('ai-key').value.trim();
-    if (k) sessionStorage.setItem('gkey', k);
-}
-
-function toggleKeyVisibility() {
-    const inp = document.getElementById('ai-key');
-    inp.type = inp.type === 'password' ? 'text' : 'password';
-}
-
-// Restore key from session
-window.addEventListener('DOMContentLoaded', () => {
-    const k = sessionStorage.getItem('gkey');
-    if (k) document.getElementById('ai-key').value = k;
-});
-
-function quickAsk(q) {
-    document.getElementById('ai-input').value = q;
-    sendAI();
-}
-
-function autoResize(el) {
-    el.style.height = 'auto';
-    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+function aiQuick(text) {
+    document.getElementById('ai-input').value = text;
+    aiSend();
 }
 
 function aiKeydown(e) {
     if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
-        sendAI();
+        aiSend();
+    }
+    // Auto-resize textarea
+    const ta = document.getElementById('ai-input');
+    setTimeout(() => {
+        ta.style.height = '44px';
+        ta.style.height = Math.min(ta.scrollHeight, 120) + 'px';
+    }, 0);
+}
+
+function aiClearChat() {
+    aiChatHistory = [];
+    const win = document.getElementById('ai-chat-window');
+    win.innerHTML = '<div class="msg ai">Saruna notīrīta. Ko vēlies uzzināt?</div>';
+}
+
+function aiSaveKey() {
+    const val = document.getElementById('ai-api-input').value.trim();
+    if (!val) { aiUpdateApiStatus(false, 'Ievadi atslēgu!'); return; }
+    sessionStorage.setItem('gemini-key', val);
+    document.getElementById('ai-api-input').value = '';
+    aiUpdateApiStatus(true);
+    // Sakļauj joslu pēc saglabāšanas
+    setTimeout(() => {
+        document.getElementById('ai-api-body').style.display = 'none';
+        document.getElementById('ai-api-toggle-icon').textContent = '▼ izvērst';
+    }, 800);
+}
+
+function aiUpdateApiStatus(ok, msg) {
+    const el = document.getElementById('ai-api-status');
+    if (ok) {
+        el.className = 'api-status ok';
+        el.textContent = '✓ Atslēga saglabāta (sesijā)';
+    } else {
+        el.className = 'api-status err';
+        el.textContent = msg || 'Nav ievadīta atslēga';
     }
 }
 
-function addMsg(role, text) {
-    const box = document.getElementById('ai-messages');
-    // Remove empty state
-    const empty = box.querySelector('.ai-empty');
-    if (empty) empty.remove();
-
-    const now = new Date().toLocaleTimeString('lv-LV', { hour:'2-digit', minute:'2-digit' });
-    const div = document.createElement('div');
-    div.className = 'msg ' + role;
-    div.innerHTML = `<div class="msg-bubble">${escHtml(text)}</div><div class="msg-time">${now}</div>`;
-    box.appendChild(div);
-    box.scrollTop = box.scrollHeight;
-    return div;
+function aiShowApiPrompt() {
+    document.getElementById('ai-api-body').style.display = 'block';
+    document.getElementById('ai-api-toggle-icon').textContent = '▲ sakļaut';
+    document.getElementById('ai-api-input').focus();
+    aiUpdateApiStatus(false, '⚠️ Ievadi API atslēgu lai turpinātu');
 }
 
-function addLoading() {
-    const box = document.getElementById('ai-messages');
-    const div = document.createElement('div');
-    div.className = 'ai-loading';
-    div.id = 'ai-loading';
-    div.innerHTML = `<div class="dots"><span></span><span></span><span></span></div><span>Domāju...</span>`;
-    box.appendChild(div);
-    box.scrollTop = box.scrollHeight;
+function aiToggleApiSection() {
+    const body = document.getElementById('ai-api-body');
+    const icon = document.getElementById('ai-api-toggle-icon');
+    const visible = body.style.display !== 'none';
+    body.style.display = visible ? 'none' : 'block';
+    icon.textContent = visible ? '▼ izvērst' : '▲ sakļaut';
 }
 
-function removeLoading() {
-    const el = document.getElementById('ai-loading');
-    if (el) el.remove();
-}
-
-function escHtml(s) {
-    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
-}
-
-async function sendAI() {
-    const inp = document.getElementById('ai-input');
-    const text = inp.value.trim();
-    if (!text) return;
-
-    const key = document.getElementById('ai-key').value.trim() || sessionStorage.getItem('gkey') || '';
-    if (!key) {
-        addMsg('ai', '⚠ Ievadi Gemini API atslēgu laukā augšā. Bezmaksas atslēgu var iegūt: https://aistudio.google.com/apikey');
-        return;
+// Init AI — pārbauda vai atslēga jau saglabāta
+(function aiInit() {
+    const existing = sessionStorage.getItem('gemini-key');
+    if (existing) {
+        aiUpdateApiStatus(true);
+        document.getElementById('ai-api-body').style.display = 'none';
+        document.getElementById('ai-api-toggle-icon').textContent = '▼ izvērst';
     }
+})();
 
-    inp.value = '';
-    inp.style.height = '48px';
-    document.getElementById('ai-send-btn').disabled = true;
-
-    addMsg('user', text);
-    aiHistory.push({ role: 'user', parts: [{ text }] });
-    addLoading();
-
-    try {
-        const body = {
-            system_instruction: { parts: [{ text: AI_SYSTEM }] },
-            contents: aiHistory,
-            generationConfig: { temperature: 0.7, maxOutputTokens: 1024 }
-        };
-
-        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body)
-        });
-
-        removeLoading();
-
-        if (!res.ok) {
-            const err = await res.json().catch(() => ({}));
-            const msg = err?.error?.message || `HTTP ${res.status}`;
-            addMsg('ai', `⚠ Kļūda: ${msg}`);
-            aiHistory.pop();
-        } else {
-            const data = await res.json();
-            const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || '(tukša atbilde)';
-            aiHistory.push({ role: 'model', parts: [{ text: reply }] });
-            addMsg('ai', reply);
-        }
-    } catch (e) {
-        removeLoading();
-        addMsg('ai', `⚠ Savienojuma kļūda: ${e.message}`);
-        aiHistory.pop();
-    }
-
-    document.getElementById('ai-send-btn').disabled = false;
-}
 </script>
 </body>
 </html>
