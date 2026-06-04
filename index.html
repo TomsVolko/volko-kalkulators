@@ -1435,117 +1435,106 @@ const PAKETES_BRACKS = [
     { max:Infinity, L1:8900, L2:11150, L3:17400 },
 ];
 
-const SVC_BASE = {
-    esi:950, taa:400, nod:950, bk_small:1400, bk_mid:2000, bk_large:3000,
-    ti:400, eps:370, elt:350, dv:350,
-};
 
 const RECS = {
     jaunbuve: [
         { id:'bk', name:'BK — Būvkonstrukcijas', urgency:'recommended',
           why:'Vajadzīgs lai aprēķinātu pamatus, jumtu, pārsegumus. Bez BK būvnieks nevar droši celties.',
           when_required:'Obligāts &gt;100 m² vai 2+ stāviem.',
-          priceFn:(a,s)=>r50c( (a<=100?SVC_BASE.bk_small:a<=250?SVC_BASE.bk_mid:SVC_BASE.bk_large)*s*1.20 ) },
+          priceFn:(a,s)=>r50( (a<=100?SVC_BASE.bk_s:a<=250?SVC_BASE.bk_m:SVC_BASE.bk_l)*s*1.20 ) },
         { id:'eps', name:'EPS — Energoefektivitātes pārskats', urgency:'recommended',
           why:'Nepieciešams jaunbūvei ar apkuri. Apliecina enerģijas patēriņu.',
           when_required:'Obligāts jaunbūvēm ar apkuri.',
-          priceFn:(a,s)=>r50c(SVC_BASE.eps*s*1.20) },
+          priceFn:(a,s)=>r50(SVC_BASE.eps*s*1.20) },
         { id:'ti', name:'TI — Topogrāfija', urgency:'if_needed',
           why:'Vajadzīgs ja nav aktuāla topogrāfiskā plāna. Parāda precīzu zemes reljefa info.',
           when_required:'Ja nav aktuāla topogrāfija (vecāka par 3 gadiem).',
-          priceFn:(a,s)=>r50c(SVC_BASE.ti*s*1.20) },
+          priceFn:(a,s)=>r50(SVC_BASE.ti*s*1.20) },
     ],
     izmaiņu: [
         { id:'ti', name:'TI — Topogrāfija', urgency:'if_needed',
           why:'Vajadzīgs ja projekts skar ārējo teritoriju vai fasādi.',
           when_required:'Ja nav aktuāla topogrāfija.',
-          priceFn:(a,s)=>r50c(SVC_BASE.ti*s*1.20) },
+          priceFn:(a,s)=>r50(SVC_BASE.ti*s*1.20) },
     ],
     rekonstrukcija: [
         { id:'taa', name:'TAA — Tehniskā apsekošana', urgency:'recommended',
           why:'Pirms rekonstrukcijas jāzina ēkas faktiskais stāvoklis. Var atklāt slēptas problēmas.',
           when_required:'Ieteicams vienmēr pirms rekonstrukcijas.',
-          priceFn:(a,s)=>r50c(SVC_BASE.taa*s*1.20) },
+          priceFn:(a,s)=>r50(SVC_BASE.taa*s*1.20) },
         { id:'bk', name:'BK — Būvkonstrukcijas', urgency:'if_needed',
           why:'Vajadzīgs ja mainās nesošās konstrukcijas vai apjoms.',
           when_required:'Ja mainās nesošie elementi.',
-          priceFn:(a,s)=>r50c( (a<=100?SVC_BASE.bk_small:a<=250?SVC_BASE.bk_mid:SVC_BASE.bk_large)*s*1.20 ) },
+          priceFn:(a,s)=>r50( (a<=100?SVC_BASE.bk_s:a<=250?SVC_BASE.bk_m:SVC_BASE.bk_l)*s*1.20 ) },
         { id:'eps', name:'EPS — Energoefektivitātes pārskats', urgency:'if_needed',
           why:'Ja rekonstrukcija ietver siltināšanu — var pieprasīt EPS.',
           when_required:'Ja mainās ēkas energoefektivitāte.',
-          priceFn:(a,s)=>r50c(SVC_BASE.eps*s*1.20) },
+          priceFn:(a,s)=>r50(SVC_BASE.eps*s*1.20) },
     ],
     vienk: [
         { id:'eps', name:'EPS — Energoefektivitātes pārskats', urgency:'if_needed',
           why:'Ja pilna ēkas siltināšana — var būt nepieciešams.',
           when_required:'Ja pilna fasāžu siltināšana.',
-          priceFn:(a,s)=>r50c(SVC_BASE.eps*s*1.20) },
+          priceFn:(a,s)=>r50(SVC_BASE.eps*s*1.20) },
     ],
     la: [
         { id:'esi', name:'ESI — Juridiskā esošās situācijas izpēte', urgency:'critical',
           why:'KRITISKS. Bez ESI var iztērēt 5000 EUR uz projektu kas tiks noraidīts. ESI pārbauda vai legalizācija iespējama.',
           when_required:'OBLIGĀTS pirms jebkura darba sākšanas.',
-          priceFn:(a,s)=>r50c(SVC_BASE.esi*s*1.20) },
+          priceFn:(a,s)=>r50(SVC_BASE.esi*s*1.20) },
         { id:'taa', name:'TAA — Tehniskā apsekošana', urgency:'critical',
           why:'Pašvaldība var pieprasīt nojaukšanu ja ēka ir konstruktīvi bīstama. TAA to novērš.',
           when_required:'OBLIGĀTS II un III grupai.',
-          priceFn:(a,s)=>r50c(SVC_BASE.taa*s*1.20) },
+          priceFn:(a,s)=>r50(SVC_BASE.taa*s*1.20) },
         { id:'nod', name:'NOD — Nodošana ekspluatācijā', urgency:'recommended',
           why:'Bez NOD ēka ir "nepabeigta". Banka nedos kredītu! Pēc NOD ēka ir 100% legāla.',
           when_required:'Ieteicams vienmēr — bez NOD process nav pabeigts.',
-          priceFn:(a,s)=>r50c(SVC_BASE.nod*s*1.20) },
+          priceFn:(a,s)=>r50(SVC_BASE.nod*s*1.20) },
         { id:'eps', name:'EPS — Energoefektivitātes pārskats', urgency:'if_needed',
           why:'Dažas pašvaldības pieprasa EPS legalizācijai. Rīgā bieži vajadzīgs II grupas ēkām.',
           when_required:'Atkarīgs no pašvaldības prasībām.',
-          priceFn:(a,s)=>r50c(SVC_BASE.eps*s*1.20) },
+          priceFn:(a,s)=>r50(SVC_BASE.eps*s*1.20) },
     ],
     lbv: [
         { id:'eps', name:'EPS — Energoefektivitātes pārskats', urgency:'if_needed',
           why:'Atkarīgs no izmaiņu apjoma un pašvaldības.',
           when_required:'Ja pašvaldība pieprasa.',
-          priceFn:(a,s)=>r50c(SVC_BASE.eps*s*1.20) },
+          priceFn:(a,s)=>r50(SVC_BASE.eps*s*1.20) },
     ],
     lbp: [
         { id:'taa', name:'TAA — Tehniskā apsekošana', urgency:'recommended',
           why:'Pilnu izmaiņu legalizācijai TAA parāda faktisko stāvokli un novērš turpmākus riskus.',
           when_required:'Ieteicams vienmēr pirms pilnas legalizācijas.',
-          priceFn:(a,s)=>r50c(SVC_BASE.taa*s*1.20) },
+          priceFn:(a,s)=>r50(SVC_BASE.taa*s*1.20) },
         { id:'nod', name:'NOD — Nodošana ekspluatācijā', urgency:'recommended',
           why:'Bez NOD ēka paliek "nepabeigta". Svarīgi ja plāno pārdot vai ieķīlāt.',
           when_required:'Ieteicams II un III grupai.',
-          priceFn:(a,s)=>r50c(SVC_BASE.nod*s*1.20) },
+          priceFn:(a,s)=>r50(SVC_BASE.nod*s*1.20) },
         { id:'eps', name:'EPS — Energoefektivitātes pārskats', urgency:'if_needed',
           why:'Atkarīgs no pašvaldības prasībām.',
           when_required:'Ja pašvaldība pieprasa.',
-          priceFn:(a,s)=>r50c(SVC_BASE.eps*s*1.20) },
+          priceFn:(a,s)=>r50(SVC_BASE.eps*s*1.20) },
     ],
     lc: [
         { id:'esi', name:'ESI — Juridiskā esošās situācijas izpēte', urgency:'critical',
           why:'Funkcijas maiņai ESI ir KRITISKS — jāpārbauda vai jaunā funkcija atļauta šajā zonā. Bez ESI var tikt noraidīts.',
           when_required:'OBLIGĀTS pirms funkcijas maiņas.',
-          priceFn:(a,s)=>r50c(SVC_BASE.esi*s*1.20) },
+          priceFn:(a,s)=>r50(SVC_BASE.esi*s*1.20) },
         { id:'nod', name:'NOD — Nodošana ekspluatācijā', urgency:'recommended',
           why:'Ar jauno funkciju NOD nostiprina izmaiņas ZG. Bez NOD banka neatzīs jauno funkciju.',
           when_required:'Ieteicams vienmēr funkcijas maiņai.',
-          priceFn:(a,s)=>r50c(SVC_BASE.nod*s*1.20) },
+          priceFn:(a,s)=>r50(SVC_BASE.nod*s*1.20) },
         { id:'eps', name:'EPS — Energoefektivitātes pārskats', urgency:'if_needed',
           why:'Ja jaunā funkcija prasa apkuri (piem. saimniecība → dzīvoklis) — EPS var būt obligāts.',
           when_required:'Ja jaunā funkcija prasa apkuri.',
-          priceFn:(a,s)=>r50c(SVC_BASE.eps*s*1.20) },
+          priceFn:(a,s)=>r50(SVC_BASE.eps*s*1.20) },
     ],
 };
 
 // ─── UTIL ─────────────────────────────────────────────────────
-function r50(n) { return Math.round(n / 50) * 50; }
-function r50c(n) { return Math.round(n / 50) * 50; }
-function eur(n) { return n.toLocaleString('lv-LV') + ' EUR'; }
-function isLegal(t) { return ['la','lbv','lbp','lc'].includes(t); }
 
 const R_REKON = [30,28,26,24,22,20,19,18,17,16,14];
 const BRACKS  = [30,60,90,120,150,180,210,240,270,300,Infinity];
-const GC = { I:0.75, II:1.20, III:1.80 };
-function grp(a,f){ if(a<=25&&f<=1)return'I'; if(a>1500||f>=4)return'III'; return'II'; }
-function bi(a){ for(let i=0;i<BRACKS.length;i++)if(a<=BRACKS[i])return i; return BRACKS.length-1; }
 function getPakete(a){ for(const b of PAKETES_BRACKS) if(a<=b.max) return b; return PAKETES_BRACKS[PAKETES_BRACKS.length-1]; }
 function calcLegAR(area, svc){
     const g=grp(area,1), gC=GC[g], rate=R_REKON[bi(area)];
@@ -1556,7 +1545,7 @@ function calcLegAR(area, svc){
 
 // ─── MAIN RENDER ─────────────────────────────────────────────
 // Eksportēts uz index.html kā renderARSection(type, area, svcCoef)
-function renderARSection(type, area, svcCoef) {
+function renderARPanels(type, area, svcCoef) {
     svcCoef = svcCoef || 1.00;
 
     // 1. Jaunbūves paketes
@@ -1584,10 +1573,10 @@ function renderARSection(type, area, svcCoef) {
         lb.classList.add('visible');
         const arInt = calcLegAR(area, svcCoef);
         const arCli = r50(arInt * 1.20);
-        const esiCli = r50c(SVC_BASE.esi * svcCoef * 1.20);
-        const taaCli = r50c(SVC_BASE.taa * svcCoef * 1.20);
-        const nodCli = r50c(SVC_BASE.nod * svcCoef * 1.20);
-        const epsCli = r50c(SVC_BASE.eps * svcCoef * 1.20);
+        const esiCli = r50(SVC_BASE.esi * svcCoef * 1.20);
+        const taaCli = r50(SVC_BASE.taa * svcCoef * 1.20);
+        const nodCli = r50(SVC_BASE.nod * svcCoef * 1.20);
+        const epsCli = r50(SVC_BASE.eps * svcCoef * 1.20);
 
         document.getElementById('leg-a-price').textContent = eur(arCli);
 
