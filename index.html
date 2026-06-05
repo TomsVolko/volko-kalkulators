@@ -845,6 +845,59 @@ body { font-family:-apple-system,'Segoe UI',sans-serif; background:var(--bg); co
 .cl-cat.tehniski{background:#fef9c3;color:#713f12}
 .cl-cat.finanses{background:#f3e8ff;color:#6b21a8}
 .cl-prog{font-size:.72rem;color:var(--muted);margin-top:8px;text-align:right}
+
+/* Improved recommendations section */
+#auto-ieteikumi { display:none }
+#auto-ieteikumi.visible { display:block }
+.rec-section-header {
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:12px;
+}
+.rec-section-title { font-size:.88rem;font-weight:700;color:var(--navy) }
+.rec-section-sub { font-size:.72rem;color:var(--muted) }
+
+/* Better rec item */
+.rec-item {
+  border:1.5px solid var(--border);border-radius:8px;
+  padding:10px 13px;margin-bottom:7px;
+  display:grid;grid-template-columns:20px 1fr auto;
+  gap:10px;align-items:flex-start;
+  transition:all .15s;cursor:pointer;
+}
+.rec-item:hover { border-color:var(--gold);background:#fffbf0; }
+.rec-item.critical { border-color:#fca5a5;background:#fff7f7; }
+.rec-item.recommended { border-color:#fde68a;background:#fffdf7; }
+.rec-item.selected { border-color:var(--navy);background:#f0f4ff; }
+
+.rec-cb { margin-top:2px;width:15px;height:15px;accent-color:var(--navy);cursor:pointer;flex-shrink:0 }
+.rec-body {}
+.rec-name { font-size:.84rem;font-weight:700;color:var(--navy);margin-bottom:2px }
+.rec-why-text { font-size:.72rem;color:var(--muted);line-height:1.4 }
+.rec-when-text { font-size:.66rem;color:var(--muted);margin-top:2px;font-style:italic }
+.rec-price-col { text-align:right;white-space:nowrap;flex-shrink:0 }
+.rec-price-eur { font-size:.82rem;font-weight:700;color:var(--navy) }
+.rec-price-note { font-size:.62rem;color:var(--muted) }
+
+.rec-urgency-badge {
+  display:inline-flex;align-items:center;gap:3px;
+  font-size:.6rem;font-weight:700;letter-spacing:.5px;
+  text-transform:uppercase;padding:1px 7px;border-radius:10px;
+  margin-bottom:3px;
+}
+.urg-critical { background:#fee2e2;color:#991b1b }
+.urg-recommended { background:#fef9c3;color:#713f12 }
+.urg-if_needed { background:#f3f4f6;color:var(--muted) }
+
+.rec-total-bar {
+  background:linear-gradient(135deg,var(--navy),#2d4a6b);
+  border-radius:8px;padding:11px 15px;
+  display:flex;justify-content:space-between;align-items:center;
+  margin-top:12px;
+}
+.rec-total-label { font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.4) }
+.rec-total-int { font-size:.78rem;color:rgba(255,255,255,.5) }
+.rec-total-cli { font-size:1.05rem;font-weight:700;color:var(--gold) }
+.rec-total-note { font-size:.62rem;color:rgba(255,255,255,.3);margin-top:2px }
 </style>
 </head>
 <body>
@@ -1361,10 +1414,17 @@ body { font-family:-apple-system,'Segoe UI',sans-serif; background:var(--bg); co
         <div class="rec-items" id="urg-if_needed-list"></div>
     </div>
 
-    <div class="rec-tot">
-        <div class="rec-tot-lbl">Papildu pakalpojumi (klientam)</div>
-        <div class="rec-tot-val" id="rec-total">0 EUR</div>
+    <div id="rec-total-bar" class="rec-total-bar" style="display:none">
+        <div>
+            <div class="rec-total-label">Papildu pakalpojumi kopā</div>
+            <div class="rec-total-int">Iekšējā: <span id="rec-bar-int">0 EUR</span></div>
+        </div>
+        <div style="text-align:right">
+            <div class="rec-total-cli" id="rec-bar-cli">0 EUR</div>
+            <div class="rec-total-note">klientam · bez PVN</div>
+        </div>
     </div>
+    <span id="rec-total" style="display:none">0 EUR</span>
 </div>
 
 </div><!-- /section-wrap -->
@@ -2461,6 +2521,8 @@ function calcAR(){
     document.getElementById("ar-p-fixed").style.display="none";
     ["jaunbuve-paketes","legalizacija-paketes","auto-ieteikumi"].forEach(id=>{document.getElementById(id).classList.remove("visible");});
     const _pp=document.getElementById("ar-passport");if(_pp)_pp.classList.remove("visible");
+    if(typeof showMuniInfo==="function") showMuniInfo(document.getElementById("ar-muni")?.value||"");
+    if(typeof showPreChecklist==="function") showPreChecklist(type);
     return;
   }
   const g=grp(area,floors);const gCoef=GC[g];
@@ -2496,6 +2558,9 @@ function calcAR(){
   renderARPanels(type,area,muni.s);
   const _mname = document.getElementById("ar-muni").options[document.getElementById("ar-muni").selectedIndex]?.text || "";
   renderPassport(type,area,floors,_mname,muni.s);
+  // Municipality info + pre-checklist
+  if(typeof showMuniInfo==="function") showMuniInfo(document.getElementById("ar-muni").value);
+  if(typeof showPreChecklist==="function") showPreChecklist(type);
 }
 
 function renderSteps(type,g,svcCoef){
@@ -2684,35 +2749,63 @@ function renderARPanels(type, area, svcCoef) {
 }
 
 function renderRecs(recs, area, svcCoef) {
-    const groups = { critical:[], recommended:[], if_needed:[] };
-    recs.forEach(r => { if(groups[r.urgency]) groups[r.urgency].push(r); });
+    const urgOrder = {critical:0, recommended:1, if_needed:2};
+    const sorted = [...recs].sort((a,b) => urgOrder[a.urgency] - urgOrder[b.urgency]);
 
-    Object.entries(groups).forEach(([urg, items]) => {
+    const urgLabels = {
+        critical: '<span class="rec-urgency-badge urg-critical">🔴 KRITISKI</span>',
+        recommended: '<span class="rec-urgency-badge urg-recommended">⭐ IETEICAMS</span>',
+        if_needed: '<span class="rec-urgency-badge urg-if_needed">○ Ja attiecas</span>'
+    };
+
+    ['critical','recommended','if_needed'].forEach(urg => {
         const grpEl  = document.getElementById('urg-' + urg);
         const listEl = document.getElementById('urg-' + urg + '-list');
+        const items  = sorted.filter(r => r.urgency === urg);
         if (!items.length) { grpEl.style.display = 'none'; return; }
         grpEl.style.display = 'block';
         listEl.innerHTML = items.map(item => {
             const price = item.priceFn ? item.priceFn(area, svcCoef) : 0;
-            const chk   = urg === 'critical' ? 'checked' : '';
-            return `<div class="rec-item ${urg}">
-                <input type="checkbox" class="rec-cb" ${chk} data-price="${price}" onchange="updRecTot()">
-                <div>
-                    <div class="rec-name">${item.name} <span class="iw"><span class="ii">?</span><span class="tb">${item.why}</span></span></div>
-                    <div class="rec-price">${price > 0 ? eur(price) + ' + PVN' : 'pēc aprēķina'}</div>
-                    <div class="rec-why">${item.why}</div>
-                    <div class="rec-when"><strong>Kad:</strong> ${item.when_required}</div>
+            const autoCheck = urg === 'critical' ? 'checked' : '';
+            const priceHtml = price > 0
+                ? `<div class="rec-price-eur">${price.toLocaleString('lv-LV')} EUR</div><div class="rec-price-note">+ PVN · klientam</div>`
+                : `<div class="rec-price-note">pēc aprēķina</div>`;
+            return `<label class="rec-item ${urg}">
+                <input type="checkbox" class="rec-cb" ${autoCheck} data-price="${price}" onchange="updRecTot()">
+                <div class="rec-body">
+                    ${urgLabels[urg]}
+                    <div class="rec-name">${item.name}</div>
+                    <div class="rec-why-text">${item.why}</div>
+                    <div class="rec-when-text">📋 ${item.when_required}</div>
                 </div>
-            </div>`;
+                <div class="rec-price-col">${priceHtml}</div>
+            </label>`;
         }).join('');
     });
     updRecTot();
 }
 
 function updRecTot() {
-    let t = 0;
-    document.querySelectorAll('.rec-cb:checked').forEach(cb => { t += parseInt(cb.dataset.price)||0; });
-    document.getElementById('rec-total').textContent = eur(t);
+    let totInt = 0;
+    document.querySelectorAll('.rec-cb:checked').forEach(cb => {
+        totInt += parseInt(cb.dataset.price) || 0;
+    });
+    const totCli = Math.round(totInt * 1.20 / 50) * 50;
+    // Legacy span
+    const el = document.getElementById('rec-total');
+    if (el) el.textContent = eur(totCli);
+    // Total bar
+    const bar = document.getElementById('rec-total-bar');
+    if (!bar) return;
+    if (totInt > 0) {
+        bar.style.display = 'flex';
+        const intEl = document.getElementById('rec-bar-int');
+        const cliEl = document.getElementById('rec-bar-cli');
+        if (intEl) intEl.textContent = eur(totInt);
+        if (cliEl) cliEl.textContent = eur(totCli);
+    } else {
+        bar.style.display = 'none';
+    }
 }
 
 /* ─────────────────────────────────────────────
@@ -4155,15 +4248,7 @@ function updateClProgress() {
   if (prog) prog.textContent = `${done} / ${total} izpildīts`;
 }
 
-// Hook into existing calcAR to call showMuniInfo and showPreChecklist
-const _origCalcAR = calcAR;
-function calcAR() {
-  _origCalcAR();
-  const muniVal = document.getElementById('ar-muni') ? document.getElementById('ar-muni').value : '';
-  const typeVal = document.getElementById('ar-type') ? document.getElementById('ar-type').value : '';
-  showMuniInfo(muniVal);
-  showPreChecklist(typeVal);
-}
+// showMuniInfo + showPreChecklist called directly from calcAR below
 
 // ── NOD TAB JAVASCRIPT ──────────────────────────────────────────
 
