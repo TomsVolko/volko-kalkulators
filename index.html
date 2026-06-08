@@ -2819,6 +2819,7 @@ function calcAR(){
     document.getElementById("ar-fp-note").textContent="Fiksētā cena I grupas mazēkai (≤25m², 1 stāvs). Iekļauj paskaidrojuma rakstu + uzmērīšanu.";
     renderARPanels(type,area,muni.s);
     if(typeof renderSolutionPaths==="function") renderSolutionPaths(type,area,"I",muni.s,fp.cli);
+    document.getElementById("ar-passport")?.classList.remove("visible"); // fiksētai mazēkai pase nav vajadzīga (novērš stale datus)
     return;
   }
   const rKey=isLeg?(LEGAL_RATE[type]||"rekonstrukcija"):type;
@@ -2836,10 +2837,11 @@ function calcAR(){
   document.getElementById("ar-p-fixed").style.display="none";
   document.getElementById("ar-p-client").textContent=eur(totCli);
   document.getElementById("ar-p-int").textContent=eur(totInt);
-  let bh=`<div class="br"><span>Likme (${rKey})</span><span>${rate} €/m²</span></div><div class="br"><span>Platība</span><span>${area} m²</span></div><div class="br"><span>Funkcija</span><span>×${fCoef.toFixed(2)}</span></div><div class="br"><span>Cenu grupa (${gP})</span><span>×${gCoef.toFixed(2)}</span></div><div class="br"><span>Pašvaldība</span><span>×${muni.p.toFixed(2)}</span></div>${encs>0?`<div class="br"><span>Apgrūtinājumi (${encs}×10%)</span><span>×${eCoef.toFixed(2)}</span></div>`:""}<div class="br tot"><span>AR projekts</span><span>${eur(arInt)}</span></div>`;
+  let bh=`<div class="br"><span>Likme (${rKey})</span><span>${rate} €/m²</span></div><div class="br"><span>Platība</span><span>${area} m²</span></div><div class="br"><span>Funkcija</span><span>×${fCoef.toFixed(2)}</span></div><div class="br"><span>Sarežģītība</span><span>×${gCoef.toFixed(2)}</span></div><div class="br"><span>Pašvaldība</span><span>×${muni.p.toFixed(2)}</span></div>${encs>0?`<div class="br"><span>Apgrūtinājumi (${encs}×10%)</span><span>×${eCoef.toFixed(2)}</span></div>`:""}<div class="br tot"><span>AR projekts</span><span>${eur(arInt)}</span></div>`;
   if(svcTot>0){svcs.forEach(s=>{bh+=`<div class="br"><span>+ ${s[0]}</span><span>${eur(r50(s[1]*muni.s))}</span></div>`;});bh+=`<div class="br tot"><span>Kopā (iekšējā)</span><span>${eur(totInt)}</span></div>`;}
   document.getElementById("ar-brkd").innerHTML=bh;
   document.getElementById("ar-hint").innerHTML=`<strong>Piedāvājumā:</strong> "no <strong>${totCli.toLocaleString("lv-LV")}</strong> EUR + PVN" <span style="color:#a16207;margin-left:6px">(rezerve: ${eur(totCli-totInt)})</span>`;
+  window._lastArInt=arInt; // legalizācijas paketes lieto šo pašu AR cenu (konsistencei ar galveno)
   renderARPanels(type,area,muni.s);
   const _mname = document.getElementById("ar-muni-search")?.value || window._arMuniName || "";
   renderPassport(type,area,floors,_mname,muni.s);
@@ -2902,25 +2904,27 @@ function renderSolutionPaths(type, area, g, muniS, baseCli){
   if(!type||!area||area<=0){panel.classList.remove('visible'); return;}
   panel.classList.add('visible');
   muniS=muniS||1.10; baseCli=baseCli||0;
-  const taa=r50(SVC_BASE.taa*muniS*1.20), nod=r50(SVC_BASE.nod*muniS*1.20),
+  const taa=r50(SVC_BASE.taa*muniS*1.20),
         eps=r50(SVC_BASE.eps*muniS*1.20), esi=r50(SVC_BASE.esi*muniS*1.20),
         bk=r50((area<=100?SVC_BASE.bk_s:area<=250?SVC_BASE.bk_m:SVC_BASE.bk_l)*muniS*1.20);
   const isLeg=isLegal(type);
   const needBK=(g!=='I' && area>100);
   const wk=({I:['3–5 ned.','5–8 ned.','6–10 ned.'],II:['1.5–3 mēn.','3–4 mēn.','4–6 mēn.'],III:['3–5 mēn.','5–7 mēn.','6–9 mēn.']})[g]||['1–3 mēn.','3–5 mēn.','5–8 mēn.'];
   const auth=isLeg?'Pašvaldība: bieži 6–18 mēn. (legalizācija)':'Pašvaldība: ~30 darba dienas (likumā fiksēts)';
+  const extras = isLeg ? (esi+taa+eps) : (taa+eps+(needBK?bk:0));
+  const fullInc=[['AR projekts (pilns)',1],[isLeg?'ESI — juridiskā izpēte':'TI + ģeodēzija',1],['TAA — tehniskā apsekošana',1],['EPS — energosertifikāts',1],['BK — būvkonstrukcijas',(needBK||isLeg)?1:0],['NOD — atsevišķi pēc būvniecības (jauns līgums)',0]];
   const variants=[
-    {icon:'⚡',name:'Ātrākais',tag:'Kad termiņš svarīgāks par cenu',
-      price:r50(baseCli*1.15),weeks:wk[0],
-      inc:[['AR projekts (prioritāri)',1],['Mūsu darbs paātrināts',1],[isLeg?'ESI ātrā pārbaude':'Tiešā saskaņošana ar pašvaldību',1],['TAA — tehniskā apsekošana',isLeg?1:0],['NOD — atsevišķi pēc būvniecības (jauns līgums)',0],['EPS — energosertifikāts',0]],
-      who:'Volko dara gandrīz visu paātrināti. Klients tikai paraksta un sagādā ZG izrakstu.'},
+    {icon:'⚡',name:'Ātrākais',tag:'Pilns serviss + prioritāri (visdārgākais)',
+      price:r50((baseCli+extras)*1.15),weeks:wk[0],
+      inc:[['Prioritāra apstrāde — paātrināts',1]].concat(fullInc),
+      who:'Pilns serviss, paātrināti. Volko dara visu, klients tikai paraksta. Maksā par ātrumu.'},
     {icon:'💰',name:'Lētākais',tag:'Minimums, lai dabūtu atļauju',
-      price:baseCli,weeks:wk[1],
-      inc:[['AR projekts (obligātais minimums)',1],[isLeg?'ESI — juridiskā izpēte':'Topogrāfija — klients pasūta pats',isLeg?1:0],['TAA — tehniskā apsekošana',0],['NOD — atsevišķi pēc būvniecības (jauns līgums)',0],['EPS — energosertifikāts',0],['BK — būvkonstrukcijas',0]],
+      price:baseCli,weeks:wk[2],
+      inc:[['AR projekts (obligātais minimums)',1],[isLeg?'ESI — juridiskā izpēte':'Topogrāfija — klients pasūta pats',isLeg?1:0],['TAA — tehniskā apsekošana',0],['EPS — energosertifikāts',0],['BK — būvkonstrukcijas',0],['NOD — atsevišķi pēc būvniecības (jauns līgums)',0]],
       who:'Klients sagādā dokumentus pats (ZG, robežu plāns, TI). Vairāk klienta darba = zemāka cena.'},
-    {icon:'🏆',name:'Pilnīgākais',tag:'Pilns serviss līdz atļaujai',best:true,
-      price:r50(baseCli+(isLeg?esi+taa+eps:taa+(needBK?bk:0))),weeks:wk[2],
-      inc:[['AR projekts (pilns)',1],[isLeg?'ESI — juridiskā izpēte':'TI + ģeodēzija',1],['TAA — tehniskā apsekošana',1],['EPS — energosertifikāts',1],['BK — būvkonstrukcijas',(needBK||isLeg)?1:0],['NOD — atsevišķi pēc būvniecības (jauns līgums)',0]],
+    {icon:'🏆',name:'Pilnīgākais',tag:'Pilns serviss, normāls temps (ieteicams)',best:true,
+      price:r50(baseCli+extras),weeks:wk[1],
+      inc:fullInc,
       who:'Volko ved projektu no A līdz atļaujai — projektēšana + saskaņošana. NOD kārto atsevišķi, kad būve pabeigta.'}
   ];
   document.getElementById('sp-cards').innerHTML=variants.map(v=>{
@@ -3057,7 +3061,7 @@ function _renderARPanelsBase(type, area, svcCoef) {
     const lb = document.getElementById('legalizacija-paketes');
     if (isLegal(type) && area > 0) {
         lb.classList.add('visible');
-        const arInt = calcLegAR(area, svcCoef);
+        const arInt = (typeof window._lastArInt==='number'?window._lastArInt:calcLegAR(area, svcCoef));
         const arCli = r50(arInt * 1.20);
         const esiCli = r50(SVC_BASE.esi * svcCoef * 1.20);
         const taaCli = r50(SVC_BASE.taa * svcCoef * 1.20);
@@ -4404,6 +4408,7 @@ function renderPassport(type, area, floors, muniName, svcCoef) {
     if (data.steps) {
       data.steps.forEach(s => {
         if (s.t && /NOD/i.test(s.t)) return; // NOD netiek iekļauts pirmajā piedāvājumā
+        if (s.price && /nodeva/i.test(s.price)) return; // valsts nodevas rāda atsevišķi (bez uzcenojuma), nedublē
         if (s.price && s.price !== 'Iekļauts' && s.price !== 'Pēc kalkulatora' && s.price !== null && s.price !== 'Nav Volko' && s.price !== 'Atsevišķi') {
           const match = s.price.match(/(\d+)/);
           if (match) costItems.push({ name: s.t, adj: Math.round(parseInt(match[1]) * svcCoef) });
@@ -4444,9 +4449,10 @@ function recalcOffer(){
   const n=parseInt((document.getElementById('pp-bldg-count')||{}).value)||1;
   let perB=0;
   tbl.querySelectorAll('.pp-item-cb:checked').forEach(cb=>{ perB+=parseInt(cb.dataset.price)||0; });
-  const stateFees=350; // vidēji valsts nodevas uz ēku
-  const totalInt=(perB+stateFees)*n;
-  const totalCli=Math.round(totalInt*1.2/50)*50;
+  const stateFees=350*n; // vidēji valsts nodevas uz ēku — pass-through, BEZ 20% uzcenojuma
+  const volkoInt=perB*n;
+  const totalInt=volkoInt+stateFees;
+  const totalCli=Math.round(volkoInt*1.2/50)*50+stateFees; // uzcenojums tikai Volko honorāram, ne valsts nodevām
   const ei=document.getElementById('pp-total-int'); if(ei) ei.textContent='~'+totalInt.toLocaleString('lv-LV')+' EUR';
   const ec=document.getElementById('pp-total-cli'); if(ec) ec.textContent='no '+totalCli.toLocaleString('lv-LV')+' EUR';
   const note=document.getElementById('pp-bldg-note');
