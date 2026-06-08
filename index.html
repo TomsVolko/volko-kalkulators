@@ -1060,14 +1060,22 @@ body { font-family:-apple-system,'Segoe UI',sans-serif; background:var(--bg); co
 .ar-subtab:hover{border-color:var(--gold)}
 .ar-subtab.active{border-color:var(--gold);background:var(--navy);color:var(--gold)}
 @media(max-width:600px){.ar-subtabs{flex-direction:column}}
+.view-toggle{background:#fff;border:1px solid var(--border);border-radius:8px;padding:7px 14px;font-size:.78rem;font-weight:700;color:var(--navy);cursor:pointer;font-family:inherit}
+.view-toggle:hover{border-color:var(--gold)}
+body.consult .cons-hide{display:none!important}
 </style>
 <div class="ar-subtabs">
   <button class="ar-subtab active" onclick="arMode('jaunbuve',this)">🏗 Jaunbūve / jauns projekts</button>
   <button class="ar-subtab" onclick="arMode('legalizacija',this)">⚖️ Legalizācija</button>
 </div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin:-6px 0 14px;gap:10px">
+  <span style="font-size:.72rem;color:var(--muted)">🎯 Konsultācijas skats — rāda tikai būtisko (cena, grupa, piedāvājums, varianti)</span>
+  <button id="view-toggle" class="view-toggle" onclick="toggleView()">📖 Rādīt visu detalizēti</button>
+</div>
+<script>document.body.classList.add('consult');</script>
 
 <!-- ══ IEVADA CEĻVEDIS (redzams pirms izvēles) ══ -->
-<div id="ar-guide" class="card" style="margin-bottom:18px;background:linear-gradient(135deg,var(--navy) 0%,#2d4a6b 100%);color:white;">
+<div id="ar-guide" class="card cons-hide" style="margin-bottom:18px;background:linear-gradient(135deg,var(--navy) 0%,#2d4a6b 100%);color:white;">
   <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;">
     <div style="text-align:center;padding:10px 8px;">
       <div style="font-size:1.6rem;margin-bottom:5px">🏗</div>
@@ -1219,13 +1227,13 @@ body { font-family:-apple-system,'Segoe UI',sans-serif; background:var(--bg); co
     </div>
 
     <!-- Dokumentu saraksts -->
-    <div class="pp-section" id="pp-docs-section">
+    <div class="pp-section cons-hide" id="pp-docs-section">
       <div class="pp-label">📁 Dokumentu pakotne BIS iesniegšanai</div>
       <div class="doc-cols" id="pp-doc-cols"></div>
     </div>
 
     <!-- Soli pa solim -->
-    <div class="pp-section" id="pp-steps-section">
+    <div class="pp-section cons-hide" id="pp-steps-section">
       <div class="pp-label">🗓️ Process soli pa solim</div>
       <div class="timeline-steps" id="pp-timeline"></div>
     </div>
@@ -1251,7 +1259,7 @@ body { font-family:-apple-system,'Segoe UI',sans-serif; background:var(--bg); co
 <div class="section-wrap">
 
 <!-- ══ PIRMS SĀKAM — PĀRBAUDES SARAKSTS (dinamisks pēc projekta tipa) ══ -->
-<div id="ar-pre-checklist" class="pre-checklist" style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px">
+<div id="ar-pre-checklist" class="pre-checklist cons-hide" style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px">
   <div class="card-title">✅ Pirms sākam — pārbaudes saraksts</div>
   <div style="font-size:.76rem;color:var(--muted);margin:-4px 0 12px">Ko pārbaudīt PIRMS projekta sākšanas — lai netērē naudu projektā, kas tiks noraidīts.</div>
   <div class="pre-checklist-body"></div>
@@ -1548,7 +1556,7 @@ body { font-family:-apple-system,'Segoe UI',sans-serif; background:var(--bg); co
 <!-- ══════════════════════════════════════════
      3. AUTO-IETEIKUMI
      ══════════════════════════════════════════ -->
-<div id="auto-ieteikumi" class="card">
+<div id="auto-ieteikumi" class="card cons-hide">
     <div class="card-title">Ieteicamie papildu pakalpojumi</div>
     <p style="font-size:.8rem;color:var(--muted);margin-bottom:16px;">Izvēlies ko iekļaut piedāvājumā. Cenas ar pašvaldības koeficientu un 20% rezervi.</p>
 
@@ -1581,7 +1589,7 @@ body { font-family:-apple-system,'Segoe UI',sans-serif; background:var(--bg); co
 </div>
 
 </div><!-- /section-wrap -->
-<div id="legalizacija-steps" class="card">
+<div id="legalizacija-steps" class="card cons-hide">
 <div class="card-title" id="steps-title">Legalizācijas soļi</div>
 <div class="steps-grid">
 <div><div class="steps-hdr">Darba secība — solis pa solim</div><div id="steps-list"></div></div>
@@ -1640,7 +1648,7 @@ body { font-family:-apple-system,'Segoe UI',sans-serif; background:var(--bg); co
 .ebn-cb.none{background:#f1f5f9;color:#94a3b8}
 .ebn-chip{display:inline-block;font-size:.66rem;background:#f4f5f0;border:1px solid var(--border);border-radius:6px;padding:2px 8px;margin:0 4px 3px 0;color:var(--text)}
 </style>
-<div id="ebn-ref" class="card">
+<div id="ebn-ref" class="card cons-hide">
   <div class="card-title" onclick="toggleEbn()" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center">
     <span>📋 EBN 2026 — ieceres veidi un sastāvs</span>
     <span id="ebn-toggle" style="font-size:.78rem;color:var(--muted);font-weight:400">▼ rādīt</span>
@@ -2717,6 +2725,12 @@ function arMode(mode,btn){
   if(lbl)lbl.textContent=mode==='legalizacija'?'Legalizācijas veids':'Projekta tips — jauns projekts';
   calcAR();
 }
+function toggleView(){
+  document.body.classList.toggle('consult');
+  const consult=document.body.classList.contains('consult');
+  const btn=document.getElementById('view-toggle');
+  if(btn) btn.textContent=consult?'📖 Rādīt visu detalizēti':'🎯 Konsultācijas skats';
+}
 
 const AR_RATES={jaunbuve:[32,30,28,26,24,22,21,20,19,18,16],"izmaiņu":[22,20,18,16,15,14,13,12,11,10,9],rekonstrukcija:[30,28,26,24,22,20,19,18,17,16,14],vienk:[21,19,17,15,14,13,12,11,10,9,8],"nojaukšana":[10,9,8,7,6,5,5,5,4,4,4],tipveida:[14,12,11,10,9,8,7,6,6,6,5]};
 const AR_BRACKS=[30,60,90,120,150,180,210,240,270,300,Infinity];
@@ -2744,6 +2758,8 @@ function grp(a,f,cat){
   // II grupa — viss pārējais (MK 500 1.piel. 2.3.)
   return "II";
 }
+// Cenu grupa = oriģinālā kalkulatora loģika (lai cenas paliek kā oriģinālā). Juridiskā grupa (grp) tikai displejam.
+function grpPrice(a,f){ if(a<=25&&f<=1) return "I"; if(a>1500||f>=4) return "III"; return "II"; }
 function grpExplain(a,f,cat,g){
   if(g==="I") return "Vienstāva ēka, apbūves laukums ≤60 m² (MK 500 1.piel. 2.1.1.). Vienkāršota kārtība — parasti paskaidrojuma raksts vai paziņojums.";
   if(g==="III"){
@@ -2792,8 +2808,8 @@ function calcAR(){
     if(typeof renderSolutionPaths==="function") renderSolutionPaths("",0);
     return;
   }
-  const g=grp(area,floors,cat);const gCoef=GC[g];
-  if(g==="I"&&area<=25&&!isLeg){
+  const g=grp(area,floors,cat);const gP=grpPrice(area,floors);const gCoef=GC[gP];
+  if(gP==="I"&&!isLeg){
     const fp=I_FIXED.find(x=>area<=x.max)||I_FIXED[I_FIXED.length-1];
     document.getElementById("ar-p-empty").style.display="none";
     document.getElementById("ar-p-result").style.display="none";
@@ -2812,7 +2828,7 @@ function calcAR(){
   const minA=AR_MINS[isLeg?type:rKey];
   const minV=minA?(area<=60?minA[0]:minA[1]):0;
   const arInt=r50(Math.max(base,minV));
-  const svcs=isLeg?(LEGAL_SVC[type]?.[g]||LEGAL_SVC[type]?.["II"]||[]):[];
+  const svcs=isLeg?(LEGAL_SVC[type]?.[gP]||LEGAL_SVC[type]?.["II"]||[]):[];
   const svcTot=svcs.reduce((acc,s)=>acc+s[1]*muni.s,0);
   const totInt=arInt+svcTot;const totCli=r50(totInt*1.20);
   document.getElementById("ar-p-empty").style.display="none";
@@ -2820,7 +2836,7 @@ function calcAR(){
   document.getElementById("ar-p-fixed").style.display="none";
   document.getElementById("ar-p-client").textContent=eur(totCli);
   document.getElementById("ar-p-int").textContent=eur(totInt);
-  let bh=`<div class="br"><span>Likme (${rKey})</span><span>${rate} €/m²</span></div><div class="br"><span>Platība</span><span>${area} m²</span></div><div class="br"><span>Funkcija</span><span>×${fCoef.toFixed(2)}</span></div><div class="br"><span>Grupa (${g})</span><span>×${gCoef.toFixed(2)}</span></div><div class="br"><span>Pašvaldība</span><span>×${muni.p.toFixed(2)}</span></div>${encs>0?`<div class="br"><span>Apgrūtinājumi (${encs}×10%)</span><span>×${eCoef.toFixed(2)}</span></div>`:""}<div class="br tot"><span>AR projekts</span><span>${eur(arInt)}</span></div>`;
+  let bh=`<div class="br"><span>Likme (${rKey})</span><span>${rate} €/m²</span></div><div class="br"><span>Platība</span><span>${area} m²</span></div><div class="br"><span>Funkcija</span><span>×${fCoef.toFixed(2)}</span></div><div class="br"><span>Cenu grupa (${gP})</span><span>×${gCoef.toFixed(2)}</span></div><div class="br"><span>Pašvaldība</span><span>×${muni.p.toFixed(2)}</span></div>${encs>0?`<div class="br"><span>Apgrūtinājumi (${encs}×10%)</span><span>×${eCoef.toFixed(2)}</span></div>`:""}<div class="br tot"><span>AR projekts</span><span>${eur(arInt)}</span></div>`;
   if(svcTot>0){svcs.forEach(s=>{bh+=`<div class="br"><span>+ ${s[0]}</span><span>${eur(r50(s[1]*muni.s))}</span></div>`;});bh+=`<div class="br tot"><span>Kopā (iekšējā)</span><span>${eur(totInt)}</span></div>`;}
   document.getElementById("ar-brkd").innerHTML=bh;
   document.getElementById("ar-hint").innerHTML=`<strong>Piedāvājumā:</strong> "no <strong>${totCli.toLocaleString("lv-LV")}</strong> EUR + PVN" <span style="color:#a16207;margin-left:6px">(rezerve: ${eur(totCli-totInt)})</span>`;
@@ -3006,7 +3022,7 @@ const R_REKON = [30,28,26,24,22,20,19,18,17,16,14];
 const BRACKS  = [30,60,90,120,150,180,210,240,270,300,Infinity];
 function getPakete(a){ for(const b of PAKETES_BRACKS) if(a<=b.max) return b; return PAKETES_BRACKS[PAKETES_BRACKS.length-1]; }
 function calcLegAR(area, svc){
-    const g=grp(area,1), gC=GC[g], rate=R_REKON[bi(area)];
+    const g=grpPrice(area,1), gC=GC[g], rate=R_REKON[bi(area)];
     const base=area*rate*gC;
     const minV=area<=60?2500:2900;
     return r50(Math.max(base,minV));
