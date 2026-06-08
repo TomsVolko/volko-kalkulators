@@ -435,6 +435,9 @@ body { font-family:-apple-system,'Segoe UI',sans-serif; background:var(--bg); co
 .cost-table .ct-total { font-weight:800;font-size:.88rem;color:var(--navy) }
 .cost-table .ct-total-price { font-weight:800;font-size:.88rem;color:var(--gold);text-align:right }
 .cost-table tr.sep td { padding-top:8px;border-top:2px solid var(--border) }
+.pp-step { width:26px;height:26px;border:1px solid var(--border);background:#fff;border-radius:6px;font-size:1rem;font-weight:800;color:var(--navy);cursor:pointer;line-height:1;vertical-align:middle }
+.pp-step:hover { border-color:var(--gold);background:#f4f5f0 }
+.pp-item-cb { width:15px;height:15px;cursor:pointer;flex-shrink:0 }
 
 
 /* ── NOD TAB SPECIFIC STYLES ─────────────────────────────────────── */
@@ -4380,48 +4383,31 @@ function renderPassport(type, area, floors, muniName, svcCoef) {
   // Cost table
   const costTable = document.getElementById('pp-cost-table');
   if (costTable) {
-    // Build cost rows based on steps that have prices
+    // Cenu pozīcijas no soļiem ar cenu — NOD izslēgts (atsevišķs līgums pēc būvniecības)
     const costItems = [];
     if (data.steps) {
       data.steps.forEach(s => {
+        if (s.t && /NOD/i.test(s.t)) return; // NOD netiek iekļauts pirmajā piedāvājumā
         if (s.price && s.price !== 'Iekļauts' && s.price !== 'Pēc kalkulatora' && s.price !== null && s.price !== 'Nav Volko' && s.price !== 'Atsevišķi') {
-          // Parse price
           const match = s.price.match(/(\d+)/);
-          if (match) {
-            const base = parseInt(match[1]);
-            const adjusted = Math.round(base * svcCoef);
-            costItems.push({ name: s.t, base: base, adj: adjusted });
-          }
+          if (match) costItems.push({ name: s.t, adj: Math.round(parseInt(match[1]) * svcCoef) });
         }
       });
     }
-
-    // Get AR project price from main calc
     const mainPriceEl = document.getElementById('ar-p-int');
     const mainPrice = mainPriceEl ? mainPriceEl.textContent.replace(/[^\d]/g,'') : '';
-
-    let html = '';
-    if (mainPrice) {
-      html += `<tr><td class="ct-name">AR projekts (Volko)</td><td class="ct-price">${parseInt(mainPrice).toLocaleString('lv-LV')} EUR</td></tr>`;
-    }
-    costItems.forEach(ci => {
-      html += `<tr><td class="ct-name">${ci.name}</td><td class="ct-price">${ci.adj.toLocaleString('lv-LV')} EUR</td></tr>`;
-    });
-
-    // Valsts nodevas
+    const cbRow = (name, price, base) => `<tr><td class="ct-name"><label style="display:flex;gap:7px;align-items:flex-start;cursor:pointer"><input type="checkbox" class="pp-item-cb" data-price="${price}" checked ${base?'data-base="1"':''} onchange="recalcOffer()"><span>${name}</span></label></td><td class="ct-price">${price.toLocaleString('lv-LV')} EUR</td></tr>`;
+    let html = '<tr><td colspan="2" style="font-size:.7rem;color:var(--muted);padding-bottom:4px">Atzīmē, ko iekļaut piedāvājumā:</td></tr>';
+    if (mainPrice) html += cbRow('AR projekts (Volko)', parseInt(mainPrice), true);
+    costItems.forEach(ci => html += cbRow(ci.name, ci.adj, false));
+    html += `<tr><td class="ct-name" style="color:var(--muted)">○ NOD — atsevišķi pēc būvniecības (jauns līgums)</td><td class="ct-price" style="color:var(--muted)">—</td></tr>`;
     html += `<tr><td class="ct-name" style="color:var(--muted)">Valsts nodevas (BIS, kadastra)</td><td class="ct-price" style="color:var(--muted)">~200–500 EUR</td></tr>`;
-
-    // Total
-    let total = mainPrice ? parseInt(mainPrice) : 0;
-    costItems.forEach(ci => total += ci.adj);
-    total += 350; // avg state fees
-
-    html += `<tr class="sep"><td class="ct-total">KOPĀ (iekšējā cena)</td><td class="ct-total-price">~${total.toLocaleString('lv-LV')} EUR</td></tr>`;
-
-    const clientTotal = Math.round(total * 1.2 / 50) * 50;
-    html += `<tr><td class="ct-total" style="color:var(--gold)">Klientam (ar 20% rezervi)</td><td class="ct-total-price" style="color:var(--gold)">no ${clientTotal.toLocaleString('lv-LV')} EUR</td></tr>`;
-
+    html += `<tr class="sep"><td class="ct-name" style="font-weight:700">🏠 Ēku skaits objektā</td><td style="text-align:right;white-space:nowrap"><button type="button" class="pp-step" onclick="bldgStep(-1)">−</button> <span id="pp-bldg-count-lbl" style="font-weight:800;color:var(--navy);display:inline-block;min-width:18px;text-align:center">1</span> <button type="button" class="pp-step" onclick="bldgStep(1)">+</button><input type="hidden" id="pp-bldg-count" value="1"></td></tr>`;
+    html += `<tr><td class="ct-total">KOPĀ (iekšējā cena)</td><td class="ct-total-price" id="pp-total-int">—</td></tr>`;
+    html += `<tr><td class="ct-total" style="color:var(--gold)">Klientam (ar 20% rezervi)</td><td class="ct-total-price" id="pp-total-cli" style="color:var(--gold)">—</td></tr>`;
+    html += `<tr><td colspan="2" id="pp-bldg-note" style="font-size:.68rem;color:var(--muted);display:none"></td></tr>`;
     costTable.innerHTML = html;
+    recalcOffer();
   }
 
   // Risks
@@ -4434,6 +4420,27 @@ function renderPassport(type, area, floors, muniName, svcCoef) {
       </div>
     `).join('');
   }
+}
+
+// Interaktīvais piedāvājums: pārrēķina kopsummu no atzīmētajiem servisiem × ēku skaits
+function recalcOffer(){
+  const tbl=document.getElementById('pp-cost-table'); if(!tbl) return;
+  const n=parseInt((document.getElementById('pp-bldg-count')||{}).value)||1;
+  let perB=0;
+  tbl.querySelectorAll('.pp-item-cb:checked').forEach(cb=>{ perB+=parseInt(cb.dataset.price)||0; });
+  const stateFees=350; // vidēji valsts nodevas uz ēku
+  const totalInt=(perB+stateFees)*n;
+  const totalCli=Math.round(totalInt*1.2/50)*50;
+  const ei=document.getElementById('pp-total-int'); if(ei) ei.textContent='~'+totalInt.toLocaleString('lv-LV')+' EUR';
+  const ec=document.getElementById('pp-total-cli'); if(ec) ec.textContent='no '+totalCli.toLocaleString('lv-LV')+' EUR';
+  const note=document.getElementById('pp-bldg-note');
+  if(note){ if(n>1){ note.style.display=''; note.textContent='Aprēķins '+n+' vienādām ēkām (×'+n+'). Dažāda izmēra ēkām — rēķini katru atsevišķi.'; } else { note.style.display='none'; } }
+}
+function bldgStep(d){
+  const inp=document.getElementById('pp-bldg-count'); if(!inp) return;
+  let n=(parseInt(inp.value)||1)+d; if(n<1)n=1; if(n>20)n=20;
+  inp.value=n; const lbl=document.getElementById('pp-bldg-count-lbl'); if(lbl) lbl.textContent=n;
+  recalcOffer();
 }
 
 
