@@ -1050,6 +1050,19 @@ body { font-family:-apple-system,'Segoe UI',sans-serif; background:var(--bg); co
 <div id="tab-ar" class="tab-panel active">
 <div class="mw">
 
+<!-- ══ AR APAKŠTABAS: Jaunbūve / Legalizācija ══ -->
+<style>
+.ar-subtabs{display:flex;gap:10px;margin-bottom:18px}
+.ar-subtab{flex:1;padding:14px;border:2px solid var(--border);background:#fff;border-radius:10px;font-size:.92rem;font-weight:800;color:var(--muted);cursor:pointer;font-family:inherit;transition:all .15s}
+.ar-subtab:hover{border-color:var(--gold)}
+.ar-subtab.active{border-color:var(--gold);background:var(--navy);color:var(--gold)}
+@media(max-width:600px){.ar-subtabs{flex-direction:column}}
+</style>
+<div class="ar-subtabs">
+  <button class="ar-subtab active" onclick="arMode('jaunbuve',this)">🏗 Jaunbūve / jauns projekts</button>
+  <button class="ar-subtab" onclick="arMode('legalizacija',this)">⚖️ Legalizācija</button>
+</div>
+
 <!-- ══ IEVADA CEĻVEDIS (redzams pirms izvēles) ══ -->
 <div id="ar-guide" class="card" style="margin-bottom:18px;background:linear-gradient(135deg,var(--navy) 0%,#2d4a6b 100%);color:white;">
   <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;">
@@ -1083,23 +1096,14 @@ body { font-family:-apple-system,'Segoe UI',sans-serif; background:var(--bg); co
 <div>
 <div class="card">
 <div class="card-title">Ēkas parametri</div>
-<div class="field"><label class="lbl">Projekta tips</label>
+<div class="field"><label class="lbl" id="ar-type-lbl">Projekta tips — jauns projekts</label>
 <select id="ar-type" onchange="calcAR()">
-<option value="">— izvēlēties —</option>
-<optgroup label="Jauns projekts">
 <option value="jaunbuve">Jaunbūve</option>
 <option value="izmaiņu">Izmaiņu projekts</option>
 <option value="rekonstrukcija">Rekonstrukcija / pārbūve</option>
 <option value="vienk">Vienkāršota atjaunošana</option>
 <option value="nojaukšana">Nojaukšanas projekts</option>
 <option value="tipveida">Tipveida projekts</option>
-</optgroup>
-<optgroup label="Legalizācija">
-<option value="la">Patvaļīga būvniecība</option>
-<option value="lbv">Nereģistrētas izmaiņas — vienkāršotas</option>
-<option value="lbp">Nereģistrētas izmaiņas — pilnas</option>
-<option value="lc">Funkcijas maiņa</option>
-</optgroup>
 </select>
 <div class="info-card" id="ar-info-card"></div>
 </div>
@@ -1439,7 +1443,7 @@ body { font-family:-apple-system,'Segoe UI',sans-serif; background:var(--bg); co
             <div class="leg-price-box">
                 <div class="leg-price-lbl">Klientam (aprēķināts)</div>
                 <div class="leg-price-val" id="leg-b-price">—</div>
-                <div class="leg-price-note">ESI + TAA + AR + BIS + NOD + Kadastra</div>
+                <div class="leg-price-note">ESI + TAA + AR + BIS + Kadastra</div>
             </div>
             <ul class="leg-includes">
                 <li><span class="pf-check-g">✓</span><span>ESI — Juridiskā esošās situācijas izpēte</span></li>
@@ -1447,8 +1451,8 @@ body { font-family:-apple-system,'Segoe UI',sans-serif; background:var(--bg); co
                 <li><span class="pf-check-g">✓</span><span>Uzmērīšana (esošais stāvoklis)</span></li>
                 <li><span class="pf-check-g">✓</span><span>AR projekts (legalizācijai)</span></li>
                 <li><span class="pf-check-g">✓</span><span>BIS iesniegums + pašvaldības saskaņošana</span></li>
-                <li><span class="pf-check-g">✓</span><span>NOD — Nodošana ekspluatācijā</span></li>
                 <li><span class="pf-check-g">✓</span><span>Kadastra uzmērīšana + ZG nostiprināšana</span></li>
+                <li><span style="color:var(--muted)">○</span><span style="color:var(--muted)">NOD — atsevišķi pēc būvniecības (jauns līgums)</span></li>
             </ul>
             <div class="leg-adv">
                 <strong>Pilna aizsardzība</strong>
@@ -1615,6 +1619,7 @@ body { font-family:-apple-system,'Segoe UI',sans-serif; background:var(--bg); co
 <div id="ar-solution-paths" class="card sp-card">
   <div class="card-title">🛣 Risinājuma ceļi — 3 varianti</div>
   <div class="sp-sub">Viens mērķis, trīs pieejas. Klients izvēlas pēc budžeta un steidzamības.</div>
+  <div style="font-size:.72rem;color:#a16207;background:#fffbf0;border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:6px;padding:8px 11px;margin-bottom:12px">ℹ️ <strong>NOD (nodošana ekspluatācijā) netiek iekļauta pirmajā līgumā.</strong> To kārto atsevišķi, kad būve pabeigta — klients nāk atpakaļ pie mums.</div>
   <div id="sp-cards" class="sp-grid"></div>
 </div>
 </div>
@@ -2656,12 +2661,29 @@ document.getElementById("pi").addEventListener("keydown",e=>{if(e.key==="Enter")
 if(sessionStorage.getItem("va")){document.getElementById("lock").style.display="none";document.getElementById("app").style.display="block";}
 function switchTab(id,btn){document.querySelectorAll(".tab-panel").forEach(t=>t.classList.remove("active"));document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));document.getElementById("tab-"+id).classList.add("active");btn.classList.add("active");}
 
+// AR apakštaba: Jaunbūve (jauns projekts) / Legalizācija — filtrē projekta tipu sarakstu
+const AR_TYPES_NEW='<option value="jaunbuve">Jaunbūve</option><option value="izmaiņu">Izmaiņu projekts</option><option value="rekonstrukcija">Rekonstrukcija / pārbūve</option><option value="vienk">Vienkāršota atjaunošana</option><option value="nojaukšana">Nojaukšanas projekts</option><option value="tipveida">Tipveida projekts</option>';
+const AR_TYPES_LEG='<option value="la">Patvaļīga būvniecība</option><option value="lbv">Nereģistrētas izmaiņas — vienkāršotas</option><option value="lbp">Nereģistrētas izmaiņas — pilnas</option><option value="lc">Funkcijas maiņa</option>';
+window._arMode='jaunbuve';
+function arMode(mode,btn){
+  window._arMode=mode;
+  document.querySelectorAll(".ar-subtab").forEach(b=>b.classList.remove("active"));
+  if(btn)btn.classList.add("active");
+  const sel=document.getElementById("ar-type");
+  sel.innerHTML=mode==='legalizacija'?AR_TYPES_LEG:AR_TYPES_NEW;
+  sel.value=mode==='legalizacija'?'la':'jaunbuve';
+  const lbl=document.getElementById("ar-type-lbl");
+  if(lbl)lbl.textContent=mode==='legalizacija'?'Legalizācijas veids':'Projekta tips — jauns projekts';
+  calcAR();
+}
+
 const AR_RATES={jaunbuve:[32,30,28,26,24,22,21,20,19,18,16],"izmaiņu":[22,20,18,16,15,14,13,12,11,10,9],rekonstrukcija:[30,28,26,24,22,20,19,18,17,16,14],vienk:[21,19,17,15,14,13,12,11,10,9,8],"nojaukšana":[10,9,8,7,6,5,5,5,4,4,4],tipveida:[14,12,11,10,9,8,7,6,6,6,5]};
 const AR_BRACKS=[30,60,90,120,150,180,210,240,270,300,Infinity];
 const AR_MINS={jaunbuve:[1700,2100],"izmaiņu":[1700,2100],rekonstrukcija:[2500,2900],la:[2500,2900],lbp:[2500,2900]};
 const GC={I:0.75,II:1.20,III:1.80};
 const LEGAL_RATE={la:"rekonstrukcija",lbv:"vienk",lbp:"rekonstrukcija",lc:"rekonstrukcija"};
-const LEGAL_SVC={la:{I:[],II:[["ESI",950],["TAA",400],["NOD",950]],III:[["ESI",950],["TAA",400],["NOD",950]]},lbv:{I:[],II:[],III:[]},lbp:{I:[["TAA",400]],II:[["TAA",400],["NOD",950]],III:[["TAA",400],["NOD",950]]},lc:{I:[["ESI",950],["NOD",950]],II:[["ESI",950],["NOD",950]],III:[["ESI",950],["NOD",950]]}};
+// NOD (nodošana ekspluatācijā) NETIEK iekļauta pirmajā līgumā — atsevišķs līgums pēc būvniecības
+const LEGAL_SVC={la:{I:[],II:[["ESI",950],["TAA",400]],III:[["ESI",950],["TAA",400]]},lbv:{I:[],II:[],III:[]},lbp:{I:[["TAA",400]],II:[["TAA",400]],III:[["TAA",400]]},lc:{I:[["ESI",950]],II:[["ESI",950]],III:[["ESI",950]]}};
 const I_FIXED=[{max:10,int:667,cli:800},{max:15,int:833,cli:1000},{max:20,int:1000,cli:1200},{max:25,int:1167,cli:1400}];
 const SVC_BASE={esi:950,taa:400,nod:950,bk_s:1400,bk_m:2000,bk_l:3000,ti:400,eps:370,elt:350,dv:350};
 const TYPE_INFO={jaunbuve:{icon:"🏗",title:"Jaunbūve",what:"Pilnīgi jauna ēka uz brīvas zemes.",permit:"Paskaidrojuma raksts (<200m²) vai Būvatļauja (≥200m²)",time:"6–18 mēneši",risks:"Pārbaudi TIAN — vai zonā drīkst celt! Inženiertīklu pieslēgumi.",tip:"Pirms sāc — pasūti zemes robežu plānu un TIAN no pašvaldības."},"izmaiņu":{icon:"✏️",title:"Izmaiņu projekts",what:"Esošas ēkas daļējas izmaiņas. Apjoms nemainās.",permit:"Paskaidrojuma raksts vai Apliecinājuma karte",time:"3–9 mēneši",risks:"Kultūrvēsturiska ēka → NKMP obligāta!",tip:"Izmanto fasādes atjaunošanai vai logu maiņai."},rekonstrukcija:{icon:"🔨",title:"Rekonstrukcija",what:"Pilna pārbūve — var mainīt apjomu, stāvus, funkciju.",permit:"Būvatļauja (sarežģītākai) vai Paskaidrojuma raksts",time:"6–18 mēneši",risks:"Pārbaudi patvaļīgu būvniecību! Kopīpašumā — visu piekrišana.",tip:"I grupas mazēkā (≤25m²) — rekonstrukcija vienkāršāka."},vienk:{icon:"🎨",title:"Vienkāršota atjaunošana",what:"Fasādes siltināšana, pārplānošana BEZ nesošo konstrukciju skaršanas.",permit:"Paskaidrojuma raksts",time:"2–6 mēneši",risks:"Nedrīkst skart nesošās konstrukcijas!",tip:"Lētākais veids kā legāli uzlabot ēku."},"nojaukšana":{icon:"🏚",title:"Nojaukšanas projekts",what:"Reģistrētas ēkas likumīga nojaukšana.",permit:"Apliecinājuma karte",time:"2–6 mēneši",risks:"Pārbaudi inženiertīklus pirms nojaukšanas!",tip:"Pēc nojaukšanas — obligāti jāatjaunina kadastra dati."},tipveida:{icon:"📋",title:"Tipveida projekts",what:"Atkārtoti izmantojams projekts vairākām ēkām.",permit:"Atkarīgs no ēkas",time:"3–9 mēneši (1.reizei)",risks:"Katrai izmantošanai vajag pielāgojumu.",tip:"Ekonomisks ja plāno vairākas vienādas ēkas."},la:{icon:"⚠️",title:"Legalizācija — Patvaļīga būvniecība",what:"Ēka uzcelta BEZ atļaujas. Dokumentācija jāsakārto PĒC.",permit:"Apliecinājuma karte (I gr.) vai Būvatļauja (II/III gr.)",time:"12–36 mēneši",risks:"RISKS: pašvaldība VAR ATTEIKT — tad ēka jānojauc!",tip:"OBLIGĀTI sāc ar ESI — bez tās var iztērēt 3000€ projektā kas tiks noraidīts."},lbv:{icon:"📝",title:"Legalizācija — Nereģistrētas izmaiņas (vienkāršotas)",what:"Nelielas izmaiņas veiktas, bet BIS nav reģistrētas.",permit:"Paskaidrojuma raksts",time:"2–6 mēneši",risks:"Pārbaudi vai izmaiņas neskar nesošās konstrukcijas.",tip:"Vienkāršākais legalizācijas veids."},lbp:{icon:"🔧",title:"Legalizācija — Nereģistrētas izmaiņas (pilnas)",what:"Nozīmīgas izmaiņas nav reģistrētas BIS.",permit:"Pārbūves atļauja vai Apliecinājuma karte",time:"6–18 mēneši",risks:"TAA var atklāt konstruktīvus trūkumus!",tip:"Atšķirībā no vienkāršotajām — vajag pilnu projektu."},lc:{icon:"🔄",title:"Legalizācija — Funkcijas maiņa",what:"Lietošanas veids mainās (piem. saimniecības → dzīvojamā).",permit:"Pārbūves atļauja ar funkcijas maiņu",time:"9–18 mēneši",risks:"ESI KRITISKA — ja zona neatļauj jauno funkciju, process apstājas!",tip:"Vienmēr sāc ar ESI."}};
@@ -2833,16 +2855,16 @@ function renderSolutionPaths(type, area, g, muniS, baseCli){
   const variants=[
     {icon:'⚡',name:'Ātrākais',tag:'Kad termiņš svarīgāks par cenu',
       price:r50(baseCli*1.15),weeks:wk[0],
-      inc:[['AR projekts (prioritāri)',1],['Mūsu darbs paātrināts',1],[isLeg?'ESI ātrā pārbaude':'Tiešā saskaņošana ar pašvaldību',1],['TAA — tehniskā apsekošana',isLeg?1:0],['NOD — nodošana ekspluatācijā',0],['EPS — energosertifikāts',0]],
+      inc:[['AR projekts (prioritāri)',1],['Mūsu darbs paātrināts',1],[isLeg?'ESI ātrā pārbaude':'Tiešā saskaņošana ar pašvaldību',1],['TAA — tehniskā apsekošana',isLeg?1:0],['NOD — atsevišķi pēc būvniecības (jauns līgums)',0],['EPS — energosertifikāts',0]],
       who:'Volko dara gandrīz visu paātrināti. Klients tikai paraksta un sagādā ZG izrakstu.'},
     {icon:'💰',name:'Lētākais',tag:'Minimums, lai dabūtu atļauju',
       price:baseCli,weeks:wk[1],
-      inc:[['AR projekts (obligātais minimums)',1],[isLeg?'ESI — juridiskā izpēte':'Topogrāfija — klients pasūta pats',isLeg?1:0],['TAA — tehniskā apsekošana',0],['NOD — nodošana ekspluatācijā',0],['EPS — energosertifikāts',0],['BK — būvkonstrukcijas',0]],
+      inc:[['AR projekts (obligātais minimums)',1],[isLeg?'ESI — juridiskā izpēte':'Topogrāfija — klients pasūta pats',isLeg?1:0],['TAA — tehniskā apsekošana',0],['NOD — atsevišķi pēc būvniecības (jauns līgums)',0],['EPS — energosertifikāts',0],['BK — būvkonstrukcijas',0]],
       who:'Klients sagādā dokumentus pats (ZG, robežu plāns, TI). Vairāk klienta darba = zemāka cena.'},
-    {icon:'🏆',name:'Pilnīgākais',tag:'Pilns serviss bez pārsteigumiem',best:true,
-      price:r50(baseCli+(isLeg?esi+taa+nod+eps:taa+nod+(needBK?bk:0))),weeks:wk[2],
-      inc:[['AR projekts (pilns)',1],[isLeg?'ESI — juridiskā izpēte':'TI + ģeodēzija',1],['TAA — tehniskā apsekošana',1],['NOD — nodošana ekspluatācijā',1],['EPS — energosertifikāts',1],['BK — būvkonstrukcijas',(needBK||isLeg)?1:0]],
-      who:'Volko ved projektu no A līdz Z — projektēšana, saskaņošana, nodošana. Klients tikai izvēlas.'}
+    {icon:'🏆',name:'Pilnīgākais',tag:'Pilns serviss līdz atļaujai',best:true,
+      price:r50(baseCli+(isLeg?esi+taa+eps:taa+(needBK?bk:0))),weeks:wk[2],
+      inc:[['AR projekts (pilns)',1],[isLeg?'ESI — juridiskā izpēte':'TI + ģeodēzija',1],['TAA — tehniskā apsekošana',1],['EPS — energosertifikāts',1],['BK — būvkonstrukcijas',(needBK||isLeg)?1:0],['NOD — atsevišķi pēc būvniecības (jauns līgums)',0]],
+      who:'Volko ved projektu no A līdz atļaujai — projektēšana + saskaņošana. NOD kārto atsevišķi, kad būve pabeigta.'}
   ];
   document.getElementById('sp-cards').innerHTML=variants.map(v=>{
     const items=v.inc.filter(x=>x[0]).map(x=>`<li class="${x[1]?'':'no'}">${x[0]}</li>`).join('');
@@ -2922,10 +2944,6 @@ const RECS = {
           why:'Pašvaldība var pieprasīt nojaukšanu ja ēka ir konstruktīvi bīstama. TAA to novērš.',
           when_required:'OBLIGĀTS II un III grupai.',
           priceFn:(a,s)=>r50(SVC_BASE.taa*s*1.20) },
-        { id:'nod', name:'NOD — Nodošana ekspluatācijā', urgency:'recommended',
-          why:'Bez NOD ēka ir "nepabeigta". Banka nedos kredītu! Pēc NOD ēka ir 100% legāla.',
-          when_required:'Ieteicams vienmēr — bez NOD process nav pabeigts.',
-          priceFn:(a,s)=>r50(SVC_BASE.nod*s*1.20) },
         { id:'eps', name:'EPS — Energoefektivitātes pārskats', urgency:'if_needed',
           why:'Dažas pašvaldības pieprasa EPS legalizācijai. Rīgā bieži vajadzīgs II grupas ēkām.',
           when_required:'Atkarīgs no pašvaldības prasībām.',
@@ -2942,10 +2960,6 @@ const RECS = {
           why:'Pilnu izmaiņu legalizācijai TAA parāda faktisko stāvokli un novērš turpmākus riskus.',
           when_required:'Ieteicams vienmēr pirms pilnas legalizācijas.',
           priceFn:(a,s)=>r50(SVC_BASE.taa*s*1.20) },
-        { id:'nod', name:'NOD — Nodošana ekspluatācijā', urgency:'recommended',
-          why:'Bez NOD ēka paliek "nepabeigta". Svarīgi ja plāno pārdot vai ieķīlāt.',
-          when_required:'Ieteicams II un III grupai.',
-          priceFn:(a,s)=>r50(SVC_BASE.nod*s*1.20) },
         { id:'eps', name:'EPS — Energoefektivitātes pārskats', urgency:'if_needed',
           why:'Atkarīgs no pašvaldības prasībām.',
           when_required:'Ja pašvaldība pieprasa.',
@@ -2956,10 +2970,6 @@ const RECS = {
           why:'Funkcijas maiņai ESI ir KRITISKS — jāpārbauda vai jaunā funkcija atļauta šajā zonā. Bez ESI var tikt noraidīts.',
           when_required:'OBLIGĀTS pirms funkcijas maiņas.',
           priceFn:(a,s)=>r50(SVC_BASE.esi*s*1.20) },
-        { id:'nod', name:'NOD — Nodošana ekspluatācijā', urgency:'recommended',
-          why:'Ar jauno funkciju NOD nostiprina izmaiņas ZG. Bez NOD banka neatzīs jauno funkciju.',
-          when_required:'Ieteicams vienmēr funkcijas maiņai.',
-          priceFn:(a,s)=>r50(SVC_BASE.nod*s*1.20) },
         { id:'eps', name:'EPS — Energoefektivitātes pārskats', urgency:'if_needed',
           why:'Ja jaunā funkcija prasa apkuri (piem. saimniecība → dzīvoklis) — EPS var būt obligāts.',
           when_required:'Ja jaunā funkcija prasa apkuri.',
@@ -3012,15 +3022,15 @@ function _renderARPanelsBase(type, area, svcCoef) {
         const arCli = r50(arInt * 1.20);
         const esiCli = r50(SVC_BASE.esi * svcCoef * 1.20);
         const taaCli = r50(SVC_BASE.taa * svcCoef * 1.20);
-        const nodCli = r50(SVC_BASE.nod * svcCoef * 1.20);
         const epsCli = r50(SVC_BASE.eps * svcCoef * 1.20);
+        // NOD NETIEK iekļauta pirmajā līgumā — atsevišķs līgums pēc būvniecības
 
         document.getElementById('leg-a-price').textContent = eur(arCli);
 
-        const bCli = r50((SVC_BASE.esi + SVC_BASE.taa + SVC_BASE.nod) * svcCoef * 1.20) + arCli;
+        const bCli = r50((SVC_BASE.esi + SVC_BASE.taa) * svcCoef * 1.20) + arCli;
         document.getElementById('leg-b-price').textContent = eur(bCli);
 
-        const cBase = ((SVC_BASE.esi + SVC_BASE.taa + SVC_BASE.nod) * svcCoef + arInt) * 1.15;
+        const cBase = ((SVC_BASE.esi + SVC_BASE.taa) * svcCoef + arInt) * 1.15;
         const cCli  = r50(cBase * 1.20) + epsCli;
         document.getElementById('leg-c-price').textContent = eur(cCli);
     } else {
@@ -3415,6 +3425,7 @@ BIS SISTĒMA (bis.gov.lv):
 
 NOD (Nodošana ekspluatācijā) — SVARĪGI:
 Bez NOD ēka juridiski ir "būvniecībā" neatkarīgi no fiziskā stāvokļa.
+VOLKO POLITIKA: NOD NETIEK iekļauta pirmajā līgumā/piedāvājumā. NOD kārto atsevišķi, kad būve fiziski pabeigta — klients nāk atpakaļ pie Volko ar jaunu līgumu. Pirmajā līgumā ir tikai projektēšana + saskaņošana līdz atļaujai.
 
 Sekas BEZ NOD:
 - Kadastrā = "nepabeigta/būvniecībā"
