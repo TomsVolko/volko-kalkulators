@@ -1422,7 +1422,7 @@ body { font-family:-apple-system,'Segoe UI',sans-serif; background:var(--bg); co
             <ul class="leg-includes">
                 <li><span class="pf-check-g">✓</span><span>Uzmērīšana (esošais stāvoklis)</span></li>
                 <li><span class="pf-check-g">✓</span><span>AR projekts (legalizācijai)</span></li>
-                <li><span class="pf-check-g">✓</span><span>BIS iesniegums (apliecinājuma karte)</span></li>
+                <li><span class="pf-check-g">✓</span><span>BIS iesniegums (paskaidrojuma raksts)</span></li>
             </ul>
             <div class="leg-risk">
                 <strong>RISKI</strong>
@@ -1535,7 +1535,7 @@ body { font-family:-apple-system,'Segoe UI',sans-serif; background:var(--bg); co
             <li>Būvatļauja derīga darbu uzsākšanai: 5 gadi</li>
             <li>Būvatļauja derīga darbu pabeigšanai: 8 gadi</li>
             <li>Pagarināšana: jā (būvatļaujai) · nē (paskaidrojuma rakstam)</li>
-            <li>Apliecinājuma karte spēkā: 2 gadi no izsniegšanas</li>
+            <li>Paskaidrojuma raksts / paziņojums spēkā: 5 gadi no ieceres akcepta (nepagarināms)</li>
         </ul>
     </div>
 
@@ -2686,8 +2686,8 @@ const LEGAL_RATE={la:"rekonstrukcija",lbv:"vienk",lbp:"rekonstrukcija",lc:"rekon
 const LEGAL_SVC={la:{I:[],II:[["ESI",950],["TAA",400]],III:[["ESI",950],["TAA",400]]},lbv:{I:[],II:[],III:[]},lbp:{I:[["TAA",400]],II:[["TAA",400]],III:[["TAA",400]]},lc:{I:[["ESI",950]],II:[["ESI",950]],III:[["ESI",950]]}};
 const I_FIXED=[{max:10,int:667,cli:800},{max:15,int:833,cli:1000},{max:20,int:1000,cli:1200},{max:25,int:1167,cli:1400}];
 const SVC_BASE={esi:950,taa:400,nod:950,bk_s:1400,bk_m:2000,bk_l:3000,ti:400,eps:370,elt:350,dv:350};
-const TYPE_INFO={jaunbuve:{icon:"🏗",title:"Jaunbūve",what:"Pilnīgi jauna ēka uz brīvas zemes.",permit:"Paskaidrojuma raksts (<200m²) vai Būvatļauja (≥200m²)",time:"6–18 mēneši",risks:"Pārbaudi TIAN — vai zonā drīkst celt! Inženiertīklu pieslēgumi.",tip:"Pirms sāc — pasūti zemes robežu plānu un TIAN no pašvaldības."},"izmaiņu":{icon:"✏️",title:"Izmaiņu projekts",what:"Esošas ēkas daļējas izmaiņas. Apjoms nemainās.",permit:"Paskaidrojuma raksts vai Apliecinājuma karte",time:"3–9 mēneši",risks:"Kultūrvēsturiska ēka → NKMP obligāta!",tip:"Izmanto fasādes atjaunošanai vai logu maiņai."},rekonstrukcija:{icon:"🔨",title:"Rekonstrukcija",what:"Pilna pārbūve — var mainīt apjomu, stāvus, funkciju.",permit:"Būvatļauja (sarežģītākai) vai Paskaidrojuma raksts",time:"6–18 mēneši",risks:"Pārbaudi patvaļīgu būvniecību! Kopīpašumā — visu piekrišana.",tip:"I grupas mazēkā (≤25m²) — rekonstrukcija vienkāršāka."},vienk:{icon:"🎨",title:"Vienkāršota atjaunošana",what:"Fasādes siltināšana, pārplānošana BEZ nesošo konstrukciju skaršanas.",permit:"Paskaidrojuma raksts",time:"2–6 mēneši",risks:"Nedrīkst skart nesošās konstrukcijas!",tip:"Lētākais veids kā legāli uzlabot ēku."},"nojaukšana":{icon:"🏚",title:"Nojaukšanas projekts",what:"Reģistrētas ēkas likumīga nojaukšana.",permit:"Apliecinājuma karte",time:"2–6 mēneši",risks:"Pārbaudi inženiertīklus pirms nojaukšanas!",tip:"Pēc nojaukšanas — obligāti jāatjaunina kadastra dati."},tipveida:{icon:"📋",title:"Tipveida projekts",what:"Atkārtoti izmantojams projekts vairākām ēkām.",permit:"Atkarīgs no ēkas",time:"3–9 mēneši (1.reizei)",risks:"Katrai izmantošanai vajag pielāgojumu.",tip:"Ekonomisks ja plāno vairākas vienādas ēkas."},la:{icon:"⚠️",title:"Legalizācija — Patvaļīga būvniecība",what:"Ēka uzcelta BEZ atļaujas. Dokumentācija jāsakārto PĒC.",permit:"Apliecinājuma karte (I gr.) vai Būvatļauja (II/III gr.)",time:"12–36 mēneši",risks:"RISKS: pašvaldība VAR ATTEIKT — tad ēka jānojauc!",tip:"OBLIGĀTI sāc ar ESI — bez tās var iztērēt 3000€ projektā kas tiks noraidīts."},lbv:{icon:"📝",title:"Legalizācija — Nereģistrētas izmaiņas (vienkāršotas)",what:"Nelielas izmaiņas veiktas, bet BIS nav reģistrētas.",permit:"Paskaidrojuma raksts",time:"2–6 mēneši",risks:"Pārbaudi vai izmaiņas neskar nesošās konstrukcijas.",tip:"Vienkāršākais legalizācijas veids."},lbp:{icon:"🔧",title:"Legalizācija — Nereģistrētas izmaiņas (pilnas)",what:"Nozīmīgas izmaiņas nav reģistrētas BIS.",permit:"Pārbūves atļauja vai Apliecinājuma karte",time:"6–18 mēneši",risks:"TAA var atklāt konstruktīvus trūkumus!",tip:"Atšķirībā no vienkāršotajām — vajag pilnu projektu."},lc:{icon:"🔄",title:"Legalizācija — Funkcijas maiņa",what:"Lietošanas veids mainās (piem. saimniecības → dzīvojamā).",permit:"Pārbūves atļauja ar funkcijas maiņu",time:"9–18 mēneši",risks:"ESI KRITISKA — ja zona neatļauj jauno funkciju, process apstājas!",tip:"Vienmēr sāc ar ESI."}};
-const STEPS_DATA={la:{I:[{t:"Uzmērīšana",d:"Precīzi izmēri dokumentiem.",who:"Volko",time:"1–2 ned."},{t:"Apliecinājuma karte (BIS)",d:"Oficiālā atzīšana.",who:"Volko",time:"1–2 mēn."},{t:"Kadastra → ZG",d:"Dati valsts reģistros.",who:"VZD",time:"2–4 ned."}],II:[{t:"ESI — Juridiskā esošās situācijas izpēte",price:"950€",d:"Pārbauda vai legalizācija VAR notikt — zona, robežas, ZG. BEZ ESI var iztērēt 5000€ projektā kas tiks noraidīts.",who:"Volko",time:"2–4 ned.",docs:"Zemesgrāmatas izraksts, kadastra izziņa, robežu plāns"},{t:"TAA — Tehniskā apsekošana",price:"400€",d:"Pārbauda konstruktīvo drošību. BEZ TAA pašvaldība var pieprasīt nojaukšanu.",who:"Volko",time:"1–3 ned.",docs:"Piekļuve ēkai"},{t:"Uzmērīšana un rasējumi",d:"Precīzi plāni, šķērsgriezumi, fasādes.",who:"Volko",time:"2–3 ned."},{t:"AR projekts (legalizācijai)",d:"Oficālā dokumentācija normatīvu atbilstībai.",who:"Volko",time:"3–5 ned."},{t:"BIS iesniegums",d:"Formāls pieteikums. Pašvaldībai 30 darba dienas atbildei.",who:"Volko",time:"1–3 mēn."},{t:"Pašvaldības saskaņošana",d:"Arhitekts izvērtē. Var pieprasīt izmaiņas.",who:"Volko",time:"1–3 mēn."},{t:"NOD — Nodošana ekspluatācijā",price:"950€",d:"BEZ NOD ēka juridiski nepabeigta. Banka nedos kredītu pret šo īpašumu!",who:"Volko",time:"2–4 ned."},{t:"Kadastra → ZG",d:"Dati jāatjaunina visos reģistros.",who:"VZD",time:"2–4 ned."}],III:[{t:"ESI",price:"950€",d:"Detalizēta zona un tiesību analīze.",who:"Volko",time:"3–4 ned.",docs:"ZG, kadastra izziņa"},{t:"TAA",price:"400€",d:"Sarežğīta — sertificēts konstruktors.",who:"Volko",time:"2–4 ned."},{t:"Uzmērīšana",d:"Pilna dokumentācija.",who:"Volko",time:"3–4 ned."},{t:"AR + BK projekts",d:"Obligāti abi III grupai.",who:"Volko",time:"5–8 ned."},{t:"BIS — Būvatļauja",d:"III grupai apliecinājuma karte nav pietiekama.",who:"Volko",time:"2–4 mēn."},{t:"NOD",price:"950€",d:"Pilna komisija.",who:"Volko",time:"3–5 ned."},{t:"Kadastra → ZG",d:"Obligāta.",who:"VZD",time:"3–4 ned."}]},lbv:{I:[{t:"Paskaidrojuma raksts (BIS)",d:"",who:"Volko",time:"2–4 ned."},{t:"Rasējumi — izmainītais stāvoklis",d:"",who:"Volko",time:""},{t:"Kadastra datu atjaunošana",d:"",who:"VZD",time:""}],II:[{t:"Paskaidrojuma raksts (BIS)",d:"",who:"Volko",time:"2–4 ned."},{t:"Rasējumi",d:"",who:"Volko",time:""},{t:"BIS akcepts",d:"",who:"",time:""},{t:"Kadastra atjaunošana",d:"",who:"VZD",time:""}],III:[{t:"TAA",price:"400€",d:"",who:"Volko",time:""},{t:"Rasējumi",d:"Pilna dokumentācija.",who:"Volko",time:""},{t:"BIS — Pārbūves atļauja",d:"",who:"Volko",time:""},{t:"Kadastra",d:"",who:"VZD",time:""}]},lbp:{I:[{t:"TAA",price:"400€",d:"Nesošo konstrukciju pārbaude.",who:"Volko",time:""},{t:"Uzmērīšana",d:"",who:"Volko",time:""},{t:"AR projekts",d:"",who:"Volko",time:""},{t:"BIS — Apliecinājuma karte",d:"",who:"Volko",time:""},{t:"Kadastra",d:"",who:"VZD",time:""}],II:[{t:"TAA",price:"400€",d:"Nesošo konstrukciju pārbaude.",who:"Volko",time:""},{t:"Uzmērīšana",d:"",who:"Volko",time:""},{t:"AR projekts",d:"Izmainītais stāvoklis + normatīvi.",who:"Volko",time:""},{t:"BIS atļauja",d:"",who:"Volko",time:""},{t:"NOD (ja vajag)",price:"950€",d:"",who:"Volko",time:""},{t:"Kadastra",d:"",who:"VZD",time:""}],III:[{t:"TAA",price:"400€",d:"",who:"Volko",time:""},{t:"AR + BK projekts",d:"Obligāti abi.",who:"Volko",time:""},{t:"BIS atļauja",d:"",who:"Volko",time:""},{t:"NOD",price:"950€",d:"",who:"Volko",time:""},{t:"Kadastra",d:"",who:"VZD",time:""}]},lc:{I:[{t:"ESI",price:"950€",d:"Vai zonā ļauj jauno funkciju.",who:"Volko",time:"",docs:"Pašv. TIN, ZG"},{t:"AR projekts",d:"",who:"Volko",time:""},{t:"BIS atļauja",d:"",who:"Volko",time:""},{t:"NOD",price:"950€",d:"",who:"Volko",time:""},{t:"Kadastra → ZG",d:"Bieži vajag notāru.",who:"VZD",time:""}],II:[{t:"ESI",price:"950€",d:"SVARĪGI: vai zonā ļauj jauno funkciju.",who:"Volko",time:"2–4 ned.",docs:"Pašvaldības TIN, ZG izraksts"},{t:"AR projekts (jaunai funkcijai)",d:"Plānojums, sanitārie mezgli, ugunsdrošība, energoefektivitāte.",who:"Volko",time:"4–6 ned."},{t:"BIS atļauja",d:"",who:"Volko",time:""},{t:"NOD",price:"950€",d:"Ar jauno funkciju.",who:"Volko",time:""},{t:"Kadastra → ZG",d:"Bieži vajag notāru.",who:"VZD",time:""}],III:[{t:"ESI",price:"950€",d:"Detalizēta.",who:"Volko",time:""},{t:"AR + BK projekts",d:"",who:"Volko",time:""},{t:"BIS atļauja",d:"",who:"Volko",time:""},{t:"NOD",price:"950€",d:"",who:"Volko",time:""},{t:"Kadastra → ZG",d:"",who:"VZD",time:""}]}};
+const TYPE_INFO={jaunbuve:{icon:"🏗",title:"Jaunbūve",what:"Pilnīgi jauna ēka uz brīvas zemes.",permit:"Paskaidrojuma raksts (<200m²) vai Būvatļauja (≥200m²)",time:"6–18 mēneši",risks:"Pārbaudi TIAN — vai zonā drīkst celt! Inženiertīklu pieslēgumi.",tip:"Pirms sāc — pasūti zemes robežu plānu un TIAN no pašvaldības."},"izmaiņu":{icon:"✏️",title:"Izmaiņu projekts",what:"Esošas ēkas daļējas izmaiņas. Apjoms nemainās.",permit:"Paskaidrojuma raksts",time:"3–9 mēneši",risks:"Kultūrvēsturiska ēka → NKMP obligāta!",tip:"Izmanto fasādes atjaunošanai vai logu maiņai."},rekonstrukcija:{icon:"🔨",title:"Rekonstrukcija",what:"Pilna pārbūve — var mainīt apjomu, stāvus, funkciju.",permit:"Būvatļauja (sarežģītākai) vai Paskaidrojuma raksts",time:"6–18 mēneši",risks:"Pārbaudi patvaļīgu būvniecību! Kopīpašumā — visu piekrišana.",tip:"I grupas mazēkā (≤25m²) — rekonstrukcija vienkāršāka."},vienk:{icon:"🎨",title:"Vienkāršota atjaunošana",what:"Fasādes siltināšana, pārplānošana BEZ nesošo konstrukciju skaršanas.",permit:"Paskaidrojuma raksts",time:"2–6 mēneši",risks:"Nedrīkst skart nesošās konstrukcijas!",tip:"Lētākais veids kā legāli uzlabot ēku."},"nojaukšana":{icon:"🏚",title:"Nojaukšanas projekts",what:"Reģistrētas ēkas likumīga nojaukšana.",permit:"Paskaidrojuma raksts (nojaukšanai)",time:"2–6 mēneši",risks:"Pārbaudi inženiertīklus pirms nojaukšanas!",tip:"Pēc nojaukšanas — obligāti jāatjaunina kadastra dati."},tipveida:{icon:"📋",title:"Tipveida projekts",what:"Atkārtoti izmantojams projekts vairākām ēkām.",permit:"Atkarīgs no ēkas",time:"3–9 mēneši (1.reizei)",risks:"Katrai izmantošanai vajag pielāgojumu.",tip:"Ekonomisks ja plāno vairākas vienādas ēkas."},la:{icon:"⚠️",title:"Legalizācija — Patvaļīga būvniecība",what:"Ēka uzcelta BEZ atļaujas. Dokumentācija jāsakārto PĒC.",permit:"Paskaidrojuma raksts (I gr.) vai būvprojekts (II/III gr.)",time:"12–36 mēneši",risks:"RISKS: pašvaldība VAR ATTEIKT — tad ēka jānojauc!",tip:"OBLIGĀTI sāc ar ESI — bez tās var iztērēt 3000€ projektā kas tiks noraidīts."},lbv:{icon:"📝",title:"Legalizācija — Nereģistrētas izmaiņas (vienkāršotas)",what:"Nelielas izmaiņas veiktas, bet BIS nav reģistrētas.",permit:"Paskaidrojuma raksts",time:"2–6 mēneši",risks:"Pārbaudi vai izmaiņas neskar nesošās konstrukcijas.",tip:"Vienkāršākais legalizācijas veids."},lbp:{icon:"🔧",title:"Legalizācija — Nereģistrētas izmaiņas (pilnas)",what:"Nozīmīgas izmaiņas nav reģistrētas BIS.",permit:"Būvprojekts vai paskaidrojuma raksts",time:"6–18 mēneši",risks:"TAA var atklāt konstruktīvus trūkumus!",tip:"Atšķirībā no vienkāršotajām — vajag pilnu projektu."},lc:{icon:"🔄",title:"Legalizācija — Funkcijas maiņa",what:"Lietošanas veids mainās (piem. saimniecības → dzīvojamā).",permit:"Pārbūves atļauja ar funkcijas maiņu",time:"9–18 mēneši",risks:"ESI KRITISKA — ja zona neatļauj jauno funkciju, process apstājas!",tip:"Vienmēr sāc ar ESI."}};
+const STEPS_DATA={la:{I:[{t:"Uzmērīšana",d:"Precīzi izmēri dokumentiem.",who:"Volko",time:"1–2 ned."},{t:"Paskaidrojuma raksts (BIS)",d:"Oficiālā atzīšana.",who:"Volko",time:"1–2 mēn."},{t:"Kadastra → ZG",d:"Dati valsts reģistros.",who:"VZD",time:"2–4 ned."}],II:[{t:"ESI — Juridiskā esošās situācijas izpēte",price:"950€",d:"Pārbauda vai legalizācija VAR notikt — zona, robežas, ZG. BEZ ESI var iztērēt 5000€ projektā kas tiks noraidīts.",who:"Volko",time:"2–4 ned.",docs:"Zemesgrāmatas izraksts, kadastra izziņa, robežu plāns"},{t:"TAA — Tehniskā apsekošana",price:"400€",d:"Pārbauda konstruktīvo drošību. BEZ TAA pašvaldība var pieprasīt nojaukšanu.",who:"Volko",time:"1–3 ned.",docs:"Piekļuve ēkai"},{t:"Uzmērīšana un rasējumi",d:"Precīzi plāni, šķērsgriezumi, fasādes.",who:"Volko",time:"2–3 ned."},{t:"AR projekts (legalizācijai)",d:"Oficālā dokumentācija normatīvu atbilstībai.",who:"Volko",time:"3–5 ned."},{t:"BIS iesniegums",d:"Formāls pieteikums. Pašvaldībai 30 darba dienas atbildei.",who:"Volko",time:"1–3 mēn."},{t:"Pašvaldības saskaņošana",d:"Arhitekts izvērtē. Var pieprasīt izmaiņas.",who:"Volko",time:"1–3 mēn."},{t:"NOD — Nodošana ekspluatācijā",price:"950€",d:"BEZ NOD ēka juridiski nepabeigta. Banka nedos kredītu pret šo īpašumu!",who:"Volko",time:"2–4 ned."},{t:"Kadastra → ZG",d:"Dati jāatjaunina visos reģistros.",who:"VZD",time:"2–4 ned."}],III:[{t:"ESI",price:"950€",d:"Detalizēta zona un tiesību analīze.",who:"Volko",time:"3–4 ned.",docs:"ZG, kadastra izziņa"},{t:"TAA",price:"400€",d:"Sarežğīta — sertificēts konstruktors.",who:"Volko",time:"2–4 ned."},{t:"Uzmērīšana",d:"Pilna dokumentācija.",who:"Volko",time:"3–4 ned."},{t:"AR + BK projekts",d:"Obligāti abi III grupai.",who:"Volko",time:"5–8 ned."},{t:"BIS — Būvprojekts + būvatļauja",d:"III grupai paskaidrojuma raksts nav pietiekams — vajag būvprojektu.",who:"Volko",time:"2–4 mēn."},{t:"NOD",price:"950€",d:"Pilna komisija.",who:"Volko",time:"3–5 ned."},{t:"Kadastra → ZG",d:"Obligāta.",who:"VZD",time:"3–4 ned."}]},lbv:{I:[{t:"Paskaidrojuma raksts (BIS)",d:"",who:"Volko",time:"2–4 ned."},{t:"Rasējumi — izmainītais stāvoklis",d:"",who:"Volko",time:""},{t:"Kadastra datu atjaunošana",d:"",who:"VZD",time:""}],II:[{t:"Paskaidrojuma raksts (BIS)",d:"",who:"Volko",time:"2–4 ned."},{t:"Rasējumi",d:"",who:"Volko",time:""},{t:"BIS akcepts",d:"",who:"",time:""},{t:"Kadastra atjaunošana",d:"",who:"VZD",time:""}],III:[{t:"TAA",price:"400€",d:"",who:"Volko",time:""},{t:"Rasējumi",d:"Pilna dokumentācija.",who:"Volko",time:""},{t:"BIS — Pārbūves atļauja",d:"",who:"Volko",time:""},{t:"Kadastra",d:"",who:"VZD",time:""}]},lbp:{I:[{t:"TAA",price:"400€",d:"Nesošo konstrukciju pārbaude.",who:"Volko",time:""},{t:"Uzmērīšana",d:"",who:"Volko",time:""},{t:"AR projekts",d:"",who:"Volko",time:""},{t:"BIS — Paskaidrojuma raksts",d:"",who:"Volko",time:""},{t:"Kadastra",d:"",who:"VZD",time:""}],II:[{t:"TAA",price:"400€",d:"Nesošo konstrukciju pārbaude.",who:"Volko",time:""},{t:"Uzmērīšana",d:"",who:"Volko",time:""},{t:"AR projekts",d:"Izmainītais stāvoklis + normatīvi.",who:"Volko",time:""},{t:"BIS atļauja",d:"",who:"Volko",time:""},{t:"NOD (ja vajag)",price:"950€",d:"",who:"Volko",time:""},{t:"Kadastra",d:"",who:"VZD",time:""}],III:[{t:"TAA",price:"400€",d:"",who:"Volko",time:""},{t:"AR + BK projekts",d:"Obligāti abi.",who:"Volko",time:""},{t:"BIS atļauja",d:"",who:"Volko",time:""},{t:"NOD",price:"950€",d:"",who:"Volko",time:""},{t:"Kadastra",d:"",who:"VZD",time:""}]},lc:{I:[{t:"ESI",price:"950€",d:"Vai zonā ļauj jauno funkciju.",who:"Volko",time:"",docs:"Pašv. TIN, ZG"},{t:"AR projekts",d:"",who:"Volko",time:""},{t:"BIS atļauja",d:"",who:"Volko",time:""},{t:"NOD",price:"950€",d:"",who:"Volko",time:""},{t:"Kadastra → ZG",d:"Bieži vajag notāru.",who:"VZD",time:""}],II:[{t:"ESI",price:"950€",d:"SVARĪGI: vai zonā ļauj jauno funkciju.",who:"Volko",time:"2–4 ned.",docs:"Pašvaldības TIN, ZG izraksts"},{t:"AR projekts (jaunai funkcijai)",d:"Plānojums, sanitārie mezgli, ugunsdrošība, energoefektivitāte.",who:"Volko",time:"4–6 ned."},{t:"BIS atļauja",d:"",who:"Volko",time:""},{t:"NOD",price:"950€",d:"Ar jauno funkciju.",who:"Volko",time:""},{t:"Kadastra → ZG",d:"Bieži vajag notāru.",who:"VZD",time:""}],III:[{t:"ESI",price:"950€",d:"Detalizēta.",who:"Volko",time:""},{t:"AR + BK projekts",d:"",who:"Volko",time:""},{t:"BIS atļauja",d:"",who:"Volko",time:""},{t:"NOD",price:"950€",d:"",who:"Volko",time:""},{t:"Kadastra → ZG",d:"",who:"VZD",time:""}]}};
 const DOCS_DATA={la:["Zemesgrāmatas izraksts (zemesgramata.lv)","Kadastra izziņa (kadastrs.lv)","Robežu plāns (VZD)","Pašvaldības TIN","Kaimiņu piekrišana (robeža <4m)","Kopīpašnieku piekrišana (ja ir)","Esošie projekti (ja ir)"],lbv:["Zemesgrāmatas izraksts","Esošie projekti / plāni","Kopīpašnieku piekrišana"],lbp:["Zemesgrāmatas izraksts","Kadastra izziņa","Esošie projekti","Kopīpašnieku piekrišana"],lc:["Zemesgrāmatas izraksts","Kadastra izziņa","Pašvaldības TIN — vai zonā ļauj jauno funkciju","Esošie projekti","Kopīpašnieku piekrišana"]};
 
 // Būves grupa pēc MK Nr. 500 "Vispārīgie būvnoteikumi" 1. pielikuma 2. sadaļas
@@ -2704,7 +2704,7 @@ function grp(a,f,cat){
   return "II";
 }
 function grpExplain(a,f,cat,g){
-  if(g==="I") return "Vienstāva ēka, apbūves laukums ≤60 m² (MK 500 1.piel. 2.1.1.). Vienkāršota kārtība — parasti paskaidrojuma raksts vai apliecinājuma karte.";
+  if(g==="I") return "Vienstāva ēka, apbūves laukums ≤60 m² (MK 500 1.piel. 2.1.1.). Vienkāršota kārtība — parasti paskaidrojuma raksts vai paziņojums.";
   if(g==="III"){
     if(f>6) return "Vairāk nekā 6 virszemes stāvi (MK 500 1.piel. 2.2.1.). Sarežģīta kārtība — būvprojekts + būvatļauja.";
     if(cat==="public") return "Publiska ēka ar kopējo platību >1000 m² (MK 500 1.piel. 2.2.3.). Būvprojekts + būvatļauja.";
@@ -2759,7 +2759,7 @@ function calcAR(){
     document.getElementById("ar-p-fixed").style.display="block";
     document.getElementById("ar-fp-val").textContent=eur(fp.cli);
     document.getElementById("ar-fp-int").textContent=eur(fp.int);
-    document.getElementById("ar-fp-note").textContent="Fiksētā cena I grupas mazēkai (≤25m², 1 stāvs). Iekļauj apliecinājuma karte + uzmērīšana.";
+    document.getElementById("ar-fp-note").textContent="Fiksētā cena I grupas mazēkai (≤25m², 1 stāvs). Iekļauj paskaidrojuma rakstu + uzmērīšanu.";
     renderARPanels(type,area,muni.s);
     if(typeof renderSolutionPaths==="function") renderSolutionPaths(type,area,"I",muni.s,fp.cli);
     return;
@@ -2894,88 +2894,43 @@ const PAKETES_BRACKS = [
 ];
 
 
-const RECS = {
-    jaunbuve: [
-        { id:'bk', name:'BK — Būvkonstrukcijas', urgency:'recommended',
-          why:'Vajadzīgs lai aprēķinātu pamatus, jumtu, pārsegumus. Bez BK būvnieks nevar droši celties.',
-          when_required:'Obligāts &gt;100 m² vai 2+ stāviem.',
-          priceFn:(a,s)=>r50( (a<=100?SVC_BASE.bk_s:a<=250?SVC_BASE.bk_m:SVC_BASE.bk_l)*s*1.20 ) },
-        { id:'eps', name:'EPS — Energoefektivitātes pārskats', urgency:'recommended',
-          why:'Nepieciešams jaunbūvei ar apkuri. Apliecina enerģijas patēriņu.',
-          when_required:'Obligāts jaunbūvēm ar apkuri.',
-          priceFn:(a,s)=>r50(SVC_BASE.eps*s*1.20) },
-        { id:'ti', name:'TI — Topogrāfija', urgency:'if_needed',
-          why:'Vajadzīgs ja nav aktuāla topogrāfiskā plāna. Parāda precīzu zemes reljefa info.',
-          when_required:'Ja nav aktuāla topogrāfija (vecāka par 3 gadiem).',
-          priceFn:(a,s)=>r50(SVC_BASE.ti*s*1.20) },
-    ],
-    izmaiņu: [
-        { id:'ti', name:'TI — Topogrāfija', urgency:'if_needed',
-          why:'Vajadzīgs ja projekts skar ārējo teritoriju vai fasādi.',
-          when_required:'Ja nav aktuāla topogrāfija.',
-          priceFn:(a,s)=>r50(SVC_BASE.ti*s*1.20) },
-    ],
-    rekonstrukcija: [
-        { id:'taa', name:'TAA — Tehniskā apsekošana', urgency:'recommended',
-          why:'Pirms rekonstrukcijas jāzina ēkas faktiskais stāvoklis. Var atklāt slēptas problēmas.',
-          when_required:'Ieteicams vienmēr pirms rekonstrukcijas.',
-          priceFn:(a,s)=>r50(SVC_BASE.taa*s*1.20) },
-        { id:'bk', name:'BK — Būvkonstrukcijas', urgency:'if_needed',
-          why:'Vajadzīgs ja mainās nesošās konstrukcijas vai apjoms.',
-          when_required:'Ja mainās nesošie elementi.',
-          priceFn:(a,s)=>r50( (a<=100?SVC_BASE.bk_s:a<=250?SVC_BASE.bk_m:SVC_BASE.bk_l)*s*1.20 ) },
-        { id:'eps', name:'EPS — Energoefektivitātes pārskats', urgency:'if_needed',
-          why:'Ja rekonstrukcija ietver siltināšanu — var pieprasīt EPS.',
-          when_required:'Ja mainās ēkas energoefektivitāte.',
-          priceFn:(a,s)=>r50(SVC_BASE.eps*s*1.20) },
-    ],
-    vienk: [
-        { id:'eps', name:'EPS — Energoefektivitātes pārskats', urgency:'if_needed',
-          why:'Ja pilna ēkas siltināšana — var būt nepieciešams.',
-          when_required:'Ja pilna fasāžu siltināšana.',
-          priceFn:(a,s)=>r50(SVC_BASE.eps*s*1.20) },
-    ],
-    la: [
-        { id:'esi', name:'ESI — Juridiskā esošās situācijas izpēte', urgency:'critical',
-          why:'KRITISKS. Bez ESI var iztērēt 5000 EUR uz projektu kas tiks noraidīts. ESI pārbauda vai legalizācija iespējama.',
-          when_required:'OBLIGĀTS pirms jebkura darba sākšanas.',
-          priceFn:(a,s)=>r50(SVC_BASE.esi*s*1.20) },
-        { id:'taa', name:'TAA — Tehniskā apsekošana', urgency:'critical',
-          why:'Pašvaldība var pieprasīt nojaukšanu ja ēka ir konstruktīvi bīstama. TAA to novērš.',
-          when_required:'OBLIGĀTS II un III grupai.',
-          priceFn:(a,s)=>r50(SVC_BASE.taa*s*1.20) },
-        { id:'eps', name:'EPS — Energoefektivitātes pārskats', urgency:'if_needed',
-          why:'Dažas pašvaldības pieprasa EPS legalizācijai. Rīgā bieži vajadzīgs II grupas ēkām.',
-          when_required:'Atkarīgs no pašvaldības prasībām.',
-          priceFn:(a,s)=>r50(SVC_BASE.eps*s*1.20) },
-    ],
-    lbv: [
-        { id:'eps', name:'EPS — Energoefektivitātes pārskats', urgency:'if_needed',
-          why:'Atkarīgs no izmaiņu apjoma un pašvaldības.',
-          when_required:'Ja pašvaldība pieprasa.',
-          priceFn:(a,s)=>r50(SVC_BASE.eps*s*1.20) },
-    ],
-    lbp: [
-        { id:'taa', name:'TAA — Tehniskā apsekošana', urgency:'recommended',
-          why:'Pilnu izmaiņu legalizācijai TAA parāda faktisko stāvokli un novērš turpmākus riskus.',
-          when_required:'Ieteicams vienmēr pirms pilnas legalizācijas.',
-          priceFn:(a,s)=>r50(SVC_BASE.taa*s*1.20) },
-        { id:'eps', name:'EPS — Energoefektivitātes pārskats', urgency:'if_needed',
-          why:'Atkarīgs no pašvaldības prasībām.',
-          when_required:'Ja pašvaldība pieprasa.',
-          priceFn:(a,s)=>r50(SVC_BASE.eps*s*1.20) },
-    ],
-    lc: [
-        { id:'esi', name:'ESI — Juridiskā esošās situācijas izpēte', urgency:'critical',
-          why:'Funkcijas maiņai ESI ir KRITISKS — jāpārbauda vai jaunā funkcija atļauta šajā zonā. Bez ESI var tikt noraidīts.',
-          when_required:'OBLIGĀTS pirms funkcijas maiņas.',
-          priceFn:(a,s)=>r50(SVC_BASE.esi*s*1.20) },
-        { id:'eps', name:'EPS — Energoefektivitātes pārskats', urgency:'if_needed',
-          why:'Ja jaunā funkcija prasa apkuri (piem. saimniecība → dzīvoklis) — EPS var būt obligāts.',
-          when_required:'Ja jaunā funkcija prasa apkuri.',
-          priceFn:(a,s)=>r50(SVC_BASE.eps*s*1.20) },
-    ],
+// PILNS PAPILDU PAKALPOJUMU MENU — pieejams visiem projekta tipiem.
+// NOD nav iekļauts (atsevišķs līgums pēc būvniecības). Urgency nosaka pa tipiem (SVC_URG); pārējie → if_needed.
+const SVC_MENU=[
+  { id:'esi', name:'ESI — Juridiskā esošās situācijas izpēte', when:'Pirms darba — vai projekts/legalizācija juridiski iespējams.',
+    why:'Pārbauda zonu (TIAN), robežas, ZG. Bez ESI risks iztērēt naudu projektā, kas tiks noraidīts.',
+    priceFn:(a,s)=>r50(SVC_BASE.esi*s*1.20) },
+  { id:'taa', name:'TAA — Tehniskā apsekošana', when:'Esošām ēkām pirms projekta.',
+    why:'Novērtē konstruktīvo drošību. Var atklāt slēptas problēmas; legalizācijā novērš nojaukšanas risku.',
+    priceFn:(a,s)=>r50(SVC_BASE.taa*s*1.20) },
+  { id:'bk', name:'BK — Būvkonstrukcijas', when:'Ja skar nesošās konstrukcijas vai >100 m² / 2+ stāvi.',
+    why:'Pamatu, jumta, pārsegumu aprēķini. Bez BK būvnieks nevar droši celties.',
+    priceFn:(a,s)=>r50((a<=100?SVC_BASE.bk_s:a<=250?SVC_BASE.bk_m:SVC_BASE.bk_l)*s*1.20) },
+  { id:'eps', name:'EPS — Energoefektivitātes pārskats', when:'Ēkām ar apkuri / siltināšanu.',
+    why:'Apliecina enerģijas patēriņu. Nepieciešams apkurināmām ēkām; dažas pašvaldības pieprasa legalizācijai.',
+    priceFn:(a,s)=>r50(SVC_BASE.eps*s*1.20) },
+  { id:'ti', name:'TI — Topogrāfija', when:'Ja nav aktuāla topogrāfija (vecāka par 3 g.) vai skar ārtelpu.',
+    why:'Precīzs zemes reljefs un situācija. Vajadzīgs projektam ar ārējo teritoriju.',
+    priceFn:(a,s)=>r50(SVC_BASE.ti*s*1.20) },
+];
+// Urgency override pa tipiem; kas nav norādīts → 'if_needed' (rādās zem "Ja attiecas")
+const SVC_URG={
+  jaunbuve:      { bk:'recommended', eps:'recommended', ti:'recommended' },
+  "izmaiņu":     { taa:'recommended', ti:'if_needed' },
+  rekonstrukcija:{ taa:'recommended', bk:'recommended', eps:'if_needed', ti:'if_needed', esi:'if_needed' },
+  vienk:         { eps:'recommended', taa:'if_needed' },
+  "nojaukšana":  { ti:'recommended', bk:'if_needed' },
+  tipveida:      { ti:'recommended', bk:'if_needed', eps:'if_needed' },
+  la:            { esi:'critical', taa:'critical', eps:'if_needed', bk:'if_needed' },
+  lbv:           { taa:'recommended', eps:'if_needed' },
+  lbp:           { taa:'recommended', bk:'if_needed', eps:'if_needed', esi:'if_needed' },
+  lc:            { esi:'critical', eps:'if_needed', taa:'if_needed', bk:'if_needed' },
 };
+function getRecs(type){
+  const urg=SVC_URG[type]; if(!urg) return [];
+  return SVC_MENU.map(s=>({ id:s.id, name:s.name, urgency:urg[s.id]||'if_needed',
+    why:s.why, when_required:s.when, priceFn:s.priceFn }));
+}
 
 // ─── UTIL ─────────────────────────────────────────────────────
 
@@ -3039,7 +2994,7 @@ function _renderARPanelsBase(type, area, svcCoef) {
 
     // 3. Auto-ieteikumi
     const ai = document.getElementById('auto-ieteikumi');
-    const recs = RECS[type];
+    const recs = getRecs(type);
     if (recs && area > 0) {
         ai.classList.add('visible');
         renderRecs(recs, area, svcCoef);
@@ -3062,7 +3017,7 @@ function renderRecs(recs, area, svcCoef) {
         const grpEl  = document.getElementById('urg-' + urg);
         const listEl = document.getElementById('urg-' + urg + '-list');
         const items  = sorted.filter(r => r.urgency === urg);
-        if (!items.length) { grpEl.style.display = 'none'; return; }
+        if (!items.length) { grpEl.style.display = 'none'; listEl.innerHTML = ''; return; }
         grpEl.style.display = 'block';
         listEl.innerHTML = items.map(item => {
             const price = item.priceFn ? item.priceFn(area, svcCoef) : 0;
@@ -3417,7 +3372,7 @@ BIS SISTĒMA (bis.gov.lv):
 - Pašvaldībai: 30 DARBA DIENAS atbildei (Būvniecības likums — juridisks termiņš, ne ieteikums)
 - Lēmumi: akceptēt / pieprasīt precizēšanu / atteikt
 - Atteikums: 30 dienas apelācijai pašvaldībai → administratīvā tiesa
-- Valsts nodevas: Paskaidrojuma raksts ~14-28€ | Apliecinājuma karte ~14€ | Būvatļauja ~28-140€
+- Valsts nodevas: Paziņojums ~0-14€ | Paskaidrojuma raksts ~14-28€ | Būvprojekts/būvatļauja ~28-140€
 - Paskaidrojuma raksts: 5 gadi, NEPAGARINĀMS
 - Būvatļauja: 5 gadi darbu uzsākšanai + 8 gadi pabeigšanai, PAGARINĀMS (pieteikums BIS pirms termiņa)
 - Būvdarbu žurnāls: obligāts BIS par visiem būvdarbiem (būvnieks aizpilda)
@@ -3466,7 +3421,7 @@ Bez TAA: pašvaldība var pieprasīt nojaukšanu ja ēka bīstama
 Cena: 400€ × pašvaldības svc koef.
 
 Legalizācija pēc grupas:
-I gr. (vienstāva ≤60m²): Uzmērīšana + apliecinājuma karte/paskaidrojuma raksts + kadastra → ~1-2 mēneši
+I gr. (vienstāva ≤60m²): Uzmērīšana + paskaidrojuma raksts (vai paziņojums) + kadastra → ~1-2 mēneši
 II gr. (tipiskā māja): ESI + TAA + uzmērīšana + AR projekts + BIS + NOD + kadastra → ~12-36 mēneši
 III gr. (>6st / publiska >1000m² / ražošana >2000m²): Kā II gr. + būvatļauja + iespējama ekspertīze → individuāli
 
@@ -3545,7 +3500,7 @@ SADAĻA 5 — BIEŽĀK UZDOTIE JAUTĀJUMI (precīzas atbildes)
 ══════════════════════════════════════════════════════════════
 
 Q: Vai klients var iesniegt BIS pats?
-A: Paziņojumus (JN2, JN7, JN10, A3, VA1, VP1) var iesniegt klients pats. Paskaidrojuma rakstus, apliecinājuma kartes, būvatļaujas — obligāts licencēta projektētāja paraksts. Bez tā BIS noraidīs.
+A: Paziņojumus (JN2, JN7, JN10, A3, VA1, VP1) var iesniegt klients pats. Paskaidrojuma rakstus un būvprojektus — obligāts licencēta projektētāja paraksts. Bez tā BIS noraidīs.
 
 Q: Cik ilgi der būvatļauja?
 A: (MK not. 529) 5 gadi darbu UZSĀKŠANAI + 8 gadi PABEIGŠANAI. Var pagarināt, iesniedzot pieteikumu BIS pirms termiņa. Paskaidrojuma raksts: 5 gadi, NEPAGARINĀMS.
@@ -3960,10 +3915,10 @@ const PASSPORT_DATA = {
   // ── LEGALIZĀCIJA PATVAĻĪGA (la) ─────────────────────────────
   la: {
     permit: (area, grp) => grp === 'I' ? {
-      name: 'Apliecinājuma karte',
-      law: 'EBN 7.3.4 un 7.3.5 — vienkāršota procedūra mazēkām',
-      desc: 'I grupas mazēkai (≤25m², 1 stāvs) — vienkāršota legalizācija ar apliecinājuma karti. Nav TAA obligāts, nav pilna projekta.',
-      bisType: 'Apliecinājuma karte'
+      name: 'Paskaidrojuma raksts',
+      law: 'MK 529 (EBN) — vienkāršota procedūra I grupas ēkām',
+      desc: 'I grupas ēkai (vienstāva ≤60m²) — vienkāršota legalizācija ar paskaidrojuma rakstu. Nav TAA obligāts, nav pilna projekta.',
+      bisType: 'Paskaidrojuma raksts'
     } : area <= 200 ? {
       name: 'Paskaidrojuma raksts (Legalizācijai)',
       law: 'EBN 7.2 (11.punkts) + BL 22.pants — patvaļīgā büvniecība',
@@ -4060,10 +4015,10 @@ const PASSPORT_DATA = {
   // ── IZMAIŅU PROJEKTS ────────────────────────────────────────
   "izmaiņu": {
     permit: (area, grp) => ({
-      name: 'Paskaidrojuma raksts vai Apliecinājuma karte',
-      law: 'EBN 7.2 (8.punkts) — izmaiņas büvē',
-      desc: 'Atkarīgs no izmaiņu apjoma. Ailas, fasāde, iekšējais plānojums (neskarot nesošās) → apliecinājuma karte. Lielākas izmaiņas → paskaidrojuma raksts.',
-      bisType: 'Apliecinājuma karte / Paskaidrojuma raksts'
+      name: 'Paskaidrojuma raksts',
+      law: 'MK 529 (EBN) — izmaiņas/atjaunošana büvē',
+      desc: 'Atkarīgs no izmaiņu apjoma. Ailas, fasāde, iekšējais plānojums (neskarot nesošās) → paskaidrojuma raksts. Apjomīgākas izmaiņas → būvprojekts.',
+      bisType: 'Paskaidrojuma raksts'
     }),
     clientDocs: [
       { icon:'📄', name:'Zemesgrāmatas apliecība', note:'', req:'must' },
@@ -4076,7 +4031,7 @@ const PASSPORT_DATA = {
       { icon:'📝', name:'Iesniegums BIS', note:'ar izmaiņu aprakstu' },
     ],
     steps: [
-      { n:1, t:'Situācijas izvērtējums', who:'Volko', dur:'1 ned.', price:null, why:'Nosaka vai vajag apliecinājuma karti vai paskaidrojuma rakstu.' },
+      { n:1, t:'Situācijas izvērtējums', who:'Volko', dur:'1 ned.', price:null, why:'Nosaka vai vajag paskaidrojuma rakstu vai būvprojektu.' },
       { n:2, t:'Izmaiņu rasējumi', who:'Volko', dur:'1–3 ned.', price:'Pēc kalkulatora', why:'Fiksē esošo un plānoto stāvokli.' },
       { n:3, t:'BIS iesniegums', who:'Volko', dur:'1 diena', price:null, why:'Iesniedz un gaida pašvaldības akcepts.' },
       { n:4, t:'Pašvaldības akcepts', who:'Pašvaldība', dur:'30 darba d.', price:null, why:'Apstiprina izmaiņas.' },
@@ -4155,10 +4110,10 @@ const PASSPORT_DATA = {
   // ── NOJAUKŠANA ──────────────────────────────────────────────
   "nojaukšana": {
     permit: (area, grp) => ({
-      name: 'Apliecinājuma karte (nojaukšanai)',
-      law: 'EBN 7.2 (9.punkts) — nojaukšana',
-      desc: 'Reģistrētas ēkas nojaukšanai nepieciešama apliecinājuma karte. Pēc nojaukšanas — obligāti jāatjaunina kadastra dati.',
-      bisType: 'Apliecinājuma karte'
+      name: 'Paskaidrojuma raksts (nojaukšanai)',
+      law: 'MK 529 (EBN) — nojaukšana',
+      desc: 'Reģistrētas ēkas nojaukšanai nepieciešams paskaidrojuma raksts. Pēc nojaukšanas — obligāti jāatjaunina kadastra dati.',
+      bisType: 'Paskaidrojuma raksts'
     }),
     clientDocs: [
       { icon:'📄', name:'Zemesgrāmatas apliecība', note:'', req:'must' },
