@@ -1,0 +1,901 @@
+<!-- ============================================================
+     BK TAB + AI KONSULTANTS TAB — HTML FRAGMENTS
+     Iekļauj index.html ar:
+       <link rel="stylesheet" href="bk-ai-section.html"> — NĒ
+     Kopē saturu tieši index.html vai ielādē ar JS.
+     Stila mainīgie: --navy, --gold, --border, --text
+     ============================================================ -->
+
+<!-- ═══════════════════════════════════════════════════════════
+     1. BK TAB
+     ═══════════════════════════════════════════════════════════ -->
+<div id="tab-bk" class="tab-content" style="display:none">
+
+  <style>
+    /* ---- BK specifiskais CSS ---- */
+    .bk-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media(max-width:700px){ .bk-grid{grid-template-columns:1fr;} }
+
+    .bk-card { background:#fff; border:1px solid var(--border); border-radius:10px; padding:16px; }
+    .bk-card h3 { margin:0 0 4px; font-size:.95rem; color:var(--navy); }
+    .bk-card .hint { font-size:.78rem; color:#888; margin:0 0 10px; font-style:italic; }
+
+    .bk-sys-select { width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:7px;
+                     font-size:.88rem; outline:none; }
+    .bk-sys-select:focus { border-color:var(--gold); }
+
+    .bk-input { width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:7px;
+                font-size:.88rem; outline:none; box-sizing:border-box; }
+    .bk-input:focus { border-color:var(--gold); }
+
+    .level-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+    .level-btn { padding:10px 6px; border:2px solid var(--border); border-radius:8px;
+                 background:#fff; cursor:pointer; text-align:center; transition:all .15s; }
+    .level-btn:hover { border-color:var(--gold); }
+    .level-btn.active { border-color:var(--navy); background:var(--navy); color:#fff; }
+    .level-btn .lb-name { font-weight:700; font-size:.88rem; }
+    .level-btn .lb-sub  { font-size:.72rem; margin-top:3px; opacity:.75; }
+
+    .level-explain { font-size:.78rem; background:#f9f7f2; border-left:3px solid var(--gold);
+                     border-radius:0 6px 6px 0; padding:8px 12px; margin-top:8px; color:#555;
+                     line-height:1.45; }
+    .level-explain strong { color:var(--navy); }
+
+    .coef-row { display:flex; align-items:center; justify-content:space-between;
+                margin-bottom:8px; font-size:.85rem; }
+    .coef-row label { color:var(--text); }
+    .coef-val { font-weight:700; color:var(--navy); min-width:40px; text-align:right; }
+
+    .bk-mezgli { display:flex; align-items:center; gap:10px; }
+    .bk-mezgli input[type=number] { width:80px; }
+
+    .bk-result-box { background:var(--navy); color:#fff; border-radius:10px;
+                     padding:18px 20px; margin-top:14px; }
+    .bk-result-box .res-label { font-size:.82rem; opacity:.7; margin-bottom:4px; }
+    .bk-result-box .res-price { font-size:1.6rem; font-weight:700; color:var(--gold); }
+    .bk-result-box .res-formula { font-size:.72rem; opacity:.6; margin-top:6px; }
+    .bk-result-box .res-note { font-size:.78rem; margin-top:6px; opacity:.8; }
+
+    .bk-items-table { width:100%; border-collapse:collapse; font-size:.82rem; margin-top:10px; }
+    .bk-items-table th { background:#f4f2ed; color:var(--navy); padding:6px 8px;
+                          text-align:left; border-bottom:2px solid var(--border); }
+    .bk-items-table td { padding:6px 8px; border-bottom:1px solid var(--border); vertical-align:top; }
+    .bk-items-table tr:last-child td { border-bottom:none; }
+    .bk-items-table .td-price { font-weight:700; color:var(--navy); text-align:right; }
+    .bk-add-btn { padding:8px 16px; background:var(--gold); color:var(--navy);
+                  border:none; border-radius:7px; font-weight:700; cursor:pointer;
+                  font-size:.85rem; margin-top:4px; }
+    .bk-add-btn:hover { opacity:.85; }
+    .bk-clear-btn { padding:6px 12px; background:#fff; color:#c00; border:1px solid #fca;
+                    border-radius:7px; font-size:.78rem; cursor:pointer; margin-left:8px; }
+    .bk-remove-btn { color:#c00; background:none; border:none; cursor:pointer;
+                     font-size:.9rem; padding:0 4px; }
+    .cat-badge { display:inline-block; font-size:.7rem; padding:1px 7px;
+                 border-radius:10px; background:#f0ede6; color:#666; margin-left:4px; }
+  </style>
+
+  <!-- ROW 1: Sistēma + Parametri -->
+  <div class="bk-grid">
+
+    <!-- Kreisais: Sistēma -->
+    <div class="bk-card">
+      <h3>Konstrukciju sistēma</h3>
+      <p class="hint">Izvēlies materiālu/sistēmu — katrai savs sarežģītības koeficients</p>
+
+      <!-- Kategorija hint -->
+      <div id="bk-cat-hint" style="font-size:.78rem;color:#888;margin-bottom:6px;min-height:18px;"></div>
+
+      <select class="bk-sys-select" id="bk-sys">
+        <optgroup label="🧱 Sienas — vertikālās nesošās konstrukcijas">
+          <option value="Siena – vieglbetona bloki">Vieglbetona bloki (visvienkāršākais)</option>
+          <option value="Siena – koka karkass">Koka karkass</option>
+          <option value="Siena – CLT">CLT paneļi (sarežģītākais)</option>
+        </optgroup>
+        <optgroup label="🏠 Jumts — nesošās jumta konstrukcijas">
+          <option value="Jumts – koka spāres">Koka spāres (roku darbs)</option>
+          <option value="Jumts – koka kopnes">Koka kopnes (fabrikā gatavotas, ekonomiskāks)</option>
+          <option value="Jumts – CLT paneļi">CLT paneļi</option>
+        </optgroup>
+        <optgroup label="🏗️ Grīda/Pārsegums">
+          <option value="Grīda/Pārsegums – koka sijas">Koka sijas</option>
+          <option value="Grīda/Pārsegums – CLT paneļi">CLT paneļi</option>
+          <option value="Pārsegums – dobie paneļi">Dobie paneļi</option>
+          <option value="Pārsegums – monolītais betons">Monolītais betons</option>
+        </optgroup>
+        <optgroup label="🏛️ Pamati — atkarīgi no augsnes un slodzēm">
+          <option value="Pamati – lentveidīgi">Lentveidīgi pamati</option>
+          <option value="Pamati – plāksne">Plāksne (dārgāka, stabilāka)</option>
+          <option value="Pamati – punktveida">Punktveida pamati</option>
+        </optgroup>
+        <optgroup label="📏 Sijas — mērvienība METRI (garums!)">
+          <option value="Sijas – līmsijas">Līmsijas</option>
+          <option value="Sijas – tērauda sijas">Tērauda sijas</option>
+        </optgroup>
+        <optgroup label="🔲 Aiļu pārsedze">
+          <option value="Aiļu pārsedze – gatavā">Gatavā pārsedze</option>
+          <option value="Aiļu pārsedze – monolītā">Monolītā pārsedze</option>
+        </optgroup>
+        <optgroup label="🏭 Ražotāja dokumentācija">
+          <option value="Ražotājs – koka karkasi">Koka karkasi (ražotājam)</option>
+          <option value="Ražotājs – CLT paneļi">CLT paneļi (ražotājam)</option>
+          <option value="Ražotājs – betona sendvičpaneļi">Betona sendvičpaneļi (ražotājam)</option>
+        </optgroup>
+      </select>
+
+      <div style="margin-top:10px;">
+        <label style="font-size:.82rem;color:#666;display:block;margin-bottom:4px;">
+          Daudzums (<span id="bk-unit-lbl">m²</span>)
+        </label>
+        <input class="bk-input" type="number" id="bk-qty" min="1" value="120" placeholder="120">
+      </div>
+    </div>
+
+    <!-- Labais: Detalizācijas līmenis -->
+    <div class="bk-card">
+      <h3>Detalizācijas līmenis</h3>
+      <p class="hint">Kāda dokumentācija nepieciešama</p>
+
+      <div class="level-grid">
+        <button class="level-btn" id="lvl-L1" onclick="bkSetLevel('L1')">
+          <div class="lb-name">L1</div>
+          <div class="lb-sub">Basic</div>
+        </button>
+        <button class="level-btn active" id="lvl-L2" onclick="bkSetLevel('L2')">
+          <div class="lb-name">L2 ⭐</div>
+          <div class="lb-sub">Build Ready</div>
+        </button>
+        <button class="level-btn" id="lvl-L3" onclick="bkSetLevel('L3')">
+          <div class="lb-name">L3</div>
+          <div class="lb-sub">Pro/Factory</div>
+        </button>
+      </div>
+
+      <div class="level-explain" id="bk-level-explain">
+        <strong>L2 ⭐ — Optimālais variants.</strong>
+        Pietiekami detalizēts lai būvniecība noritētu bez pārsteigumiem.
+        90% projektu ieteicams tieši šis.
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 2: Koeficienti + Sarežģītība -->
+  <div class="bk-grid" style="margin-top:14px;">
+
+    <!-- Kreisais: Koeficienti -->
+    <div class="bk-card">
+      <h3>Koeficienti</h3>
+      <p class="hint">Tiek piemēroti automātiski pēc ievadītajiem datiem</p>
+
+      <div class="coef-row">
+        <label>Platības koef. (pēc m²):</label>
+        <span class="coef-val" id="bk-c-area">1.00</span>
+      </div>
+      <div style="font-size:.75rem;color:#aaa;margin:-4px 0 8px;text-align:right;">
+        &lt;25→×1.20 | 60→×1.10 | 100→×1.05 | 120→×1.00 | 180→×0.95 | 250→×0.90 | &gt;400→×0.85
+      </div>
+
+      <div class="coef-row">
+        <label>Slāņu skaits / stāvi:</label>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input class="bk-input" type="number" id="bk-slani" min="1" max="6" value="1"
+                 style="width:60px;" oninput="bkCalc()">
+          <span class="coef-val" id="bk-c-slani">1.00</span>
+        </div>
+      </div>
+      <div style="font-size:.75rem;color:#aaa;margin:-4px 0 8px;">
+        1=×1.0 | 2=×0.8 | 3=×1.0 | 4=×1.1 | 5=×1.15 | 6=×1.2 | 7+=×1.25
+      </div>
+
+      <div class="coef-row">
+        <label>Sarežģītība:</label>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <select class="bk-sys-select" id="bk-sarezg" onchange="bkCalc()" style="width:auto;font-size:.82rem;padding:5px 8px;">
+            <option value="0.8">Vienkārša (×0.8)</option>
+            <option value="1.0" selected>Standarta (×1.0)</option>
+            <option value="1.2">Sarežģīta (×1.2)</option>
+            <option value="1.5">Ļoti sarežģīta (×1.5)</option>
+          </select>
+          <span class="coef-val" id="bk-c-sarezg">1.00</span>
+        </div>
+      </div>
+
+      <div class="coef-row">
+        <label>Steidzamība:</label>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <select class="bk-sys-select" id="bk-steidz" onchange="bkCalc()" style="width:auto;font-size:.82rem;padding:5px 8px;">
+            <option value="1.0" selected>Standarta (×1.0)</option>
+            <option value="1.25">Steidzami (×1.25)</option>
+            <option value="1.5">Ļoti steidzami (×1.5)</option>
+          </select>
+          <span class="coef-val" id="bk-c-steidz">1.00</span>
+        </div>
+      </div>
+
+      <div class="coef-row" style="margin-top:4px;">
+        <label>Sistēmas koef. (Sis):</label>
+        <span class="coef-val" id="bk-c-sys">1.00</span>
+      </div>
+      <div class="coef-row">
+        <label>Segšana (Seg):</label>
+        <input class="bk-input" type="number" id="bk-seg" min="0.1" max="2" step="0.05" value="1.0"
+               style="width:70px;" oninput="bkCalc()">
+        <span class="coef-val" id="bk-c-seg">1.00</span>
+      </div>
+
+      <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
+        <div class="bk-mezgli">
+          <label style="font-size:.82rem;flex:1;">Mezgli / specpozīcijas (×25€/gab.):</label>
+          <input class="bk-input" type="number" id="bk-mezgli" min="0" value="0"
+                 style="width:60px;" oninput="bkCalc()">
+        </div>
+      </div>
+    </div>
+
+    <!-- Labais: Rezultāts -->
+    <div class="bk-card" style="display:flex;flex-direction:column;justify-content:space-between;">
+      <div>
+        <h3>Aprēķins</h3>
+        <p class="hint">5 × (Likme × Daudzums × Seg × Sis × AreaCoef × Slāni × Sarežģ × Steidz) + Mezgli×25</p>
+
+        <div id="bk-result-box" class="bk-result-box">
+          <div class="res-label">BK projekta cena (bez PVN)</div>
+          <div class="res-price" id="bk-price">0 €</div>
+          <div class="res-formula" id="bk-formula-str">—</div>
+          <div class="res-note" id="bk-res-note"></div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="bk-add-btn" onclick="bkAddItem()">+ Pievienot pozīcijai</button>
+        <button class="bk-clear-btn" onclick="bkClearItems()">Notīrīt sarakstu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 3: Pozīciju saraksts -->
+  <div id="bk-items-section" style="display:none;margin-top:14px;">
+    <div class="bk-card">
+      <h3>Pozīciju saraksts</h3>
+      <p class="hint">Vairākas konstrukciju sistēmas vienam projektam</p>
+      <table class="bk-items-table">
+        <thead>
+          <tr>
+            <th>Sistēma</th>
+            <th>Daudzums</th>
+            <th>Līmenis</th>
+            <th style="text-align:right">Cena (€)</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="bk-items-tbody"></tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3" style="font-weight:700;padding:8px;font-size:.88rem;">KOPĀ (bez PVN)</td>
+            <td class="td-price" id="bk-total-price">0 €</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td colspan="3" style="color:#666;padding:4px 8px;font-size:.8rem;">Ar PVN (20%)</td>
+            <td class="td-price" style="color:#666;font-size:.85rem;" id="bk-total-pvn">0 €</td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+</div>
+<!-- ═══ END BK TAB ═══ -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     2. AI KONSULTANTS TAB
+     ═══════════════════════════════════════════════════════════ -->
+<div id="tab-ai" class="tab-content" style="display:none">
+
+  <style>
+    /* ---- AI Chat CSS ---- */
+    .chat-window {
+      height: 450px; overflow-y: auto; border: 1px solid var(--border);
+      border-radius: 10px; padding: 16px; background: #fafaf8;
+    }
+    .msg { max-width: 80%; margin-bottom: 12px; }
+    .msg.user {
+      margin-left: auto; background: var(--navy); color: white;
+      padding: 10px 14px; border-radius: 14px 14px 4px 14px; font-size: .9rem;
+    }
+    .msg.ai {
+      background: white; border: 1px solid var(--border);
+      padding: 12px 14px; border-radius: 14px 14px 14px 4px;
+      font-size: .88rem; line-height: 1.55;
+    }
+    .msg.ai strong { color: var(--navy); }
+    .msg.error {
+      background: #fff5f5; border: 1px solid #fca5a5;
+      padding: 10px 14px; border-radius: 8px; font-size: .84rem; color: #c00;
+    }
+    .loading-dots { display: inline-flex; gap: 4px; align-items:center; }
+    .loading-dots span {
+      width: 6px; height: 6px; background: var(--gold);
+      border-radius: 50%; animation: bounce 1.2s infinite;
+    }
+    .loading-dots span:nth-child(2) { animation-delay: .2s; }
+    .loading-dots span:nth-child(3) { animation-delay: .4s; }
+    @keyframes bounce {
+      0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-6px)}
+    }
+    .quick-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .qbtn {
+      font-size: .75rem; padding: 5px 11px; background: white;
+      border: 1px solid var(--border); border-radius: 20px;
+      cursor: pointer; color: var(--text); transition: all .15s;
+    }
+    .qbtn:hover { border-color: var(--gold); background: #fffbf0; }
+    .chat-input-row { display: flex; gap: 8px; margin-top: 10px; }
+    .chat-input {
+      flex: 1; padding: 10px 14px; border: 1px solid var(--border);
+      border-radius: 8px; font-size: .9rem; outline: none;
+      resize: none; height: 44px; box-sizing: border-box;
+      font-family: inherit;
+    }
+    .chat-input:focus { border-color: var(--gold); }
+    .send-btn {
+      padding: 10px 18px; background: var(--navy); color: var(--gold);
+      border: none; border-radius: 8px; font-weight: 700;
+      cursor: pointer; font-size: .85rem; white-space: nowrap;
+    }
+    .send-btn:hover { opacity: .88; }
+    .send-btn:disabled { opacity: .45; cursor: not-allowed; }
+    .api-key-section {
+      background: #fffbf0; border: 1px solid #fde68a;
+      border-radius: 8px; padding: 14px; margin-bottom: 14px;
+    }
+    .api-key-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 8px; cursor: pointer;
+    }
+    .api-key-header h4 { margin:0; font-size:.88rem; color:var(--navy); }
+    .api-key-header .toggle-icon { font-size:.8rem; color:#888; }
+    .api-key-body { }
+    .api-key-row { display: flex; gap: 8px; }
+    .api-input {
+      flex: 1; padding: 8px 12px; border: 1px solid var(--border);
+      border-radius: 7px; font-size: .88rem; outline: none;
+      font-family: monospace;
+    }
+    .api-input:focus { border-color: var(--gold); }
+    .api-save-btn {
+      padding: 8px 14px; background: var(--gold); color: var(--navy);
+      border: none; border-radius: 7px; font-weight: 700;
+      cursor: pointer; font-size: .82rem;
+    }
+    .api-save-btn:hover { opacity:.85; }
+    .api-status { font-size:.75rem; margin-top:5px; color:#666; }
+    .api-status.ok { color:#2d8a4e; }
+    .api-status.err { color:#c00; }
+    .chat-container { background:#fff; border:1px solid var(--border); border-radius:10px; padding:16px; }
+    .ai-header { margin-bottom:14px; }
+    .ai-header h2 { margin:0 0 2px; font-size:1.1rem; color:var(--navy); }
+    .ai-header p { margin:0; font-size:.82rem; color:#888; }
+    .clear-chat-btn {
+      font-size:.72rem; padding:3px 10px; background:none;
+      border:1px solid var(--border); border-radius:20px;
+      cursor:pointer; color:#888; margin-left:8px;
+    }
+    .clear-chat-btn:hover { color:#c00; border-color:#fca; }
+  </style>
+
+  <!-- Header -->
+  <div class="chat-container">
+    <div class="ai-header">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <h2>🤖 AI Konsultants</h2>
+          <p>Uzdod jautājumu par projektu, cenu vai procesu</p>
+        </div>
+        <button class="clear-chat-btn" onclick="aiClearChat()">Notīrīt sarunu</button>
+      </div>
+    </div>
+
+    <!-- API Key josla -->
+    <div class="api-key-section" id="ai-api-section">
+      <div class="api-key-header" onclick="aiToggleApiSection()">
+        <h4>🔑 Gemini API atslēga</h4>
+        <span class="toggle-icon" id="ai-api-toggle-icon">▲ sakļaut</span>
+      </div>
+      <div class="api-key-body" id="ai-api-body">
+        <div style="font-size:.78rem;color:#666;margin-bottom:8px;">
+          Bezmaksas atslēga: <a href="https://aistudio.google.com/apikey" target="_blank"
+          style="color:var(--navy)">aistudio.google.com/apikey</a>. Tiek saglabāta tikai pārlūkā (sessionStorage).
+        </div>
+        <div class="api-key-row">
+          <input class="api-input" type="password" id="ai-api-input"
+                 placeholder="AIza..." autocomplete="off">
+          <button class="api-save-btn" onclick="aiSaveKey()">Saglabāt</button>
+        </div>
+        <div class="api-status" id="ai-api-status">Nav ievadīta atslēga</div>
+      </div>
+    </div>
+
+    <!-- Ātrās pogas -->
+    <div class="quick-btns">
+      <button class="qbtn" onclick="aiQuick('Cik maksā 120m² jaunbūve Rīgā?')">💰 120m² jaunbūve Rīgā?</button>
+      <button class="qbtn" onclick="aiQuick('Kā legalizēt patvaļīgi celtu ēku?')">🏚️ Legalizācija</button>
+      <button class="qbtn" onclick="aiQuick('Kas ir ESI un vai tā vajadzīga?')">📋 Kas ir ESI?</button>
+      <button class="qbtn" onclick="aiQuick('Kāda atšķirība L1 vs L2 vs L3 BK detalizācijā?')">📐 L1 vs L2 vs L3</button>
+      <button class="qbtn" onclick="aiQuick('Ko nozīmē II grupas ēka?')">🏠 II grupas ēka</button>
+      <button class="qbtn" onclick="aiQuick('Cik ilgi aizņem legalizācija?')">⏱️ Legalizācijas laiks</button>
+      <button class="qbtn" onclick="aiQuick('Kāpēc vajag TAA apsekošanu?')">🔍 Kāpēc TAA?</button>
+      <button class="qbtn" onclick="aiQuick('Kādi dokumenti vajadzīgi no klienta?')">📁 Klienta dokumenti</button>
+    </div>
+
+    <!-- Chat window -->
+    <div class="chat-window" id="ai-chat-window">
+      <div class="msg ai">
+        Sveiki! Es esmu Volko Engineering AI konsultants. Varu palīdzēt ar jautājumiem par
+        arhitektūras projektiem, cenām, BK dokumentāciju un būvniecības procesiem Latvijā.<br><br>
+        Uzdodi jautājumu vai izmanto ātrās pogas augšā! ⬆️
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div class="chat-input-row">
+      <textarea class="chat-input" id="ai-input"
+                placeholder="Uzdod jautājumu..." rows="1"
+                onkeydown="aiKeydown(event)"></textarea>
+      <button class="send-btn" id="ai-send-btn" onclick="aiSend()">Sūtīt ▶</button>
+    </div>
+  </div>
+
+</div>
+<!-- ═══ END AI TAB ═══ -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     3. JAVASCRIPT — BK + AI funkcijas
+     Iekļauj pirms </body> vai apvienot ar galveno skriptu.
+     ═══════════════════════════════════════════════════════════ -->
+<script>
+/* ─────────────────────────────────────────────
+   BK DATI
+───────────────────────────────────────────── */
+const BK_SYS = {
+    'Siena – vieglbetona bloki':         { c:1.00, u:'m2' },
+    'Siena – koka karkass':              { c:1.10, u:'m2' },
+    'Siena – CLT':                       { c:1.25, u:'m2' },
+    'Jumts – koka spāres':               { c:1.00, u:'m2' },
+    'Jumts – koka kopnes':               { c:1.10, u:'m2' },
+    'Jumts – CLT paneļi':                { c:1.30, u:'m2' },
+    'Grīda/Pārsegums – koka sijas':      { c:1.05, u:'m2' },
+    'Grīda/Pārsegums – CLT paneļi':      { c:0.84, u:'m2' },
+    'Pārsegums – dobie paneļi':          { c:1.10, u:'m2' },
+    'Pārsegums – monolītais betons':     { c:1.20, u:'m2' },
+    'Pamati – lentveidīgi':              { c:1.40, u:'m2' },
+    'Pamati – plāksne':                  { c:1.54, u:'m2' },
+    'Pamati – punktveida':               { c:1.26, u:'m2' },
+    'Sijas – līmsijas':                  { c:0.80, u:'m'  },
+    'Sijas – tērauda sijas':             { c:1.00, u:'m'  },
+    'Aiļu pārsedze – gatavā':            { c:0.50, u:'m2' },
+    'Aiļu pārsedze – monolītā':          { c:0.90, u:'m2' },
+    'Ražotājs – koka karkasi':           { c:1.15, u:'m2' },
+    'Ražotājs – CLT paneļi':             { c:1.25, u:'m2' },
+    'Ražotājs – betona sendvičpaneļi':   { c:1.30, u:'m2' },
+};
+
+const BK_RATES = {
+    m2: { L1:0.5, L2:0.96, L3:1.8 },
+    m:  { L1:0.3, L2:0.6,  L3:1.1 }
+};
+
+// [platības_robeža, koeficients] — pirmā robeža kas >= qty piemērojas
+const BK_AREA_COEF = [
+    [25,  1.20],
+    [60,  1.10],
+    [100, 1.05],
+    [120, 1.00],
+    [180, 0.95],
+    [250, 0.90],
+    [400, 0.85],
+];
+
+// Indekss = slāņu skaits - 1 (maks 6+)
+const BK_SLANI_COEF = [1.0, 0.8, 1.0, 1.1, 1.15, 1.2, 1.25];
+
+const BK_LEVEL_EXPLAIN = {
+    L1: '<strong>L1 — Minimālā dokumentācija būvatļaujai.</strong> Klients ietaupa tagad, bet bieži maksā vairāk būvlaikā — jo detaļas nav precizētas.',
+    L2: '<strong>L2 ⭐ — Optimālais variants.</strong> Pietiekami detalizēts lai būvniecība noritētu bez pārsteigumiem. 90% projektu ieteicams tieši šis.',
+    L3: '<strong>L3 — Ražošanas līmeņa dokumentācija.</strong> CLT paneļus, koka karkasas un metāla konstrukcijas taisīt BEZ šī ir riskanti — ražotājam vajag precīzus mērus.',
+};
+
+const BK_CAT_HINTS = {
+    'Siena':      'Vertikālās nesošās konstrukcijas. Cena atkarīga no materiāla sarežģītības (vieglbetona bloki = vienkāršāks, CLT = sarežģītāks).',
+    'Jumts':      'Nesošās jumta konstrukcijas. Kopnes (fabrikā gatavotas) ir lētākas par spārēm (roku darbs).',
+    'Grīda':      'Starpstāvu vai grunts pārseguma konstrukcijas.',
+    'Pārsegums':  'Starpstāvu pārseguma konstrukcijas.',
+    'Pamati':     'Pamatu veids atkarīgs no augsnes un slodzēm. Plāksne ir dārgāka bet stabilāka.',
+    'Sijas':      '⚠️ Mērvienība — METRI (garums), nevis m². Ievadi sijas garumu metros.',
+    'Aiļu':       'Logu/durvju aiļu pārsedze.',
+    'Ražotājs':   'Dokumentācija ražotājam — detalizētākas rasējumu prasības.',
+};
+
+let bkLevel = 'L2';
+let bkItems = [];
+
+function bkGetAreaCoef(qty) {
+    for (const [limit, coef] of BK_AREA_COEF) {
+        if (qty <= limit) return coef;
+    }
+    return 0.85;
+}
+
+function bkGetSlaniCoef(n) {
+    const idx = Math.min(n - 1, BK_SLANI_COEF.length - 1);
+    return BK_SLANI_COEF[Math.max(0, idx)];
+}
+
+function bkSetLevel(lvl) {
+    bkLevel = lvl;
+    ['L1','L2','L3'].forEach(l => {
+        document.getElementById('lvl-'+l).classList.toggle('active', l === lvl);
+    });
+    document.getElementById('bk-level-explain').innerHTML = BK_LEVEL_EXPLAIN[lvl];
+    bkCalc();
+}
+
+function bkGetSysKey() {
+    const sel = document.getElementById('bk-sys');
+    const opt = sel.options[sel.selectedIndex];
+    return opt ? opt.value : null;
+}
+
+function bkCalc() {
+    const sysKey  = bkGetSysKey();
+    const sys     = sysKey ? BK_SYS[sysKey] : null;
+    const qty     = parseFloat(document.getElementById('bk-qty').value) || 0;
+    const slani   = parseInt(document.getElementById('bk-slani').value) || 1;
+    const sarezg  = parseFloat(document.getElementById('bk-sarezg').value) || 1.0;
+    const steidz  = parseFloat(document.getElementById('bk-steidz').value) || 1.0;
+    const seg     = parseFloat(document.getElementById('bk-seg').value) || 1.0;
+    const mezgli  = parseInt(document.getElementById('bk-mezgli').value) || 0;
+
+    if (!sys) return;
+
+    const unit      = sys.u;
+    const sysC      = sys.c;
+    const likme     = BK_RATES[unit][bkLevel];
+    const areaCoef  = (unit === 'm2') ? bkGetAreaCoef(qty) : 1.0;
+    const slaniCoef = bkGetSlaniCoef(slani);
+
+    const cena = 5 * (likme * qty * seg * sysC * areaCoef * slaniCoef * sarezg * steidz) + mezgli * 25;
+
+    // Atjaunina koeficientu displejs
+    document.getElementById('bk-c-area').textContent  = areaCoef.toFixed(2);
+    document.getElementById('bk-c-slani').textContent = slaniCoef.toFixed(2);
+    document.getElementById('bk-c-sarezg').textContent= sarezg.toFixed(2);
+    document.getElementById('bk-c-steidz').textContent= steidz.toFixed(2);
+    document.getElementById('bk-c-sys').textContent   = sysC.toFixed(2);
+    document.getElementById('bk-c-seg').textContent   = seg.toFixed(2);
+    document.getElementById('bk-unit-lbl').textContent= unit;
+
+    // Rezultātu displejs
+    document.getElementById('bk-price').textContent =
+        Math.round(cena).toLocaleString('lv-LV') + ' €';
+    document.getElementById('bk-formula-str').textContent =
+        `5 × (${likme} × ${qty} × ${seg} × ${sysC} × ${areaCoef} × ${slaniCoef} × ${sarezg} × ${steidz}) + ${mezgli}×25`;
+
+    // Piezīme par līmeni
+    const notes = {
+        L1: 'Minimāla dokumentācija — zemākā cena, mazāk detaļu.',
+        L2: '⭐ Ieteicamais variants — optimāls balanss.',
+        L3: 'Ražošanas precizitāte — nepieciešams CLT/karkasu ražotājiem.',
+    };
+    document.getElementById('bk-res-note').textContent = notes[bkLevel];
+
+    // Cat hint
+    const firstWord = sysKey.split('–')[0].trim().split('/')[0].trim().split(' ')[0];
+    let hintText = '';
+    for (const [key, val] of Object.entries(BK_CAT_HINTS)) {
+        if (sysKey.startsWith(key) || firstWord === key) { hintText = val; break; }
+    }
+    if (!hintText) {
+        // Fallback — meklē pēc pirmā vārda
+        for (const [key, val] of Object.entries(BK_CAT_HINTS)) {
+            if (sysKey.includes(key)) { hintText = val; break; }
+        }
+    }
+    document.getElementById('bk-cat-hint').textContent = hintText;
+}
+
+function bkAddItem() {
+    const sysKey = bkGetSysKey();
+    const sys    = sysKey ? BK_SYS[sysKey] : null;
+    if (!sys) return;
+
+    const qty    = parseFloat(document.getElementById('bk-qty').value) || 0;
+    const slani  = parseInt(document.getElementById('bk-slani').value) || 1;
+    const sarezg = parseFloat(document.getElementById('bk-sarezg').value) || 1.0;
+    const steidz = parseFloat(document.getElementById('bk-steidz').value) || 1.0;
+    const seg    = parseFloat(document.getElementById('bk-seg').value) || 1.0;
+    const mezgli = parseInt(document.getElementById('bk-mezgli').value) || 0;
+
+    const unit      = sys.u;
+    const likme     = BK_RATES[unit][bkLevel];
+    const areaCoef  = (unit === 'm2') ? bkGetAreaCoef(qty) : 1.0;
+    const slaniCoef = bkGetSlaniCoef(slani);
+    const cena      = 5 * (likme * qty * seg * sys.c * areaCoef * slaniCoef * sarezg * steidz) + mezgli * 25;
+
+    bkItems.push({ sysKey, qty, unit, level: bkLevel, cena: Math.round(cena) });
+    bkRenderItems();
+}
+
+function bkRenderItems() {
+    const section = document.getElementById('bk-items-section');
+    const tbody   = document.getElementById('bk-items-tbody');
+    if (!bkItems.length) { section.style.display = 'none'; return; }
+    section.style.display = 'block';
+
+    tbody.innerHTML = bkItems.map((item, i) => `
+        <tr>
+          <td>${item.sysKey}</td>
+          <td>${item.qty} ${item.unit}</td>
+          <td>${item.level}</td>
+          <td class="td-price">${item.cena.toLocaleString('lv-LV')} €</td>
+          <td><button class="bk-remove-btn" onclick="bkRemoveItem(${i})" title="Dzēst">✕</button></td>
+        </tr>
+    `).join('');
+
+    const total = bkItems.reduce((s, it) => s + it.cena, 0);
+    document.getElementById('bk-total-price').textContent =
+        total.toLocaleString('lv-LV') + ' €';
+    document.getElementById('bk-total-pvn').textContent =
+        Math.round(total * 1.20).toLocaleString('lv-LV') + ' €';
+}
+
+function bkRemoveItem(idx) {
+    bkItems.splice(idx, 1);
+    bkRenderItems();
+}
+
+function bkClearItems() {
+    bkItems = [];
+    bkRenderItems();
+}
+
+// Init BK
+document.getElementById('bk-sys').addEventListener('change', bkCalc);
+document.getElementById('bk-qty').addEventListener('input', bkCalc);
+bkCalc();
+
+
+/* ─────────────────────────────────────────────
+   AI KONSULTANTS
+───────────────────────────────────────────── */
+let aiChatHistory = [];
+let aiTyping = false;
+
+const AI_SYSTEM = `Tu esi Volko Engineering projektu konsultants. Toms izmanto šo rīku tikšanās laikā ar klientiem Latvijā. Atbildi LATVISKI, kodolīgi, praktiski. Izmanto punktu sarakstus.
+
+VOLKO PAKALPOJUMI UN CENAS (bez PVN; klientam vienmēr rāda ar 20% uzcenojumu):
+
+AR — ARHITEKTŪRAS PROJEKTS (Toms):
+Bāzes likmes €/m²: Jaunbūve 16-32 | Izmaiņu projekts 9-22 | Rekonstrukcija 14-30 | Vienkāršota atjaunošana 8-21 | Nojaukšana 4-10
+Minimālās: Jaunbūve/Izmaiņu ≤60m²=1700€, 61-100m²=2100€; Rekonstrukcija ≤60m²=2500€, 61-100m²=2900€
+Grupas: I(≤25m²,1st)=koef.×0.75 | II(26-1500m²,≤3st)=×1.20 | III(>1500m² vai ≥4st)=×1.80
+I grupas mazēkas FIKSĒTI: 1-10m²=800€ | 11-15m²=1000€ | 16-20m²=1200€ | 21-25m²=1400€
+Apgrūtinājumi: +10% katrs (NKMP, legalizācija, kopīpašums, robeža<4m, steidzamība)
+Pašvaldību koef. (projekts/pakalpojumi): Rīga=1.20/1.05 | Mārupes u.c.=1.10/1.05 | Jūrmala/Sigulda u.c.=1.00/1.10 | Valmiera u.c.=1.02/1.15 | Liepāja/Ventspils/Daugavpils=1.05/1.20
+
+JAUNBŪVJU PAKETES:
+L1 Standarta: 3100-8900€ — 1×2D+1×3D skice+VR, AR projekts, BK 2D, 1 korekcija
+L2 Uzlabots: 3900-11150€ — 2×3D+VR+izmaksu aprēķins, AR projekts, BK 3D LOD200, 2 korekcijas
+L3 Premium: 6100-17400€ — 3×3D+2×VR, AR projekts, BK 3D LOD300, gandrīz-nulles ES, 3 korekcijas
+
+PAPILDU PAKALPOJUMI (reizina ar pašvaldības svc koef.):
+ESI=950€ | TAA=400€ | NOD=950€ | BK≤100m²=1400€ | BK101-250m²=2000€ | BK251-450m²=3000€ | TI=400€ | EPS=370€ | ELT=350€ | D/V=350€
+
+LEGALIZĀCIJA (patvaļīga, II gr.):
+1. ESI 950€ — pārbauda vai legalizācija vispār iespējama
+2. TAA 400€ — konstruktīvā drošība
+3. Uzmērīšana + rasējumi — precīzi plāni
+4. AR projekts — dokumentācija pašvaldībai
+5. BIS iesniegums — formāls pieteikums
+6. Pašvaldības saskaņošana — 1-3 mēneši
+7. NOD 950€ — nodošana ekspluatācijā
+8. Kadastra/ZG — valsts reģistru atjaunošana
+Kopā II gr. leģ. parasti: 5000-12000€ + 12-36 mēneši. RISKS: atteikums iespējams!
+
+BK — BŪVKONSTRUKCIJAS (Vladimirs):
+Formula: 5 × (likme × daudzums × koeficienti). L1=0.5 vien/m², L2=0.96, L3=1.8
+L1 Basic — minimāli dokumenti | L2 Build Ready ⭐ — ieteicams | L3 Pro/Factory — ražošanai
+
+APGRŪTINĀJUMI:
+NKMP: jāsaskaņo kultūras mantojuma pārvalde — ilgs process, katrai izmaiņai darba uzdevums
+Kopīpašums: VISU līdzīpašnieku rakstiska piekrišana OBLIGĀTA
+Robeža<4m: kaimiņa saskaņojums vai TIAN prasību atbilstība
+Meža zeme: atmežošanas atļauja 3-6 mēn. + kompensācija
+Detālplānojums: 1-3 gadi
+
+JAUTĀ ja nezini — labāk atzīt nezināšanu nekā sniegt neprecīzu info.`;
+
+function renderMd(text) {
+    return text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/^#### (.*)/gm, '<h5 style="margin:.4em 0 .15em;font-size:.85rem;color:var(--navy)">$1</h5>')
+        .replace(/^### (.*)/gm, '<strong style="display:block;margin:.5em 0 .15em">$1</strong>')
+        .replace(/^## (.*)/gm, '<h4 style="margin:.5em 0 .2em;font-size:.9rem;color:var(--navy)">$1</h4>')
+        .replace(/^- (.*)/gm, '<div style="padding:2px 0 2px 12px">• $1</div>')
+        .replace(/^\d+\. (.*)/gm, (m) => `<div style="padding:2px 0 2px 12px">${m}</div>`)
+        .replace(/\n\n/g, '<br><br>')
+        .replace(/\n/g, '<br>');
+}
+
+function aiAppendMsg(role, htmlContent, id) {
+    const win = document.getElementById('ai-chat-window');
+    const div = document.createElement('div');
+    div.className = 'msg ' + role;
+    if (id) div.id = id;
+    div.innerHTML = htmlContent;
+    win.appendChild(div);
+    win.scrollTop = win.scrollHeight;
+    return div;
+}
+
+function aiShowLoading() {
+    return aiAppendMsg('ai',
+        '<div class="loading-dots"><span></span><span></span><span></span></div>',
+        'ai-loading');
+}
+
+function aiRemoveLoading() {
+    const el = document.getElementById('ai-loading');
+    if (el) el.remove();
+}
+
+async function sendToGemini(userMessage) {
+    const apiKey = sessionStorage.getItem('gemini-key');
+    if (!apiKey) { aiShowApiPrompt(); return null; }
+
+    const contents = aiChatHistory.map(m => ({
+        role: m.role,
+        parts: [{ text: m.text }]
+    }));
+    contents.push({ role: 'user', parts: [{ text: userMessage }] });
+
+    const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                system_instruction: { parts: [{ text: AI_SYSTEM }] },
+                contents: contents,
+                generationConfig: { temperature: 0.7, maxOutputTokens: 1024 }
+            })
+        }
+    );
+
+    const data = await response.json();
+    if (data.error) throw new Error(data.error.message);
+    return data.candidates[0].content.parts[0].text;
+}
+
+async function aiSend() {
+    const input = document.getElementById('ai-input');
+    const msg   = input.value.trim();
+    if (!msg || aiTyping) return;
+
+    const apiKey = sessionStorage.getItem('gemini-key');
+    if (!apiKey) {
+        aiShowApiPrompt();
+        return;
+    }
+
+    input.value = '';
+    input.style.height = '44px';
+    aiTyping = true;
+    document.getElementById('ai-send-btn').disabled = true;
+
+    aiAppendMsg('user', msg);
+    aiChatHistory.push({ role: 'user', text: msg });
+
+    aiShowLoading();
+
+    try {
+        const reply = await sendToGemini(msg);
+        aiRemoveLoading();
+        if (reply) {
+            aiChatHistory.push({ role: 'model', text: reply });
+            aiAppendMsg('ai', renderMd(reply));
+        }
+    } catch(err) {
+        aiRemoveLoading();
+        let errMsg = 'Kļūda: ' + err.message;
+        if (err.message.toLowerCase().includes('api key') ||
+            err.message.toLowerCase().includes('invalid')) {
+            errMsg = '⚠️ Nepareiza API atslēga. Pārbaudi un ievadi atkārtoti.';
+            sessionStorage.removeItem('gemini-key');
+            aiUpdateApiStatus(false);
+            document.getElementById('ai-api-body').style.display = 'block';
+            document.getElementById('ai-api-toggle-icon').textContent = '▲ sakļaut';
+        }
+        aiAppendMsg('error', errMsg);
+    }
+
+    aiTyping = false;
+    document.getElementById('ai-send-btn').disabled = false;
+}
+
+function aiQuick(text) {
+    document.getElementById('ai-input').value = text;
+    aiSend();
+}
+
+function aiKeydown(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        aiSend();
+    }
+    // Auto-resize textarea
+    const ta = document.getElementById('ai-input');
+    setTimeout(() => {
+        ta.style.height = '44px';
+        ta.style.height = Math.min(ta.scrollHeight, 120) + 'px';
+    }, 0);
+}
+
+function aiClearChat() {
+    aiChatHistory = [];
+    const win = document.getElementById('ai-chat-window');
+    win.innerHTML = '<div class="msg ai">Saruna notīrīta. Ko vēlies uzzināt?</div>';
+}
+
+function aiSaveKey() {
+    const val = document.getElementById('ai-api-input').value.trim();
+    if (!val) { aiUpdateApiStatus(false, 'Ievadi atslēgu!'); return; }
+    sessionStorage.setItem('gemini-key', val);
+    document.getElementById('ai-api-input').value = '';
+    aiUpdateApiStatus(true);
+    // Sakļauj joslu pēc saglabāšanas
+    setTimeout(() => {
+        document.getElementById('ai-api-body').style.display = 'none';
+        document.getElementById('ai-api-toggle-icon').textContent = '▼ izvērst';
+    }, 800);
+}
+
+function aiUpdateApiStatus(ok, msg) {
+    const el = document.getElementById('ai-api-status');
+    if (ok) {
+        el.className = 'api-status ok';
+        el.textContent = '✓ Atslēga saglabāta (sesijā)';
+    } else {
+        el.className = 'api-status err';
+        el.textContent = msg || 'Nav ievadīta atslēga';
+    }
+}
+
+function aiShowApiPrompt() {
+    document.getElementById('ai-api-body').style.display = 'block';
+    document.getElementById('ai-api-toggle-icon').textContent = '▲ sakļaut';
+    document.getElementById('ai-api-input').focus();
+    aiUpdateApiStatus(false, '⚠️ Ievadi API atslēgu lai turpinātu');
+}
+
+function aiToggleApiSection() {
+    const body = document.getElementById('ai-api-body');
+    const icon = document.getElementById('ai-api-toggle-icon');
+    const visible = body.style.display !== 'none';
+    body.style.display = visible ? 'none' : 'block';
+    icon.textContent = visible ? '▼ izvērst' : '▲ sakļaut';
+}
+
+// Init AI — pārbauda vai atslēga jau saglabāta
+(function aiInit() {
+    const existing = sessionStorage.getItem('gemini-key');
+    if (existing) {
+        aiUpdateApiStatus(true);
+        document.getElementById('ai-api-body').style.display = 'none';
+        document.getElementById('ai-api-toggle-icon').textContent = '▼ izvērst';
+    }
+})();
+</script>

@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Volko Engineering — AR Sekcija</title>
+<style>
+:root {
+    --navy: #1a2b3c;
+    --gold: #c8a84b;
+    --bg: #f4f5f0;
+    --card: #ffffff;
+    --text: #1a2b3c;
+    --muted: #6b7280;
+    --border: #e2e8f0;
+    --radius: 10px;
+    --red: #dc2626;
+    --green: #059669;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:-apple-system,'Segoe UI',sans-serif; background:var(--bg); color:var(--text); }
+
+.card { background:var(--card); border-radius:var(--radius); padding:22px; box-shadow:0 1px 3px rgba(0,0,0,.07),0 4px 12px rgba(0,0,0,.04); margin-bottom:16px; }
+.card-title { font-size:.68rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid var(--border); }
+.section-wrap { max-width:1060px; margin:0 auto; padding:24px 20px; }
+
+/* ─── JAUNBUVE PAKETES ─────────────────────── */
+#jaunbuve-paketes { display:none; }
+#jaunbuve-paketes.visible { display:block; }
+
+.paketes-header { text-align:center; margin-bottom:20px; }
+.paketes-header h2 { font-size:1rem; font-weight:800; color:var(--navy); }
+.paketes-header p { font-size:.8rem; color:var(--muted); margin-top:5px; }
+
+.paketes-full-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+@media (max-width:760px) { .paketes-full-grid { grid-template-columns:1fr; } }
+
+.pf-card { border:2px solid var(--border); border-radius:12px; padding:18px; position:relative; }
+.pf-card.best { border-color:var(--gold); background:#fffbf0; }
+.pf-card.best::before { content:'IETEICAMS'; position:absolute; top:-11px; left:50%; transform:translateX(-50%); background:var(--gold); color:var(--navy); font-size:.6rem; font-weight:800; letter-spacing:2px; padding:3px 10px; border-radius:20px; white-space:nowrap; }
+
+.pf-code { font-size:.68rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:3px; }
+.pf-name { font-size:1rem; font-weight:800; color:var(--navy); margin-bottom:2px; }
+.pf-tagline { font-size:.72rem; color:var(--muted); margin-bottom:12px; }
+
+.pf-price-box { background:var(--navy); border-radius:8px; padding:11px 13px; margin-bottom:11px; }
+.pf-price-lbl { font-size:.58rem; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,.4); margin-bottom:2px; }
+.pf-price-val { font-size:1.4rem; font-weight:700; color:var(--gold); }
+.pf-price-int { font-size:.68rem; color:rgba(255,255,255,.3); margin-top:2px; }
+
+.pf-includes { list-style:none; margin-bottom:12px; }
+.pf-includes li { font-size:.76rem; color:var(--text); padding:3.5px 0; border-bottom:1px solid var(--border); display:flex; gap:7px; align-items:flex-start; line-height:1.4; }
+.pf-includes li:last-child { border-bottom:none; }
+.pf-check-g { color:var(--green); font-weight:700; flex-shrink:0; margin-top:1px; }
+
+.pf-risk { background:#fef2f2; border-left:3px solid var(--red); border-radius:6px; padding:9px 11px; margin-bottom:10px; font-size:.73rem; color:#991b1b; line-height:1.5; }
+.pf-risk strong { display:block; margin-bottom:3px; color:var(--red); font-size:.76rem; }
+
+.pf-savings { background:#ecfdf5; border-left:3px solid var(--green); border-radius:6px; padding:9px 11px; margin-bottom:10px; font-size:.73rem; color:#065f46; line-height:1.5; }
+.pf-savings strong { display:block; margin-bottom:3px; color:var(--green); font-size:.76rem; }
+
+.pf-applies { background:var(--bg); border-radius:6px; padding:7px 10px; font-size:.71rem; color:var(--muted); }
+.pf-applies strong { color:var(--text); }
+
+/* ─── LEGALIZACIJA PAKETES ─────────────────── */
+#legalizacija-paketes { display:none; }
+#legalizacija-paketes.visible { display:block; }
+
+.leg-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:22px; }
+@media (max-width:760px) { .leg-grid { grid-template-columns:1fr; } }
+
+.leg-card { border:2px solid var(--border); border-radius:12px; padding:18px; position:relative; }
+.leg-card.best { border-color:var(--gold); background:#fffbf0; }
+.leg-card.best::before { content:'IETEICAMS'; position:absolute; top:-11px; left:50%; transform:translateX(-50%); background:var(--gold); color:var(--navy); font-size:.6rem; font-weight:800; letter-spacing:2px; padding:3px 10px; border-radius:20px; white-space:nowrap; }
+
+.leg-pack-code { font-size:.68rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:3px; }
+.leg-pack-name { font-size:1rem; font-weight:800; color:var(--navy); margin-bottom:2px; }
+.leg-pack-sub { font-size:.72rem; color:var(--muted); margin-bottom:12px; }
+
+.leg-price-box { background:var(--navy); border-radius:8px; padding:11px 13px; margin-bottom:11px; }
+.leg-price-lbl { font-size:.58rem; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,.4); margin-bottom:2px; }
+.leg-price-val { font-size:1.25rem; font-weight:700; color:var(--gold); }
+.leg-price-note { font-size:.68rem; color:rgba(255,255,255,.3); margin-top:2px; }
+
+.leg-includes { list-style:none; margin-bottom:10px; }
+.leg-includes li { font-size:.76rem; padding:3px 0; border-bottom:1px solid var(--border); display:flex; gap:7px; align-items:flex-start; line-height:1.4; }
+.leg-includes li:last-child { border-bottom:none; }
+
+.leg-risk { background:#fef2f2; border-left:3px solid var(--red); border-radius:6px; padding:9px 11px; margin-bottom:9px; font-size:.72rem; color:#991b1b; line-height:1.5; }
+.leg-risk strong { display:block; margin-bottom:3px; color:var(--red); font-size:.75rem; }
+.leg-risk .ri { margin-top:4px; display:flex; gap:5px; }
+.leg-risk .ri::before { content:'⚠'; flex-shrink:0; }
+
+.leg-adv { background:#ecfdf5; border-left:3px solid var(--green); border-radius:6px; padding:9px 11px; margin-bottom:9px; font-size:.72rem; color:#065f46; line-height:1.5; }
+.leg-adv strong { display:block; margin-bottom:3px; color:var(--green); font-size:.75rem; }
+
+.leg-when { background:var(--bg); border-radius:6px; padding:7px 10px; font-size:.71rem; color:var(--muted); margin-bottom:9px; }
+.leg-when strong { color:var(--text); }
+
+/* Timeline */
+.tl-wrap { background:var(--bg); border-radius:10px; padding:14px 16px; margin-bottom:18px; overflow-x:auto; }
+.tl-title { font-size:.65rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:12px; }
+.tl { display:flex; align-items:center; gap:0; min-width:600px; }
+.tl-node { display:flex; flex-direction:column; align-items:center; }
+.tl-label { font-size:.66rem; font-weight:700; color:var(--navy); background:var(--card); border:1.5px solid var(--gold); border-radius:5px; padding:3px 7px; white-space:nowrap; }
+.tl-month { font-size:.6rem; color:var(--muted); margin-top:3px; white-space:nowrap; text-align:center; }
+.tl-conn { display:flex; flex-direction:column; align-items:center; padding:0 3px; }
+.tl-dur { font-size:.58rem; color:var(--muted); white-space:nowrap; margin-bottom:1px; }
+.tl-arr { color:var(--gold); font-weight:700; font-size:.9rem; line-height:1; margin-bottom:14px; }
+
+/* Normativi */
+.normativi { background:var(--navy); border-radius:10px; padding:18px 20px; }
+.normativi-title { font-size:.65rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--gold); margin-bottom:12px; }
+.normativi h4 { font-size:.8rem; font-weight:700; color:rgba(255,255,255,.88); margin-bottom:6px; }
+.normativi ul { list-style:none; margin-bottom:12px; }
+.normativi ul li { font-size:.75rem; color:rgba(255,255,255,.6); padding:2.5px 0; display:flex; gap:7px; line-height:1.4; }
+.normativi ul li::before { content:'•'; color:var(--gold); flex-shrink:0; }
+.normativi hr { border:none; border-top:1px solid rgba(255,255,255,.1); margin:10px 0; }
+
+/* ─── AUTO-IETEIKUMI ───────────────────────── */
+#auto-ieteikumi { display:none; }
+#auto-ieteikumi.visible { display:block; }
+
+.urg-group { margin-bottom:16px; }
+.urg-label { font-size:.63rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; padding:3px 9px; border-radius:4px; display:inline-block; margin-bottom:8px; }
+.urg-label.critical { background:#fef2f2; color:var(--red); }
+.urg-label.recommended { background:#fffbf0; color:#92400e; }
+.urg-label.if_needed { background:#f3f4f6; color:var(--muted); }
+
+.rec-items { display:flex; flex-direction:column; gap:7px; }
+.rec-item { border:1.5px solid var(--border); border-radius:8px; padding:11px 13px; display:flex; gap:11px; align-items:flex-start; transition:border-color .15s; }
+.rec-item.critical { border-color:#fca5a5; background:#fff7f7; }
+.rec-item.recommended { border-color:#fde68a; background:#fffdf7; }
+.rec-item:hover { border-color:var(--gold); }
+
+.rec-cb { margin-top:2px; width:15px; height:15px; accent-color:var(--gold); cursor:pointer; flex-shrink:0; }
+.rec-name { font-size:.84rem; font-weight:700; color:var(--navy); margin-bottom:2px; }
+.rec-price { font-size:.76rem; color:var(--gold); font-weight:700; margin-bottom:3px; }
+.rec-why { font-size:.73rem; color:var(--muted); line-height:1.45; }
+.rec-when { font-size:.67rem; color:var(--muted); margin-top:3px; font-style:italic; }
+.rec-when strong { font-style:normal; color:var(--text); }
+
+.rec-tot { background:var(--navy); border-radius:8px; padding:11px 15px; display:flex; justify-content:space-between; align-items:center; margin-top:12px; }
+.rec-tot-lbl { font-size:.65rem; letter-spacing:1.5px; text-transform:uppercase; color:rgba(255,255,255,.4); }
+.rec-tot-val { font-size:1.05rem; font-weight:700; color:var(--gold); }
+
+/* Tooltip */
+.iw { display:inline-flex; align-items:center; gap:4px; position:relative; }
+.ii { display:inline-flex; align-items:center; justify-content:center; width:14px; height:14px; border-radius:50%; background:var(--gold); color:var(--navy); font-size:.6rem; font-weight:800; cursor:pointer; flex-shrink:0; }
+.tb { display:none; position:absolute; left:18px; top:-4px; z-index:100; background:var(--navy); color:rgba(255,255,255,.88); font-size:.73rem; line-height:1.5; padding:9px 12px; border-radius:8px; width:230px; box-shadow:0 6px 20px rgba(0,0,0,.25); pointer-events:none; }
+.tb::before { content:''; position:absolute; left:-5px; top:8px; border:5px solid transparent; border-right-color:var(--navy); border-left:none; }
+.iw:hover .tb { display:block; }
+</style>
+</head>
+<body>
+<div class="section-wrap">
+
+<!-- ══════════════════════════════════════════
+     1. JAUNBŪVES PAKETES
+     ══════════════════════════════════════════ -->
+<div id="jaunbuve-paketes" class="card">
+    <div class="card-title">Jaunbūvju paketes — Detalizēts salīdzinājums</div>
+    <div class="paketes-header">
+        <h2>Izvēlies piemērotāko paketi savai mājai</h2>
+        <p>Platība: <span id="pb-area">—</span> m² &nbsp;·&nbsp; Visas cenas bez PVN, klientam (ar 20% rezervi)</p>
+    </div>
+    <div class="paketes-full-grid">
+
+        <!-- L1 -->
+        <div class="pf-card">
+            <div class="pf-code">L1</div>
+            <div class="pf-name">Standarta</div>
+            <div class="pf-tagline">Pamata dokumentācija</div>
+            <div class="pf-price-box">
+                <div class="pf-price-lbl">Klientam</div>
+                <div class="pf-price-val" id="pf-l1-cli">—</div>
+                <div class="pf-price-int">Iekšējā: <span id="pf-l1-int">—</span></div>
+            </div>
+            <ul class="pf-includes">
+                <li><span class="pf-check-g">✓</span><span>1× 2D skice (pamata plāns — redzēsi kur atradīsies telpas)</span></li>
+                <li><span class="pf-check-g">✓</span><span>1× 3D vizualizācija (kā ēka izskatīsies no ārpuses)</span></li>
+                <li><span class="pf-check-g">✓</span><span>VR tūre (360° apskate telefonā vai datorā)</span></li>
+                <li><span class="pf-check-g">✓</span><span>Arhitektūras projekts: plāni, fasādes, 1 griezums</span></li>
+                <li><span class="pf-check-g">✓</span><span>Galvenais plāns + situācijas apliecinājums</span></li>
+                <li><span class="pf-check-g">✓</span><span>BK 2D — pamata konstruktīvie aprēķini</span></li>
+                <li><span class="pf-check-g">✓</span><span>Energosertifikāts (bāzes novērtējums)</span></li>
+                <li><span class="pf-check-g">✓</span><span>1 korekciju kārta</span></li>
+            </ul>
+            <div class="pf-risk">
+                <strong>Risks</strong>
+                Bez detalizētiem mezgliem būvniekam var rasties jautājumi būvlaikā — papildu izmaksas par skaidrojumiem un izmaiņām.
+            </div>
+            <div class="pf-applies">
+                <strong>Piemērojams:</strong> Vienkāršākai privātmājai līdz 100 m², kad nav sarežģītību.
+            </div>
+        </div>
+
+        <!-- L2 -->
+        <div class="pf-card best">
+            <div class="pf-code">L2 ⭐</div>
+            <div class="pf-name">Uzlabots</div>
+            <div class="pf-tagline">90% privātmāju vajadzīgs šis</div>
+            <div class="pf-price-box">
+                <div class="pf-price-lbl">Klientam</div>
+                <div class="pf-price-val" id="pf-l2-cli">—</div>
+                <div class="pf-price-int">Iekšējā: <span id="pf-l2-int">—</span></div>
+            </div>
+            <ul class="pf-includes">
+                <li><span class="pf-check-g">✓</span><span>2× 3D vizualizāciju varianti</span></li>
+                <li><span class="pf-check-g">✓</span><span>VR tūre (360° apskate)</span></li>
+                <li><span class="pf-check-g">✓</span><span>Orientējoša celtniecības izmaksu prognoze</span></li>
+                <li><span class="pf-check-g">✓</span><span>Arhitektūras projekts: plāni, fasādes, 4 griezumi, 4 mezgli</span></li>
+                <li><span class="pf-check-g">✓</span><span>Galvenais plāns ar vertikālo plānojumu + žogs</span></li>
+                <li><span class="pf-check-g">✓</span><span>BK 3D LOD200 — detalizētāki konstrukciju rasējumi</span></li>
+                <li><span class="pf-check-g">✓</span><span>Energosertifikāts (bāzes novērtējums)</span></li>
+                <li><span class="pf-check-g">✓</span><span>2 korekciju kārtas</span></li>
+            </ul>
+            <div class="pf-savings">
+                <strong>Ietaupa naudu</strong>
+                Precīzāka dokumentācija = mazāk jautājumu no būvnieka = mazāk papildu izmaksu būvlaikā. Samazina pārsteigumus būvlaukumā.
+            </div>
+            <div class="pf-applies">
+                <strong>Ieteicams:</strong> Standarta privātmājai 80–220 m².
+            </div>
+        </div>
+
+        <!-- L3 -->
+        <div class="pf-card">
+            <div class="pf-code">L3</div>
+            <div class="pf-name">Premium</div>
+            <div class="pf-tagline">Pilna dokumentācija · gatavs ražošanai</div>
+            <div class="pf-price-box">
+                <div class="pf-price-lbl">Klientam</div>
+                <div class="pf-price-val" id="pf-l3-cli">—</div>
+                <div class="pf-price-int">Iekšējā: <span id="pf-l3-int">—</span></div>
+            </div>
+            <ul class="pf-includes">
+                <li><span class="pf-check-g">✓</span><span>3× 3D varianti</span></li>
+                <li><span class="pf-check-g">✓</span><span>2× VR tūres (interjers + eksterjers)</span></li>
+                <li><span class="pf-check-g">✓</span><span>Izmaksu prognoze ar papildinājumiem</span></li>
+                <li><span class="pf-check-g">✓</span><span>Arhitektūras projekts: plāni, fasādes, 7 griezumi, kāpnes, 8 mezgli</span></li>
+                <li><span class="pf-check-g">✓</span><span>Būvapjomu saraksts (precīzs materiālu daudzums — var iegūt tāmi)</span></li>
+                <li><span class="pf-check-g">✓</span><span>BK 3D LOD300 — pilnīgi detalizētas konstrukcijas, gatavs ražošanai</span></li>
+                <li><span class="pf-check-g">✓</span><span>Gandrīz nulles enerģijas sertifikāts (augstākā klase)</span></li>
+                <li><span class="pf-check-g">✓</span><span>3 korekciju kārtas</span></li>
+            </ul>
+            <div class="pf-risk" style="background:#ecfdf5; border-left-color:var(--green);">
+                <strong style="color:var(--green);">LOD300 priekšrocība</strong>
+                <span style="color:#065f46;">Precīzi ražošanas rasējumi. Kļūdu risks ražošanā samazināts līdz minimumam.</span>
+            </div>
+            <div class="pf-applies">
+                <strong>Piemērojams:</strong> Lielām ēkām &gt;220 m². Ja plāno CLT vai koka karkasu — vajag šo.
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     2. LEGALIZĀCIJAS PAKETES
+     ══════════════════════════════════════════ -->
+<div id="legalizacija-paketes" class="card">
+    <div class="card-title">Legalizācijas varianti — Izvēlies drošo ceļu</div>
+
+    <div class="leg-grid">
+
+        <!-- Pakete A -->
+        <div class="leg-card">
+            <div class="leg-pack-code">Pakete A</div>
+            <div class="leg-pack-name">Ātrā / Lētā</div>
+            <div class="leg-pack-sub">Tikai obligātais minimum</div>
+            <div class="leg-price-box">
+                <div class="leg-price-lbl">Aptuveni no</div>
+                <div class="leg-price-val" id="leg-a-price">—</div>
+                <div class="leg-price-note">tikai AR projekts + BIS</div>
+            </div>
+            <ul class="leg-includes">
+                <li><span class="pf-check-g">✓</span><span>Uzmērīšana (esošais stāvoklis)</span></li>
+                <li><span class="pf-check-g">✓</span><span>AR projekts (legalizācijai)</span></li>
+                <li><span class="pf-check-g">✓</span><span>BIS iesniegums (apliecinājuma karte)</span></li>
+            </ul>
+            <div class="leg-risk">
+                <strong>RISKI</strong>
+                <div class="ri">BEZ ESI — var izrādīties ka legalizācija nav iespējama. Iztērēsi 2000–5000 EUR uz projektu kas tiks noraidīts.</div>
+                <div class="ri">BEZ TAA — pašvaldība var pieprasīt nojaukšanu ja ēka ir konstruktīvi bīstama.</div>
+                <div class="ri">BEZ NOD — ēka paliek "nepabeigta". Banka nedos kredītu pret šo īpašumu.</div>
+            </div>
+            <div class="leg-when">
+                <strong>Tikai ja:</strong> I grupas mazēka (≤25 m²) un zona NOTEIKTI atļauj būvniecību. Konsultējies pirms!
+            </div>
+        </div>
+
+        <!-- Pakete B -->
+        <div class="leg-card best">
+            <div class="leg-pack-code">Pakete B</div>
+            <div class="leg-pack-name">Ieteicamā</div>
+            <div class="leg-pack-sub">Pilnā drošā ceļa pakete</div>
+            <div class="leg-price-box">
+                <div class="leg-price-lbl">Klientam (aprēķināts)</div>
+                <div class="leg-price-val" id="leg-b-price">—</div>
+                <div class="leg-price-note">ESI + TAA + AR + BIS + NOD + Kadastra</div>
+            </div>
+            <ul class="leg-includes">
+                <li><span class="pf-check-g">✓</span><span>ESI — Juridiskā esošās situācijas izpēte</span></li>
+                <li><span class="pf-check-g">✓</span><span>TAA — Tehniskā apsekošana</span></li>
+                <li><span class="pf-check-g">✓</span><span>Uzmērīšana (esošais stāvoklis)</span></li>
+                <li><span class="pf-check-g">✓</span><span>AR projekts (legalizācijai)</span></li>
+                <li><span class="pf-check-g">✓</span><span>BIS iesniegums + pašvaldības saskaņošana</span></li>
+                <li><span class="pf-check-g">✓</span><span>NOD — Nodošana ekspluatācijā</span></li>
+                <li><span class="pf-check-g">✓</span><span>Kadastra uzmērīšana + ZG nostiprināšana</span></li>
+            </ul>
+            <div class="leg-adv">
+                <strong>Pilna aizsardzība</strong>
+                Pēc procesa ēka ir 100% legāla. Juridiskā bāze: EBN 7.2, EBN 159.1, BL 22.pants.
+            </div>
+            <div class="leg-when">
+                <strong>Ieteicams vienmēr</strong> II–III grupas ēkām. Samazina risku līdz nullei.
+            </div>
+        </div>
+
+        <!-- Pakete C -->
+        <div class="leg-card">
+            <div class="leg-pack-code">Pakete C</div>
+            <div class="leg-pack-name">Premium / Paātrināta</div>
+            <div class="leg-pack-sub">Viss + prioritāra apstrāde</div>
+            <div class="leg-price-box">
+                <div class="leg-price-lbl">Klientam (ar prioritāti)</div>
+                <div class="leg-price-val" id="leg-c-price">—</div>
+                <div class="leg-price-note">Pakete B + EPS + steidzamība ×1.15</div>
+            </div>
+            <ul class="leg-includes">
+                <li><span class="pf-check-g">✓</span><span>Viss kā Pakete B</span></li>
+                <li><span class="pf-check-g">✓</span><span>EPS — Energoefektivitātes pārskats</span></li>
+                <li><span class="pf-check-g">✓</span><span>Prioritāra apstrāde (termiņi saīsināti ~30%)</span></li>
+                <li><span class="pf-check-g">✓</span><span>Juridiskie komentāri par katru BIS lēmumu</span></li>
+                <li><span class="pf-check-g">✓</span><span>Dedikēts kontaktpunkts visos soļos</span></li>
+            </ul>
+            <div class="leg-adv">
+                <strong>Maksimālais komforts</strong>
+                Visātrākais ceļš. Piemērojams ja ir steidzamība (pārdošana, mantojums, kredīts) vai sarežģīts objekts.
+            </div>
+            <div class="leg-when">
+                <strong>Izvēlies ja:</strong> Steidzama pārdošana vai vēlies minimālu iesaistīšanos procesā.
+            </div>
+        </div>
+
+    </div>
+
+    <!-- PROCESA LAIKA JOSLA -->
+    <div class="tl-wrap">
+        <div class="tl-title">Paketes B — Aptuvenais procesa laiks</div>
+        <div class="tl">
+            <div class="tl-node"><div class="tl-label">ESI</div><div class="tl-month">1. mēn.</div></div>
+            <div class="tl-conn"><div class="tl-dur">~2 ned.</div><div class="tl-arr">──►</div></div>
+            <div class="tl-node"><div class="tl-label">TAA</div><div class="tl-month">2. mēn.</div></div>
+            <div class="tl-conn"><div class="tl-dur">~2 ned.</div><div class="tl-arr">──►</div></div>
+            <div class="tl-node"><div class="tl-label">Uzmērīšana</div><div class="tl-month">2–3. mēn.</div></div>
+            <div class="tl-conn"><div class="tl-dur">~3 ned.</div><div class="tl-arr">──►</div></div>
+            <div class="tl-node"><div class="tl-label">Projekts</div><div class="tl-month">3–4. mēn.</div></div>
+            <div class="tl-conn"><div class="tl-dur">~4 ned.</div><div class="tl-arr">──►</div></div>
+            <div class="tl-node"><div class="tl-label">BIS</div><div class="tl-month">4–5. mēn.</div></div>
+            <div class="tl-conn"><div class="tl-dur">~4 ned.</div><div class="tl-arr">──►</div></div>
+            <div class="tl-node"><div class="tl-label">NOD</div><div class="tl-month">6–7. mēn.</div></div>
+            <div class="tl-conn"><div class="tl-dur">~3 ned.</div><div class="tl-arr">──►</div></div>
+            <div class="tl-node"><div class="tl-label">Kadastra</div><div class="tl-month">8. mēn.</div></div>
+        </div>
+    </div>
+
+    <!-- NORMATĪVAIS REGULĒJUMS -->
+    <div class="normativi">
+        <div class="normativi-title">Normatīvais regulējums</div>
+        <h4>Galvenie tiesību akti</h4>
+        <ul>
+            <li>Ēku būvnoteikumi (EBN) — MK not. Nr. 529, 02.09.2014. (ar grozījumiem)</li>
+            <li>Būvniecības likums — 09.07.2013. (ar grozījumiem)</li>
+            <li>Vispārīgie būvnoteikumi — MK not. Nr. 500, 19.08.2014.</li>
+        </ul>
+        <hr>
+        <h4>II grupas ēkas legalizācijai piemērojamie punkti</h4>
+        <ul>
+            <li>EBN 7.2 — Pārbūves projekts (Paskaidrojuma raksts) esošai ēkai</li>
+            <li>EBN 71 — Būvprojekts (Būvatļauja) sarežģītākām pārbūvēm</li>
+            <li>EBN 159.1 — Esošo ēku tehniskā apsekošana pirms pārbūves</li>
+            <li>BL 22. pants — Patvaļīgā būvniecība un tās seku novēršana</li>
+        </ul>
+        <hr>
+        <h4>Termiņi (BL un EBN)</h4>
+        <ul>
+            <li>Pašvaldībai jāsniedz atbilde BIS: 30 darba dienas</li>
+            <li>Būvatļauja derīga darbu uzsākšanai: 5 gadi</li>
+            <li>Būvatļauja derīga darbu pabeigšanai: 8 gadi</li>
+            <li>Pagarināšana: jā (būvatļaujai) · nē (paskaidrojuma rakstam)</li>
+            <li>Apliecinājuma karte spēkā: 2 gadi no izsniegšanas</li>
+        </ul>
+    </div>
+
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     3. AUTO-IETEIKUMI
+     ══════════════════════════════════════════ -->
+<div id="auto-ieteikumi" class="card">
+    <div class="card-title">Ieteicamie papildu pakalpojumi</div>
+    <p style="font-size:.8rem;color:var(--muted);margin-bottom:16px;">Izvēlies ko iekļaut piedāvājumā. Cenas ar pašvaldības koeficientu un 20% rezervi.</p>
+
+    <div id="urg-critical" class="urg-group" style="display:none">
+        <div class="urg-label critical">🔴 KRITISKI — obligāti iesaka</div>
+        <div class="rec-items" id="urg-critical-list"></div>
+    </div>
+
+    <div id="urg-recommended" class="urg-group" style="display:none">
+        <div class="urg-label recommended">🟡 IETEICAMS — lielākajai daļai</div>
+        <div class="rec-items" id="urg-recommended-list"></div>
+    </div>
+
+    <div id="urg-if_needed" class="urg-group" style="display:none">
+        <div class="urg-label if_needed">⚪ NEPIECIEŠAMS JA — atkarīgs no situācijas</div>
+        <div class="rec-items" id="urg-if_needed-list"></div>
+    </div>
+
+    <div class="rec-tot">
+        <div class="rec-tot-lbl">Papildu pakalpojumi (klientam)</div>
+        <div class="rec-tot-val" id="rec-total">0 EUR</div>
+    </div>
+</div>
+
+</div><!-- /section-wrap -->
+
+<script>
+// ─── DATI ────────────────────────────────────────────────────
+const PAKETES_BRACKS = [
+    { max:60,  L1:3100, L2:3900,  L3:6100  },
+    { max:100, L1:3550, L2:4450,  L3:6950  },
+    { max:160, L1:4000, L2:5000,  L3:7850  },
+    { max:220, L1:4450, L2:5600,  L3:8700  },
+    { max:300, L1:4900, L2:6150,  L3:9550  },
+    { max:400, L1:5750, L2:7250,  L3:11300 },
+    { max:Infinity, L1:8900, L2:11150, L3:17400 },
+];
+
+const SVC_BASE = {
+    esi:950, taa:400, nod:950, bk_small:1400, bk_mid:2000, bk_large:3000,
+    ti:400, eps:370, elt:350, dv:350,
+};
+
+const RECS = {
+    jaunbuve: [
+        { id:'bk', name:'BK — Būvkonstrukcijas', urgency:'recommended',
+          why:'Vajadzīgs lai aprēķinātu pamatus, jumtu, pārsegumus. Bez BK būvnieks nevar droši celties.',
+          when_required:'Obligāts &gt;100 m² vai 2+ stāviem.',
+          priceFn:(a,s)=>r50c( (a<=100?SVC_BASE.bk_small:a<=250?SVC_BASE.bk_mid:SVC_BASE.bk_large)*s*1.20 ) },
+        { id:'eps', name:'EPS — Energoefektivitātes pārskats', urgency:'recommended',
+          why:'Nepieciešams jaunbūvei ar apkuri. Apliecina enerģijas patēriņu.',
+          when_required:'Obligāts jaunbūvēm ar apkuri.',
+          priceFn:(a,s)=>r50c(SVC_BASE.eps*s*1.20) },
+        { id:'ti', name:'TI — Topogrāfija', urgency:'if_needed',
+          why:'Vajadzīgs ja nav aktuāla topogrāfiskā plāna. Parāda precīzu zemes reljefa info.',
+          when_required:'Ja nav aktuāla topogrāfija (vecāka par 3 gadiem).',
+          priceFn:(a,s)=>r50c(SVC_BASE.ti*s*1.20) },
+    ],
+    izmaiņu: [
+        { id:'ti', name:'TI — Topogrāfija', urgency:'if_needed',
+          why:'Vajadzīgs ja projekts skar ārējo teritoriju vai fasādi.',
+          when_required:'Ja nav aktuāla topogrāfija.',
+          priceFn:(a,s)=>r50c(SVC_BASE.ti*s*1.20) },
+    ],
+    rekonstrukcija: [
+        { id:'taa', name:'TAA — Tehniskā apsekošana', urgency:'recommended',
+          why:'Pirms rekonstrukcijas jāzina ēkas faktiskais stāvoklis. Var atklāt slēptas problēmas.',
+          when_required:'Ieteicams vienmēr pirms rekonstrukcijas.',
+          priceFn:(a,s)=>r50c(SVC_BASE.taa*s*1.20) },
+        { id:'bk', name:'BK — Būvkonstrukcijas', urgency:'if_needed',
+          why:'Vajadzīgs ja mainās nesošās konstrukcijas vai apjoms.',
+          when_required:'Ja mainās nesošie elementi.',
+          priceFn:(a,s)=>r50c( (a<=100?SVC_BASE.bk_small:a<=250?SVC_BASE.bk_mid:SVC_BASE.bk_large)*s*1.20 ) },
+        { id:'eps', name:'EPS — Energoefektivitātes pārskats', urgency:'if_needed',
+          why:'Ja rekonstrukcija ietver siltināšanu — var pieprasīt EPS.',
+          when_required:'Ja mainās ēkas energoefektivitāte.',
+          priceFn:(a,s)=>r50c(SVC_BASE.eps*s*1.20) },
+    ],
+    vienk: [
+        { id:'eps', name:'EPS — Energoefektivitātes pārskats', urgency:'if_needed',
+          why:'Ja pilna ēkas siltināšana — var būt nepieciešams.',
+          when_required:'Ja pilna fasāžu siltināšana.',
+          priceFn:(a,s)=>r50c(SVC_BASE.eps*s*1.20) },
+    ],
+    la: [
+        { id:'esi', name:'ESI — Juridiskā esošās situācijas izpēte', urgency:'critical',
+          why:'KRITISKS. Bez ESI var iztērēt 5000 EUR uz projektu kas tiks noraidīts. ESI pārbauda vai legalizācija iespējama.',
+          when_required:'OBLIGĀTS pirms jebkura darba sākšanas.',
+          priceFn:(a,s)=>r50c(SVC_BASE.esi*s*1.20) },
+        { id:'taa', name:'TAA — Tehniskā apsekošana', urgency:'critical',
+          why:'Pašvaldība var pieprasīt nojaukšanu ja ēka ir konstruktīvi bīstama. TAA to novērš.',
+          when_required:'OBLIGĀTS II un III grupai.',
+          priceFn:(a,s)=>r50c(SVC_BASE.taa*s*1.20) },
+        { id:'nod', name:'NOD — Nodošana ekspluatācijā', urgency:'recommended',
+          why:'Bez NOD ēka ir "nepabeigta". Banka nedos kredītu! Pēc NOD ēka ir 100% legāla.',
+          when_required:'Ieteicams vienmēr — bez NOD process nav pabeigts.',
+          priceFn:(a,s)=>r50c(SVC_BASE.nod*s*1.20) },
+        { id:'eps', name:'EPS — Energoefektivitātes pārskats', urgency:'if_needed',
+          why:'Dažas pašvaldības pieprasa EPS legalizācijai. Rīgā bieži vajadzīgs II grupas ēkām.',
+          when_required:'Atkarīgs no pašvaldības prasībām.',
+          priceFn:(a,s)=>r50c(SVC_BASE.eps*s*1.20) },
+    ],
+    lbv: [
+        { id:'eps', name:'EPS — Energoefektivitātes pārskats', urgency:'if_needed',
+          why:'Atkarīgs no izmaiņu apjoma un pašvaldības.',
+          when_required:'Ja pašvaldība pieprasa.',
+          priceFn:(a,s)=>r50c(SVC_BASE.eps*s*1.20) },
+    ],
+    lbp: [
+        { id:'taa', name:'TAA — Tehniskā apsekošana', urgency:'recommended',
+          why:'Pilnu izmaiņu legalizācijai TAA parāda faktisko stāvokli un novērš turpmākus riskus.',
+          when_required:'Ieteicams vienmēr pirms pilnas legalizācijas.',
+          priceFn:(a,s)=>r50c(SVC_BASE.taa*s*1.20) },
+        { id:'nod', name:'NOD — Nodošana ekspluatācijā', urgency:'recommended',
+          why:'Bez NOD ēka paliek "nepabeigta". Svarīgi ja plāno pārdot vai ieķīlāt.',
+          when_required:'Ieteicams II un III grupai.',
+          priceFn:(a,s)=>r50c(SVC_BASE.nod*s*1.20) },
+        { id:'eps', name:'EPS — Energoefektivitātes pārskats', urgency:'if_needed',
+          why:'Atkarīgs no pašvaldības prasībām.',
+          when_required:'Ja pašvaldība pieprasa.',
+          priceFn:(a,s)=>r50c(SVC_BASE.eps*s*1.20) },
+    ],
+    lc: [
+        { id:'esi', name:'ESI — Juridiskā esošās situācijas izpēte', urgency:'critical',
+          why:'Funkcijas maiņai ESI ir KRITISKS — jāpārbauda vai jaunā funkcija atļauta šajā zonā. Bez ESI var tikt noraidīts.',
+          when_required:'OBLIGĀTS pirms funkcijas maiņas.',
+          priceFn:(a,s)=>r50c(SVC_BASE.esi*s*1.20) },
+        { id:'nod', name:'NOD — Nodošana ekspluatācijā', urgency:'recommended',
+          why:'Ar jauno funkciju NOD nostiprina izmaiņas ZG. Bez NOD banka neatzīs jauno funkciju.',
+          when_required:'Ieteicams vienmēr funkcijas maiņai.',
+          priceFn:(a,s)=>r50c(SVC_BASE.nod*s*1.20) },
+        { id:'eps', name:'EPS — Energoefektivitātes pārskats', urgency:'if_needed',
+          why:'Ja jaunā funkcija prasa apkuri (piem. saimniecība → dzīvoklis) — EPS var būt obligāts.',
+          when_required:'Ja jaunā funkcija prasa apkuri.',
+          priceFn:(a,s)=>r50c(SVC_BASE.eps*s*1.20) },
+    ],
+};
+
+// ─── UTIL ─────────────────────────────────────────────────────
+function r50(n) { return Math.round(n / 50) * 50; }
+function r50c(n) { return Math.round(n / 50) * 50; }
+function eur(n) { return n.toLocaleString('lv-LV') + ' EUR'; }
+function isLegal(t) { return ['la','lbv','lbp','lc'].includes(t); }
+
+const R_REKON = [30,28,26,24,22,20,19,18,17,16,14];
+const BRACKS  = [30,60,90,120,150,180,210,240,270,300,Infinity];
+const GC = { I:0.75, II:1.20, III:1.80 };
+function grp(a,f){ if(a<=25&&f<=1)return'I'; if(a>1500||f>=4)return'III'; return'II'; }
+function bi(a){ for(let i=0;i<BRACKS.length;i++)if(a<=BRACKS[i])return i; return BRACKS.length-1; }
+function getPakete(a){ for(const b of PAKETES_BRACKS) if(a<=b.max) return b; return PAKETES_BRACKS[PAKETES_BRACKS.length-1]; }
+function calcLegAR(area, svc){
+    const g=grp(area,1), gC=GC[g], rate=R_REKON[bi(area)];
+    const base=area*rate*gC;
+    const minV=area<=60?2500:2900;
+    return r50(Math.max(base,minV));
+}
+
+// ─── MAIN RENDER ─────────────────────────────────────────────
+// Eksportēts uz index.html kā renderARSection(type, area, svcCoef)
+function renderARSection(type, area, svcCoef) {
+    svcCoef = svcCoef || 1.00;
+
+    // 1. Jaunbūves paketes
+    const jb = document.getElementById('jaunbuve-paketes');
+    if (type === 'jaunbuve' && area > 0) {
+        jb.classList.add('visible');
+        const pb = getPakete(area);
+        document.getElementById('pb-area').textContent = area;
+        [
+            ['l1', pb.L1],
+            ['l2', pb.L2],
+            ['l3', pb.L3],
+        ].forEach(([id, int]) => {
+            const cli = r50(int * 1.20);
+            document.getElementById('pf-' + id + '-cli').textContent = eur(cli);
+            document.getElementById('pf-' + id + '-int').textContent = eur(int);
+        });
+    } else {
+        jb.classList.remove('visible');
+    }
+
+    // 2. Legalizācijas paketes
+    const lb = document.getElementById('legalizacija-paketes');
+    if (isLegal(type) && area > 0) {
+        lb.classList.add('visible');
+        const arInt = calcLegAR(area, svcCoef);
+        const arCli = r50(arInt * 1.20);
+        const esiCli = r50c(SVC_BASE.esi * svcCoef * 1.20);
+        const taaCli = r50c(SVC_BASE.taa * svcCoef * 1.20);
+        const nodCli = r50c(SVC_BASE.nod * svcCoef * 1.20);
+        const epsCli = r50c(SVC_BASE.eps * svcCoef * 1.20);
+
+        document.getElementById('leg-a-price').textContent = eur(arCli);
+
+        const bCli = r50((SVC_BASE.esi + SVC_BASE.taa + SVC_BASE.nod) * svcCoef * 1.20) + arCli;
+        document.getElementById('leg-b-price').textContent = eur(bCli);
+
+        const cBase = ((SVC_BASE.esi + SVC_BASE.taa + SVC_BASE.nod) * svcCoef + arInt) * 1.15;
+        const cCli  = r50(cBase * 1.20) + epsCli;
+        document.getElementById('leg-c-price').textContent = eur(cCli);
+    } else {
+        lb.classList.remove('visible');
+    }
+
+    // 3. Auto-ieteikumi
+    const ai = document.getElementById('auto-ieteikumi');
+    const recs = RECS[type];
+    if (recs && area > 0) {
+        ai.classList.add('visible');
+        renderRecs(recs, area, svcCoef);
+    } else {
+        ai.classList.remove('visible');
+    }
+}
+
+function renderRecs(recs, area, svcCoef) {
+    const groups = { critical:[], recommended:[], if_needed:[] };
+    recs.forEach(r => { if(groups[r.urgency]) groups[r.urgency].push(r); });
+
+    Object.entries(groups).forEach(([urg, items]) => {
+        const grpEl  = document.getElementById('urg-' + urg);
+        const listEl = document.getElementById('urg-' + urg + '-list');
+        if (!items.length) { grpEl.style.display = 'none'; return; }
+        grpEl.style.display = 'block';
+        listEl.innerHTML = items.map(item => {
+            const price = item.priceFn ? item.priceFn(area, svcCoef) : 0;
+            const chk   = urg === 'critical' ? 'checked' : '';
+            return `<div class="rec-item ${urg}">
+                <input type="checkbox" class="rec-cb" ${chk} data-price="${price}" onchange="updRecTot()">
+                <div>
+                    <div class="rec-name">${item.name} <span class="iw"><span class="ii">?</span><span class="tb">${item.why}</span></span></div>
+                    <div class="rec-price">${price > 0 ? eur(price) + ' + PVN' : 'pēc aprēķina'}</div>
+                    <div class="rec-why">${item.why}</div>
+                    <div class="rec-when"><strong>Kad:</strong> ${item.when_required}</div>
+                </div>
+            </div>`;
+        }).join('');
+    });
+    updRecTot();
+}
+
+function updRecTot() {
+    let t = 0;
+    document.querySelectorAll('.rec-cb:checked').forEach(cb => { t += parseInt(cb.dataset.price)||0; });
+    document.getElementById('rec-total').textContent = eur(t);
+}
+
+// ─── STANDALONE DEMO ─────────────────────────────────────────
+if (!window._embeddedInKalkulators) {
+    window.addEventListener('DOMContentLoaded', () => {
+        renderARSection('jaunbuve', 120, 1.00);
+    });
+}
+</script>
+</body>
+</html>

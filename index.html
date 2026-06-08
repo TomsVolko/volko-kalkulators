@@ -1108,46 +1108,40 @@ body { font-family:-apple-system,'Segoe UI',sans-serif; background:var(--bg); co
 <div class="field"><label class="lbl">Stāvu skaits</label>
 <select id="ar-floors" onchange="calcAR()">
 <option value="1">1 stāvs</option><option value="2">2 stāvi</option>
-<option value="3">3 stāvi</option><option value="4">4+ stāvi</option>
+<option value="3">3 stāvi</option><option value="4">4 stāvi</option>
+<option value="5">5 stāvi</option><option value="6">6 stāvi</option>
+<option value="7">7+ stāvi</option>
 </select></div>
 <div class="field"><label class="lbl">Ēkas funkcija</label>
 <select id="ar-func" onchange="calcAR()">
-<option value="1.00">Individuālā dzīvojamā māja</option>
-<option value="1.05">Dvīņu māja</option><option value="1.10">Rindu māja</option>
-<option value="1.30">Daudzdzīvokļu māja</option>
-<option value="0.85">Vasarnīca / dārza māja</option>
-<option value="0.70">Saimniecības ēka</option><option value="0.60">Garāža</option>
-<option value="0.65">Noliktava</option><option value="1.20">Biroja ēka</option>
-<option value="1.25">Tirdzniecības ēka</option>
-<option value="1.15">Jaukta lietojuma ēka</option>
-<option value="0.50">Inženierbūve / žogs</option>
+<option value="1.00" data-cat="dwelling">Individuālā dzīvojamā māja</option>
+<option value="1.05" data-cat="dwelling">Dvīņu māja</option><option value="1.10" data-cat="dwelling">Rindu māja</option>
+<option value="1.30" data-cat="dwelling">Daudzdzīvokļu māja</option>
+<option value="0.85" data-cat="dwelling">Vasarnīca / dārza māja</option>
+<option value="0.70" data-cat="aux">Saimniecības ēka</option><option value="0.60" data-cat="aux">Garāža</option>
+<option value="0.65" data-cat="warehouse">Noliktava</option><option value="1.20" data-cat="public">Biroja ēka</option>
+<option value="1.25" data-cat="public">Tirdzniecības ēka</option>
+<option value="1.15" data-cat="public">Jaukta lietojuma ēka</option>
+<option value="0.50" data-cat="eng">Inženierbūve / žogs</option>
 </select></div>
 <div class="field"><label class="lbl">Pašvaldība</label>
-<select id="ar-muni" onchange="calcAR();showMuniInfo(this.value)">
-<option value='{"p":1.00,"s":1.10}'>— izvēlēties —</option>
-<option value='{"p":1.20,"s":1.05}'>Rīga</option>
-<option value='{"p":1.10,"s":1.05}'>Mārupes novads</option>
-<option value='{"p":1.10,"s":1.05}'>Ķekavas novads</option>
-<option value='{"p":1.10,"s":1.05}'>Salaspils novads</option>
-<option value='{"p":1.10,"s":1.05}'>Ādažu / Ropažu / Olaines novads</option>
-<option value='{"p":1.10,"s":1.05}'>Stopiņu / Garkalnes / Babītes novads</option>
-<option value='{"p":1.00,"s":1.10}'>Jūrmala</option>
-<option value='{"p":1.00,"s":1.10}'>Siguldas novads</option>
-<option value='{"p":1.00,"s":1.10}'>Jelgava / Jelgavas novads</option>
-<option value='{"p":1.00,"s":1.10}'>Ogres novads</option>
-<option value='{"p":1.00,"s":1.10}'>Saulkrastu / Limbažu novads</option>
-<option value='{"p":1.00,"s":1.10}'>Tukuma / Cēsu novads</option>
-<option value='{"p":1.00,"s":1.10}'>Dobeles / Bauskas / Kandavas novads</option>
-<option value='{"p":1.02,"s":1.15}'>Valmieras novads</option>
-<option value='{"p":1.02,"s":1.15}'>Talsu novads</option>
-<option value='{"p":1.02,"s":1.15}'>Saldus / Kuldīgas novads</option>
-<option value='{"p":1.02,"s":1.15}'>Jēkabpils / Madonas novads</option>
-<option value='{"p":1.05,"s":1.20}'>Liepāja</option>
-<option value='{"p":1.05,"s":1.20}'>Ventspils</option>
-<option value='{"p":1.05,"s":1.20}'>Daugavpils</option>
-<option value='{"p":1.05,"s":1.20}'>Rēzekne</option>
-<option value='{"p":1.00,"s":1.10}'>Cits novads</option>
-</select></div>
+<div class="muni-ac">
+  <input type="text" id="ar-muni-search" autocomplete="off" placeholder="Sāc rakstīt: Rīga, Mārupe, Kuldīga…" oninput="muniFilter(this.value)" onfocus="muniFilter(this.value)" onblur="muniBlur()">
+  <input type="hidden" id="ar-muni" value="">
+  <div id="ar-muni-dd" class="muni-dd" style="display:none"></div>
+</div>
+<style>
+.muni-ac{position:relative}
+#ar-muni-search{width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:8px;font-size:.85rem;font-family:inherit;background:#fff;color:var(--text)}
+#ar-muni-search:focus{outline:none;border-color:var(--gold)}
+.muni-dd{position:absolute;top:100%;left:0;right:0;z-index:50;background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.14);max-height:280px;overflow-y:auto;margin-top:3px}
+.muni-dd-group{padding:6px 11px;font-size:.65rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--gold);background:var(--navy);position:sticky;top:0}
+.muni-dd-item{padding:8px 11px;font-size:.82rem;cursor:pointer;border-bottom:1px solid #f1f5f9}
+.muni-dd-item:hover{background:#f4f5f0}
+.muni-dd-empty{padding:10px 11px;font-size:.8rem;color:var(--muted)}
+</style>
+<div id="ar-muni-info-panel" class="muni-info-panel"></div>
+</div>
 <div class="field"><label class="lbl">Apgrūtinājumi (+10% katrs)</label>
 <div class="checks">
 <label class="chk"><input type="checkbox" id="c1" onchange="calcAR()"> Kultūras piemineklis / NKMP</label>
@@ -1248,6 +1242,13 @@ body { font-family:-apple-system,'Segoe UI',sans-serif; background:var(--bg); co
 </div>
 <div style="margin-top:16px">
 <div class="section-wrap">
+
+<!-- ══ PIRMS SĀKAM — PĀRBAUDES SARAKSTS (dinamisks pēc projekta tipa) ══ -->
+<div id="ar-pre-checklist" class="pre-checklist" style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px">
+  <div class="card-title">✅ Pirms sākam — pārbaudes saraksts</div>
+  <div style="font-size:.76rem;color:var(--muted);margin:-4px 0 12px">Ko pārbaudīt PIRMS projekta sākšanas — lai netērē naudu projektā, kas tiks noraidīts.</div>
+  <div class="pre-checklist-body"></div>
+</div>
 
 <!-- ══════════════════════════════════════════
      1. JAUNBŪVES PAKETES — KONFIGURĒTĀJS
@@ -1579,6 +1580,42 @@ body { font-family:-apple-system,'Segoe UI',sans-serif; background:var(--bg); co
 <div><div class="steps-hdr">Darba secība — solis pa solim</div><div id="steps-list"></div></div>
 <div><div class="steps-hdr">Ko klients sagādā</div><ul class="docs-list" id="docs-list"></ul></div>
 </div>
+<div id="steps-law" class="steps-law"></div>
+</div>
+
+<style>
+.steps-law{margin-top:16px;padding:14px 16px;background:#f8fafc;border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:8px}
+.steps-law h4{font-size:.82rem;color:var(--navy);margin:0 0 8px;font-weight:800}
+.steps-law-item{font-size:.74rem;color:var(--text);padding:5px 0;border-bottom:1px dashed #e2e8f0;display:flex;justify-content:space-between;gap:12px}
+.steps-law-item:last-of-type{border-bottom:none}
+.steps-law-item .law-ref{color:#a16207;font-weight:700;white-space:nowrap;text-align:right}
+.steps-law-note{font-size:.67rem;color:var(--muted);margin-top:9px;font-style:italic}
+#ar-solution-paths{display:none}
+#ar-solution-paths.visible{display:block}
+.sp-card .sp-sub{font-size:.78rem;color:var(--muted);margin:-4px 0 14px}
+.sp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:760px){.sp-grid{grid-template-columns:1fr}}
+.sp-col{border:1px solid var(--border);border-radius:10px;padding:14px;background:#fff;position:relative;display:flex;flex-direction:column}
+.sp-col.best{border:2px solid var(--gold);box-shadow:0 6px 20px rgba(200,168,75,.18)}
+.sp-best-tag{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--navy);font-size:.62rem;font-weight:800;letter-spacing:.5px;padding:3px 10px;border-radius:20px;text-transform:uppercase;white-space:nowrap}
+.sp-icon{font-size:1.5rem}
+.sp-name{font-size:.95rem;font-weight:800;color:var(--navy);margin:4px 0 2px}
+.sp-tagline{font-size:.72rem;color:var(--muted);margin-bottom:10px;min-height:30px}
+.sp-price{font-size:1.3rem;font-weight:800;color:var(--navy)}
+.sp-price-note{font-size:.65rem;color:var(--muted);margin-bottom:9px}
+.sp-meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.sp-chip{font-size:.65rem;background:#f4f5f0;border:1px solid var(--border);border-radius:6px;padding:3px 7px;color:var(--text)}
+.sp-list{list-style:none;padding:0;margin:0 0 6px;flex:1}
+.sp-list li{font-size:.73rem;padding:3px 0 3px 17px;position:relative;color:var(--text)}
+.sp-list li:before{content:'✓';position:absolute;left:0;color:var(--green);font-weight:800}
+.sp-list li.no{color:var(--muted)}
+.sp-list li.no:before{content:'○';color:var(--muted)}
+.sp-who{font-size:.68rem;color:var(--muted);border-top:1px solid #f1f5f9;padding-top:8px;margin-top:6px;line-height:1.4}
+</style>
+<div id="ar-solution-paths" class="card sp-card">
+  <div class="card-title">🛣 Risinājuma ceļi — 3 varianti</div>
+  <div class="sp-sub">Viens mērķis, trīs pieejas. Klients izvēlas pēc budžeta un steidzamības.</div>
+  <div id="sp-cards" class="sp-grid"></div>
 </div>
 </div>
 </div>
@@ -2631,7 +2668,28 @@ const TYPE_INFO={jaunbuve:{icon:"🏗",title:"Jaunbūve",what:"Pilnīgi jauna ē
 const STEPS_DATA={la:{I:[{t:"Uzmērīšana",d:"Precīzi izmēri dokumentiem.",who:"Volko",time:"1–2 ned."},{t:"Apliecinājuma karte (BIS)",d:"Oficiālā atzīšana.",who:"Volko",time:"1–2 mēn."},{t:"Kadastra → ZG",d:"Dati valsts reģistros.",who:"VZD",time:"2–4 ned."}],II:[{t:"ESI — Juridiskā esošās situācijas izpēte",price:"950€",d:"Pārbauda vai legalizācija VAR notikt — zona, robežas, ZG. BEZ ESI var iztērēt 5000€ projektā kas tiks noraidīts.",who:"Volko",time:"2–4 ned.",docs:"Zemesgrāmatas izraksts, kadastra izziņa, robežu plāns"},{t:"TAA — Tehniskā apsekošana",price:"400€",d:"Pārbauda konstruktīvo drošību. BEZ TAA pašvaldība var pieprasīt nojaukšanu.",who:"Volko",time:"1–3 ned.",docs:"Piekļuve ēkai"},{t:"Uzmērīšana un rasējumi",d:"Precīzi plāni, šķērsgriezumi, fasādes.",who:"Volko",time:"2–3 ned."},{t:"AR projekts (legalizācijai)",d:"Oficālā dokumentācija normatīvu atbilstībai.",who:"Volko",time:"3–5 ned."},{t:"BIS iesniegums",d:"Formāls pieteikums. Pašvaldībai 30 darba dienas atbildei.",who:"Volko",time:"1–3 mēn."},{t:"Pašvaldības saskaņošana",d:"Arhitekts izvērtē. Var pieprasīt izmaiņas.",who:"Volko",time:"1–3 mēn."},{t:"NOD — Nodošana ekspluatācijā",price:"950€",d:"BEZ NOD ēka juridiski nepabeigta. Banka nedos kredītu pret šo īpašumu!",who:"Volko",time:"2–4 ned."},{t:"Kadastra → ZG",d:"Dati jāatjaunina visos reģistros.",who:"VZD",time:"2–4 ned."}],III:[{t:"ESI",price:"950€",d:"Detalizēta zona un tiesību analīze.",who:"Volko",time:"3–4 ned.",docs:"ZG, kadastra izziņa"},{t:"TAA",price:"400€",d:"Sarežğīta — sertificēts konstruktors.",who:"Volko",time:"2–4 ned."},{t:"Uzmērīšana",d:"Pilna dokumentācija.",who:"Volko",time:"3–4 ned."},{t:"AR + BK projekts",d:"Obligāti abi III grupai.",who:"Volko",time:"5–8 ned."},{t:"BIS — Būvatļauja",d:"III grupai apliecinājuma karte nav pietiekama.",who:"Volko",time:"2–4 mēn."},{t:"NOD",price:"950€",d:"Pilna komisija.",who:"Volko",time:"3–5 ned."},{t:"Kadastra → ZG",d:"Obligāta.",who:"VZD",time:"3–4 ned."}]},lbv:{I:[{t:"Paskaidrojuma raksts (BIS)",d:"",who:"Volko",time:"2–4 ned."},{t:"Rasējumi — izmainītais stāvoklis",d:"",who:"Volko",time:""},{t:"Kadastra datu atjaunošana",d:"",who:"VZD",time:""}],II:[{t:"Paskaidrojuma raksts (BIS)",d:"",who:"Volko",time:"2–4 ned."},{t:"Rasējumi",d:"",who:"Volko",time:""},{t:"BIS akcepts",d:"",who:"",time:""},{t:"Kadastra atjaunošana",d:"",who:"VZD",time:""}],III:[{t:"TAA",price:"400€",d:"",who:"Volko",time:""},{t:"Rasējumi",d:"Pilna dokumentācija.",who:"Volko",time:""},{t:"BIS — Pārbūves atļauja",d:"",who:"Volko",time:""},{t:"Kadastra",d:"",who:"VZD",time:""}]},lbp:{I:[{t:"TAA",price:"400€",d:"Nesošo konstrukciju pārbaude.",who:"Volko",time:""},{t:"Uzmērīšana",d:"",who:"Volko",time:""},{t:"AR projekts",d:"",who:"Volko",time:""},{t:"BIS — Apliecinājuma karte",d:"",who:"Volko",time:""},{t:"Kadastra",d:"",who:"VZD",time:""}],II:[{t:"TAA",price:"400€",d:"Nesošo konstrukciju pārbaude.",who:"Volko",time:""},{t:"Uzmērīšana",d:"",who:"Volko",time:""},{t:"AR projekts",d:"Izmainītais stāvoklis + normatīvi.",who:"Volko",time:""},{t:"BIS atļauja",d:"",who:"Volko",time:""},{t:"NOD (ja vajag)",price:"950€",d:"",who:"Volko",time:""},{t:"Kadastra",d:"",who:"VZD",time:""}],III:[{t:"TAA",price:"400€",d:"",who:"Volko",time:""},{t:"AR + BK projekts",d:"Obligāti abi.",who:"Volko",time:""},{t:"BIS atļauja",d:"",who:"Volko",time:""},{t:"NOD",price:"950€",d:"",who:"Volko",time:""},{t:"Kadastra",d:"",who:"VZD",time:""}]},lc:{I:[{t:"ESI",price:"950€",d:"Vai zonā ļauj jauno funkciju.",who:"Volko",time:"",docs:"Pašv. TIN, ZG"},{t:"AR projekts",d:"",who:"Volko",time:""},{t:"BIS atļauja",d:"",who:"Volko",time:""},{t:"NOD",price:"950€",d:"",who:"Volko",time:""},{t:"Kadastra → ZG",d:"Bieži vajag notāru.",who:"VZD",time:""}],II:[{t:"ESI",price:"950€",d:"SVARĪGI: vai zonā ļauj jauno funkciju.",who:"Volko",time:"2–4 ned.",docs:"Pašvaldības TIN, ZG izraksts"},{t:"AR projekts (jaunai funkcijai)",d:"Plānojums, sanitārie mezgli, ugunsdrošība, energoefektivitāte.",who:"Volko",time:"4–6 ned."},{t:"BIS atļauja",d:"",who:"Volko",time:""},{t:"NOD",price:"950€",d:"Ar jauno funkciju.",who:"Volko",time:""},{t:"Kadastra → ZG",d:"Bieži vajag notāru.",who:"VZD",time:""}],III:[{t:"ESI",price:"950€",d:"Detalizēta.",who:"Volko",time:""},{t:"AR + BK projekts",d:"",who:"Volko",time:""},{t:"BIS atļauja",d:"",who:"Volko",time:""},{t:"NOD",price:"950€",d:"",who:"Volko",time:""},{t:"Kadastra → ZG",d:"",who:"VZD",time:""}]}};
 const DOCS_DATA={la:["Zemesgrāmatas izraksts (zemesgramata.lv)","Kadastra izziņa (kadastrs.lv)","Robežu plāns (VZD)","Pašvaldības TIN","Kaimiņu piekrišana (robeža <4m)","Kopīpašnieku piekrišana (ja ir)","Esošie projekti (ja ir)"],lbv:["Zemesgrāmatas izraksts","Esošie projekti / plāni","Kopīpašnieku piekrišana"],lbp:["Zemesgrāmatas izraksts","Kadastra izziņa","Esošie projekti","Kopīpašnieku piekrišana"],lc:["Zemesgrāmatas izraksts","Kadastra izziņa","Pašvaldības TIN — vai zonā ļauj jauno funkciju","Esošie projekti","Kopīpašnieku piekrišana"]};
 
-function grp(a,f){if(a<=25&&f<=1)return"I";if(a>1500||f>=4)return"III";return"II";}
+// Būves grupa pēc MK Nr. 500 "Vispārīgie būvnoteikumi" 1. pielikuma 2. sadaļas
+// (uz šo iedalījumu atsaucas arī MK Nr. 529 "Ēku būvnoteikumi"). cat: dwelling|aux|public|warehouse|industrial|eng
+function grp(a,f,cat){
+  cat=cat||'dwelling';
+  // III grupa (MK 500 1.piel. 2.2.) — pārbauda pirmo, dominē
+  if(f>6) return "III";                                          // 2.2.1. vairāk nekā 6 virszemes stāvi
+  if(cat==="public" && a>1000) return "III";                     // 2.2.3. publiska ēka, kopējā platība >1000 m²
+  if((cat==="warehouse"||cat==="industrial") && a>2000) return "III"; // 2.2.5./2.2.7. >2000 m²
+  // I grupa (MK 500 1.piel. 2.1.)
+  if(f<=1 && a<=60) return "I";                                  // 2.1.1. vienstāva ēka, apbūves laukums ≤60 m²
+  // II grupa — viss pārējais (MK 500 1.piel. 2.3.)
+  return "II";
+}
+function grpExplain(a,f,cat,g){
+  if(g==="I") return "Vienstāva ēka, apbūves laukums ≤60 m² (MK 500 1.piel. 2.1.1.). Vienkāršota kārtība — parasti paskaidrojuma raksts vai apliecinājuma karte.";
+  if(g==="III"){
+    if(f>6) return "Vairāk nekā 6 virszemes stāvi (MK 500 1.piel. 2.2.1.). Sarežģīta kārtība — būvprojekts + būvatļauja.";
+    if(cat==="public") return "Publiska ēka ar kopējo platību >1000 m² (MK 500 1.piel. 2.2.3.). Būvprojekts + būvatļauja.";
+    return "Ražošanas/noliktavas ēka >2000 m² (MK 500 1.piel. 2.2.5./2.2.7.). Būvprojekts + būvatļauja.";
+  }
+  return "Ēka, kas neietilpst I un III grupā (MK 500 1.piel. 2.3.) — piem. tipiska dzīvojamā māja. Standarta kārtība: paskaidrojuma raksts vai būvprojekts atkarībā no darbu apjoma.";
+}
 function bi(a){for(let i=0;i<AR_BRACKS.length;i++)if(a<=AR_BRACKS[i])return i;return AR_BRACKS.length-1;}
 function r50(n){return Math.round(n/50)*50;}
 function eur(n){return n.toLocaleString("lv-LV")+" EUR";}
@@ -2642,6 +2700,7 @@ function calcAR(){
   const area=parseFloat(document.getElementById("ar-area").value)||0;
   const floors=parseInt(document.getElementById("ar-floors").value)||1;
   const fCoef=parseFloat(document.getElementById("ar-func").value)||1;
+  const cat=document.getElementById("ar-func").selectedOptions[0]?.dataset.cat||"dwelling";window._arCat=cat;
   let muni={p:1.00,s:1.10};
   try{muni=JSON.parse(document.getElementById("ar-muni").value);}catch(e){}
   const encs=["c1","c2","c3","c4","c5"].filter(id=>document.getElementById(id).checked).length;
@@ -2653,13 +2712,12 @@ function calcAR(){
     ic.innerHTML=`<div class="ic-title">${ti.icon} ${ti.title}</div><div>${ti.what}</div><span class="ic-permit">📋 ${ti.permit}</span><span style="display:inline-flex;align-items:center;gap:3px;font-size:.72rem;color:#2563eb;margin-left:6px">⏱ ${ti.time}</span>${ti.risks?`<div class="ic-risk">⚠ ${ti.risks}</div>`:""}${ti.tip?`<div style="margin-top:4px;font-size:.71rem;color:#2563eb">💡 ${ti.tip}</div>`:""}`;
   }else{ic.classList.remove("visible");}
   if(area>0){
-    const g=grp(area,floors);document.getElementById("ar-grp-badge").textContent=g+" grupa";
-    const gd={I:"≤25m² un 1 stāvs — vienkāršota procedūra (apliecinājuma karte)",II:"26–1500m², līdz 3 stāviem — standarta procedūra",III:">1500m² vai 4+ stāvi — sarežğīta procedūra (būvatļauja)"};
-    document.getElementById("ar-grp-desc").textContent=gd[g];
+    const g=grp(area,floors,cat);document.getElementById("ar-grp-badge").textContent=g+" grupa";
+    document.getElementById("ar-grp-desc").textContent=grpExplain(area,floors,cat,g);
   }else{document.getElementById("ar-grp-badge").textContent="—";document.getElementById("ar-grp-desc").textContent="Ievadi platību un stāvu skaitu";}
   const isLeg=isLegal(type);
   document.getElementById("legalizacija-steps").classList.toggle("visible",isLeg&&area>0);
-  if(isLeg&&area>0)renderSteps(type,grp(area,floors),muni.s);
+  if(isLeg&&area>0)renderSteps(type,grp(area,floors,cat),muni.s);
   if(!type||area<=0){
     document.getElementById("ar-p-empty").style.display="block";
     document.getElementById("ar-p-result").style.display="none";
@@ -2668,10 +2726,11 @@ function calcAR(){
     const _pp=document.getElementById("ar-passport");if(_pp)_pp.classList.remove("visible");
     if(typeof showMuniInfo==="function") showMuniInfo(document.getElementById("ar-muni")?.value||"");
     if(typeof showPreChecklist==="function") showPreChecklist(type);
+    if(typeof renderSolutionPaths==="function") renderSolutionPaths("",0);
     return;
   }
-  const g=grp(area,floors);const gCoef=GC[g];
-  if(g==="I"&&!isLeg){
+  const g=grp(area,floors,cat);const gCoef=GC[g];
+  if(g==="I"&&area<=25&&!isLeg){
     const fp=I_FIXED.find(x=>area<=x.max)||I_FIXED[I_FIXED.length-1];
     document.getElementById("ar-p-empty").style.display="none";
     document.getElementById("ar-p-result").style.display="none";
@@ -2679,7 +2738,9 @@ function calcAR(){
     document.getElementById("ar-fp-val").textContent=eur(fp.cli);
     document.getElementById("ar-fp-int").textContent=eur(fp.int);
     document.getElementById("ar-fp-note").textContent="Fiksētā cena I grupas mazēkai (≤25m², 1 stāvs). Iekļauj apliecinājuma karte + uzmērīšana.";
-    renderARPanels(type,area,muni.s);return;
+    renderARPanels(type,area,muni.s);
+    if(typeof renderSolutionPaths==="function") renderSolutionPaths(type,area,"I",muni.s,fp.cli);
+    return;
   }
   const rKey=isLeg?(LEGAL_RATE[type]||"rekonstrukcija"):type;
   const rates=AR_RATES[rKey];if(!rates)return;
@@ -2701,12 +2762,45 @@ function calcAR(){
   document.getElementById("ar-brkd").innerHTML=bh;
   document.getElementById("ar-hint").innerHTML=`<strong>Piedāvājumā:</strong> "no <strong>${totCli.toLocaleString("lv-LV")}</strong> EUR + PVN" <span style="color:#a16207;margin-left:6px">(rezerve: ${eur(totCli-totInt)})</span>`;
   renderARPanels(type,area,muni.s);
-  const _mname = document.getElementById("ar-muni").options[document.getElementById("ar-muni").selectedIndex]?.text || "";
+  const _mname = document.getElementById("ar-muni-search")?.value || window._arMuniName || "";
   renderPassport(type,area,floors,_mname,muni.s);
   // Municipality info + pre-checklist
   if(typeof showMuniInfo==="function") showMuniInfo(document.getElementById("ar-muni").value);
   if(typeof showPreChecklist==="function") showPreChecklist(type);
+  if(typeof renderSolutionPaths==="function") renderSolutionPaths(type,area,g,muni.s,totCli);
 }
+
+// Tiesiskais pamats legalizācijai (verificētas atsauces — Būvniecības likums, MK 500, MK 529)
+const LEG_BASIS={
+  la:[
+    ["Patvaļīgas būvniecības jēdziens","Būvniecības likuma 18. p. (2)"],
+    ["Būvvaldes lēmums — legalizēt vai nojaukt","Būvniecības likuma 18. p. (5)"],
+    ["Lēmums izpildāms nekavējoties (apstrīdēšana neaptur)","Būvniecības likuma 18. p. (11)"],
+    ["Būves iedalījums grupās","MK Nr. 500 1. pielikums"],
+    ["Tehniskās apsekošanas atzinums","MK Nr. 500 38.6. p."],
+    ["Ieceres dokumenti pa grupām","MK Nr. 529 7. p."],
+    ["Pastiprinātā (5×) pašvaldības nodeva","MK Nr. 500 (būvatļaujas nodeva 5×)"],
+    ["Administratīvais sods","Būvniecības likuma 25. p. — fiz. līdz 2000 €, jur. līdz 20 000 €"]
+  ],
+  lbv:[
+    ["Patvaļīgas būvniecības jēdziens","Būvniecības likuma 18. p. (2)"],
+    ["Ieceres dokuments (paskaidrojuma raksts)","MK Nr. 529 7. p."],
+    ["Būves iedalījums grupās","MK Nr. 500 1. pielikums"]
+  ],
+  lbp:[
+    ["Patvaļīgas būvniecības jēdziens","Būvniecības likuma 18. p. (2)"],
+    ["Tehniskās apsekošanas atzinums","MK Nr. 500 38.6. p."],
+    ["Ieceres dokumenti pa grupām","MK Nr. 529 7. p."],
+    ["Pastiprinātā (5×) pašvaldības nodeva","MK Nr. 500"],
+    ["Administratīvais sods","Būvniecības likuma 25. p."]
+  ],
+  lc:[
+    ["Ekspluatācijas veida (funkcijas) maiņa","Būvniecības likuma 18. p. (2) 5. pkt."],
+    ["Būves iedalījums grupās","MK Nr. 500 1. pielikums"],
+    ["Ieceres dokumenti pa grupām","MK Nr. 529 7. p."],
+    ["Nodošana ekspluatācijā ar jauno funkciju","MK Nr. 529 (nodošanas nodaļa)"]
+  ]
+};
 
 function renderSteps(type,g,svcCoef){
   const tt={la:"Patvaļīga būvniecība",lbv:"Nereģistrētas izmaiņas (vienkāršotas)",lbp:"Nereģistrētas izmaiņas (pilnas)",lc:"Funkcijas maiņa"};
@@ -2714,6 +2808,56 @@ function renderSteps(type,g,svcCoef){
   const sd=STEPS_DATA[type]?.[g]||STEPS_DATA[type]?.["II"]||[];
   document.getElementById("steps-list").innerHTML=sd.map((s,i)=>`<div class="step-c"><div class="sn">${i+1}</div><div><div class="sc-title">${s.t}${s.price?` <span class="sc-price">${s.price}</span>`:""}</div>${s.d?`<div class="why-box">${s.d}</div>`:""}<div class="sc-who">${s.who?"Veic: "+s.who:""}${s.time?" · "+s.time:""}</div>${s.docs?`<div class="sc-docs"><strong>Klients sagādā:</strong> ${s.docs}</div>`:""}</div></div>`).join("");
   document.getElementById("docs-list").innerHTML=(DOCS_DATA[type]||[]).map(d=>`<li>${d}</li>`).join("");
+  const lawEl=document.getElementById("steps-law");
+  if(lawEl){
+    const lb=LEG_BASIS[type]||[];
+    lawEl.innerHTML=lb.length
+      ? '<h4>⚖️ Tiesiskais pamats</h4>'+lb.map(x=>`<div class="steps-law-item"><span>${x[0]}</span><span class="law-ref">${x[1]}</span></div>`).join('')+'<div class="steps-law-note">Atsauces sagatavotas tikšanās sarunai. Konkrētie MK Nr. 529 nodošanas apakšpunkti precizējami katrā gadījumā pēc spēkā esošās redakcijas (likumi.lv).</div>'
+      : '';
+  }
+}
+
+// ── F5: RISINĀJUMA CEĻI — 3 varianti (ātrākais / lētākais / pilnīgākais) ──
+function renderSolutionPaths(type, area, g, muniS, baseCli){
+  const panel=document.getElementById('ar-solution-paths'); if(!panel) return;
+  if(!type||!area||area<=0){panel.classList.remove('visible'); return;}
+  panel.classList.add('visible');
+  muniS=muniS||1.10; baseCli=baseCli||0;
+  const taa=r50(SVC_BASE.taa*muniS*1.20), nod=r50(SVC_BASE.nod*muniS*1.20),
+        eps=r50(SVC_BASE.eps*muniS*1.20), esi=r50(SVC_BASE.esi*muniS*1.20),
+        bk=r50((area<=100?SVC_BASE.bk_s:area<=250?SVC_BASE.bk_m:SVC_BASE.bk_l)*muniS*1.20);
+  const isLeg=isLegal(type);
+  const needBK=(g!=='I' && area>100);
+  const wk=({I:['3–5 ned.','5–8 ned.','6–10 ned.'],II:['1.5–3 mēn.','3–4 mēn.','4–6 mēn.'],III:['3–5 mēn.','5–7 mēn.','6–9 mēn.']})[g]||['1–3 mēn.','3–5 mēn.','5–8 mēn.'];
+  const auth=isLeg?'Pašvaldība: bieži 6–18 mēn. (legalizācija)':'Pašvaldība: ~30 darba dienas (likumā fiksēts)';
+  const variants=[
+    {icon:'⚡',name:'Ātrākais',tag:'Kad termiņš svarīgāks par cenu',
+      price:r50(baseCli*1.15),weeks:wk[0],
+      inc:[['AR projekts (prioritāri)',1],['Mūsu darbs paātrināts',1],[isLeg?'ESI ātrā pārbaude':'Tiešā saskaņošana ar pašvaldību',1],['TAA — tehniskā apsekošana',isLeg?1:0],['NOD — nodošana ekspluatācijā',0],['EPS — energosertifikāts',0]],
+      who:'Volko dara gandrīz visu paātrināti. Klients tikai paraksta un sagādā ZG izrakstu.'},
+    {icon:'💰',name:'Lētākais',tag:'Minimums, lai dabūtu atļauju',
+      price:baseCli,weeks:wk[1],
+      inc:[['AR projekts (obligātais minimums)',1],[isLeg?'ESI — juridiskā izpēte':'Topogrāfija — klients pasūta pats',isLeg?1:0],['TAA — tehniskā apsekošana',0],['NOD — nodošana ekspluatācijā',0],['EPS — energosertifikāts',0],['BK — būvkonstrukcijas',0]],
+      who:'Klients sagādā dokumentus pats (ZG, robežu plāns, TI). Vairāk klienta darba = zemāka cena.'},
+    {icon:'🏆',name:'Pilnīgākais',tag:'Pilns serviss bez pārsteigumiem',best:true,
+      price:r50(baseCli+(isLeg?esi+taa+nod+eps:taa+nod+(needBK?bk:0))),weeks:wk[2],
+      inc:[['AR projekts (pilns)',1],[isLeg?'ESI — juridiskā izpēte':'TI + ģeodēzija',1],['TAA — tehniskā apsekošana',1],['NOD — nodošana ekspluatācijā',1],['EPS — energosertifikāts',1],['BK — būvkonstrukcijas',(needBK||isLeg)?1:0]],
+      who:'Volko ved projektu no A līdz Z — projektēšana, saskaņošana, nodošana. Klients tikai izvēlas.'}
+  ];
+  document.getElementById('sp-cards').innerHTML=variants.map(v=>{
+    const items=v.inc.filter(x=>x[0]).map(x=>`<li class="${x[1]?'':'no'}">${x[0]}</li>`).join('');
+    return `<div class="sp-col ${v.best?'best':''}">${v.best?'<span class="sp-best-tag">⭐ Ieteicams</span>':''}
+      <div class="sp-icon">${v.icon}</div>
+      <div class="sp-name">${v.name}</div>
+      <div class="sp-tagline">${v.tag}</div>
+      <div class="sp-price">no ${v.price.toLocaleString('lv-LV')} €</div>
+      <div class="sp-price-note">bez PVN · klientam</div>
+      <div class="sp-meta"><span class="sp-chip">⏱ Volko: ${v.weeks}</span><span class="sp-chip">${g} grupa</span></div>
+      <ul class="sp-list">${items}</ul>
+      <div class="sp-who">👤 ${v.who}</div>
+      <div class="sp-who" style="border:none;padding-top:3px">🏛 ${auth}</div>
+    </div>`;
+  }).join('');
 }
 
 // ─── DATI ────────────────────────────────────────────────────
@@ -2837,7 +2981,7 @@ function calcLegAR(area, svc){
 
 // ─── MAIN RENDER ─────────────────────────────────────────────
 // Eksportēts uz index.html kā renderARSection(type, area, svcCoef)
-function renderARPanels(type, area, svcCoef) {
+function _renderARPanelsBase(type, area, svcCoef) {
     svcCoef = svcCoef || 1.00;
 
     // 1. Jaunbūves paketes
@@ -2845,15 +2989,16 @@ function renderARPanels(type, area, svcCoef) {
     if (type === 'jaunbuve' && area > 0) {
         jb.classList.add('visible');
         const pb = getPakete(area);
-        document.getElementById('pb-area').textContent = area;
+        const pbEl = document.getElementById('pb-area'); if (pbEl) pbEl.textContent = area;
+        // Legacy hidden grid (jaunais konfigurators rāda pkg-price-* caur initPkgWizard) — droši guard
         [
             ['l1', pb.L1],
             ['l2', pb.L2],
             ['l3', pb.L3],
         ].forEach(([id, int]) => {
             const cli = r50(int * 1.20);
-            document.getElementById('pf-' + id + '-cli').textContent = eur(cli);
-            document.getElementById('pf-' + id + '-int').textContent = eur(int);
+            const cEl = document.getElementById('pf-' + id + '-cli'); if (cEl) cEl.textContent = eur(cli);
+            const iEl = document.getElementById('pf-' + id + '-int'); if (iEl) iEl.textContent = eur(int);
         });
     } else {
         jb.classList.remove('visible');
@@ -3195,10 +3340,10 @@ DOKUMENTĀCIJAS PAKĀPES (no mazākās uz lielāko):
 5. Būvprojekts + MBP — pilns projekts ar minimālo būvprojektu, 5+8 gadi PAGARINĀMS
 6. Būvprojekts + EKSPERTĪZE — obligāta 3.grupai un publiskām ēkām
 
-GRUPAS:
-- I grupa: ≤25m², 1 stāvs (mazēkas, palīgēkas)
-- II grupa: 26-1500m², ≤3 stāvi (tipiskās mājas)
-- III grupa: >1500m² vai ≥4 stāvi (lielas/sarežģītas ēkas)
+GRUPAS (MK 500 "Vispārīgie būvnoteikumi" 1.pielikums; uz to atsaucas MK 529):
+- I grupa: vienstāva ēka ar apbūves laukumu ≤60m² (t.sk. mazēkas ≤25m², palīgēkas)
+- II grupa: visas ēkas, kas nav I un III grupā (tipiskā 1-2 dzīvokļu dzīvojamā māja)
+- III grupa: >6 virszemes stāvi; >1 pazemes stāvs; publiska ēka >1000m²; ražošanas/noliktavas ēka >2000m²
 
 JN — JAUNBŪVE (jauna ēka):
 JN1: ≤25m², 1st; ārpus pilsētas VAI 1/2dz.mājas zemesgabalā; NAV kultūras mantojumā → BEZ saskaņošanas
@@ -3246,7 +3391,7 @@ LVM1: Jebkādas telpu grupas funkcijas maiņa BEZ pārbūves → Paskaidrojuma r
 
 LĒMUMU LOĢIKA:
 1. Nosaki darba veidu: JN/P/VP/A/VA/LVM
-2. Nosaki grupu: I(≤25m²,1st) / II(26-1500m²,≤3st) / III(>1500m² vai ≥4st)
+2. Nosaki grupu: I(vienstāva ≤60m²) / II(viss pārējais, tipiskā māja) / III(>6 stāvi vai publiska >1000m² vai ražošana/noliktava >2000m²)
 3. Kritiskās robežas: 25m² / 60m² / 200m² / 400m² — platība
 4. Vai ir kultūras mantojuma teritorijā? Ja JĀ → vienmēr augstāka pakāpe
 5. Vai mainās funkcija? Ja JĀ → P7/P8 vai LVM1
@@ -3310,9 +3455,9 @@ Bez TAA: pašvaldība var pieprasīt nojaukšanu ja ēka bīstama
 Cena: 400€ × pašvaldības svc koef.
 
 Legalizācija pēc grupas:
-I gr. (≤25m², 1st): Uzmērīšana + apliecinājuma karte + kadastra → ~1-2 mēneši
-II gr. (26-1500m², ≤3st): ESI + TAA + uzmērīšana + AR projekts + BIS + NOD + kadastra → ~12-36 mēneši
-III gr. (>1500m², ≥4st): Kā II gr. + būvatļauja + iespējama ekspertīze → individuāli
+I gr. (vienstāva ≤60m²): Uzmērīšana + apliecinājuma karte/paskaidrojuma raksts + kadastra → ~1-2 mēneši
+II gr. (tipiskā māja): ESI + TAA + uzmērīšana + AR projekts + BIS + NOD + kadastra → ~12-36 mēneši
+III gr. (>6st / publiska >1000m² / ražošana >2000m²): Kā II gr. + būvatļauja + iespējama ekspertīze → individuāli
 
 Biežākie atteikuma iemesli:
 1. TIAN neatļauj šādu ēku (pārbauda ESI)
@@ -3708,7 +3853,7 @@ function updateAIContext() {
     // Read current calculator state
     const type = document.getElementById('ar-type') ? document.getElementById('ar-type').value : '';
     const area = document.getElementById('ar-area') ? document.getElementById('ar-area').value : '';
-    const muni = document.getElementById('ar-muni') ? document.getElementById('ar-muni').options[document.getElementById('ar-muni').selectedIndex]?.text : '';
+    const muni = document.getElementById('ar-muni-search') ? document.getElementById('ar-muni-search').value : '';
     const priceEl = document.getElementById('ar-p-client');
     const price = priceEl ? priceEl.textContent : '';
     const typeNames = {jaunbuve:'Jaunbūve',izmaiņu:'Izmaiņu projekts',rekonstrukcija:'Rekonstrukcija',vienk:'Vienkāršota atjaunošana',nojaukšana:'Nojaukšana',tipveida:'Tipveida',la:'Legalizācija (patvaļīga)',lbv:'Legalizācija (vienkāršotas izm.)',lbp:'Legalizācija (pilnas izm.)',lc:'Funkcijas maiņa'};
@@ -4136,7 +4281,7 @@ function renderPassport(type, area, floors, muniName, svcCoef) {
   if (!data || !area) { passport.classList.remove('visible'); return; }
   passport.classList.add('visible');
 
-  const g = grp(area, floors);
+  const g = grp(area, floors, window._arCat || "dwelling");
   const permit = data.permit(area, g);
   svcCoef = svcCoef || 1.0;
 
@@ -4295,6 +4440,48 @@ const MUNI_INFO = {
     time:'6-10 mēn.'
   }
 };
+
+// ── PAŠVALDĪBU AUTOCOMPLETE (visi 43 Latvijas novadi + valstspilsētas, 2021. ATR) ──
+const _MT={R:'{"p":1.20,"s":1.05}',P:'{"p":1.10,"s":1.05}',S:'{"p":1.00,"s":1.10}',G:'{"p":1.02,"s":1.15}',C:'{"p":1.05,"s":1.20}'};
+const MUNI_LIST=[
+  {g:'Rīga',items:[['Rīga',_MT.R]]},
+  {g:'Pierīga',items:[['Mārupes novads',_MT.P],['Ķekavas novads',_MT.P],['Salaspils novads',_MT.P],['Ādažu novads',_MT.P],['Ropažu novads',_MT.P],['Olaines novads',_MT.P]]},
+  {g:'Valstspilsētas',items:[['Jūrmala',_MT.S],['Jelgava',_MT.S],['Liepāja',_MT.C],['Ventspils',_MT.C],['Daugavpils',_MT.C],['Rēzekne',_MT.C]]},
+  {g:'Novadi',items:[
+    ['Aizkraukles novads',_MT.S],['Alūksnes novads',_MT.G],['Augšdaugavas novads',_MT.G],['Balvu novads',_MT.G],
+    ['Bauskas novads',_MT.S],['Cēsu novads',_MT.S],['Dienvidkurzemes novads',_MT.G],['Dobeles novads',_MT.S],
+    ['Gulbenes novads',_MT.G],['Jelgavas novads',_MT.S],['Jēkabpils novads',_MT.G],['Krāslavas novads',_MT.G],
+    ['Kuldīgas novads',_MT.G],['Limbažu novads',_MT.S],['Līvānu novads',_MT.G],['Ludzas novads',_MT.G],
+    ['Madonas novads',_MT.G],['Ogres novads',_MT.S],['Preiļu novads',_MT.G],['Rēzeknes novads',_MT.G],
+    ['Saldus novads',_MT.G],['Saulkrastu novads',_MT.S],['Siguldas novads',_MT.S],['Smiltenes novads',_MT.G],
+    ['Talsu novads',_MT.G],['Tukuma novads',_MT.S],['Valkas novads',_MT.G],['Valmieras novads',_MT.G],
+    ['Varakļānu novads',_MT.G],['Ventspils novads',_MT.G]
+  ]},
+];
+function muniNorm(s){return (s||'').toLowerCase().replace(/[āčēģīķļņšūž]/g,c=>({'ā':'a','č':'c','ē':'e','ģ':'g','ī':'i','ķ':'k','ļ':'l','ņ':'n','š':'s','ū':'u','ž':'z'}[c]||c));}
+function muniFilter(q){
+  const dd=document.getElementById('ar-muni-dd'); if(!dd) return;
+  const nq=muniNorm(q);
+  let html='';
+  MUNI_LIST.forEach((grpO,gi)=>{
+    const ms=grpO.items.map((it,ii)=>({it,ii})).filter(o=>muniNorm(o.it[0]).includes(nq));
+    if(!ms.length) return;
+    html+=`<div class="muni-dd-group">${grpO.g}</div>`;
+    ms.forEach(o=>{html+=`<div class="muni-dd-item" onmousedown="muniPick(${gi},${o.ii})">${o.it[0]}</div>`;});
+  });
+  dd.innerHTML=html||'<div class="muni-dd-empty">Nav atrasts</div>';
+  dd.style.display='block';
+}
+function muniPick(gi,ii){
+  const it=MUNI_LIST[gi].items[ii];
+  document.getElementById('ar-muni-search').value=it[0];
+  document.getElementById('ar-muni').value=it[1];
+  document.getElementById('ar-muni-dd').style.display='none';
+  window._arMuniName=it[0];
+  calcAR();
+  if(typeof showMuniInfo==='function') showMuniInfo(it[1]);
+}
+function muniBlur(){setTimeout(()=>{const dd=document.getElementById('ar-muni-dd');if(dd)dd.style.display='none';},150);}
 
 function showMuniInfo(val) {
   const panel = document.getElementById('ar-muni-info-panel');
@@ -4757,9 +4944,8 @@ function copyPkgToOffer() {
 }
 
 // Hook into renderARPanels to init wizard
-const _origRenderARPanels = renderARPanels;
 function renderARPanels(type, area, svcCoef) {
-    _origRenderARPanels(type, area, svcCoef);
+    _renderARPanelsBase(type, area, svcCoef);
     if (type === 'jaunbuve' && area > 0) {
         initPkgWizard(area);
     }
