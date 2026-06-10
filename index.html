@@ -1168,6 +1168,13 @@ body[data-artype="jaunbuve"] #ar-jaunbuve-note{display:block}
 </style>
 <div id="ar-muni-info-panel" class="muni-info-panel"></div>
 </div>
+<div class="field"><label class="lbl">Kadastra Nr. (izpētei — neobligāts)</label>
+<div style="display:flex;gap:8px">
+  <input type="text" id="ar-kadastrs" autocomplete="off" placeholder="piem. 0100 905 0235" style="flex:1;padding:9px 11px;border:1px solid var(--border);border-radius:8px;font-size:.85rem;font-family:inherit;background:#fff;color:var(--text)">
+  <button onclick="copyKadastrsPrompt()" title="Nokopē gatavu izpētes uzdevumu Claude sesijai" style="white-space:nowrap;padding:9px 12px;border:1px solid var(--gold);border-radius:8px;background:#fffbf0;font-size:.76rem;font-weight:700;color:var(--navy);cursor:pointer;font-family:inherit">📋 Izpētes uzdevums</button>
+</div>
+<div id="kadastrs-copied" style="display:none;font-size:.7rem;color:#166534;margin-top:5px">✓ Nokopēts starpliktuvē — ielīmē Claude sesijā, un bots izmeklēs īpašumu</div>
+</div>
 <div class="field"><label class="lbl">Apgrūtinājumi (+10% katrs)</label>
 <div class="checks">
 <label class="chk"><input type="checkbox" id="c1" onchange="calcAR()"> Kultūras piemineklis / NKMP</label>
@@ -1212,6 +1219,7 @@ body[data-artype="jaunbuve"] #ar-jaunbuve-note{display:block}
 <div class="p-int"><span>Iekšējā cena (minimums)</span><strong id="ar-p-int">—</strong></div>
 <div class="brkd" id="ar-brkd"></div>
 <div class="hint-box" id="ar-hint"></div>
+<button onclick="addEkaToList('formula')" style="width:100%;margin-top:10px;padding:8px;border:1px dashed var(--gold);border-radius:8px;background:#fffbf0;font-size:.76rem;font-weight:700;color:var(--navy);cursor:pointer;font-family:inherit">➕ Pievienot šo ēku objekta sarakstam</button>
 </div>
 <div id="ar-p-fixed" style="display:none">
 <div class="fp-box">
@@ -1220,12 +1228,15 @@ body[data-artype="jaunbuve"] #ar-jaunbuve-note{display:block}
 <div class="fp-int">Iekšējā: <span id="ar-fp-int">—</span></div>
 <div class="fp-note" id="ar-fp-note">—</div>
 </div>
+<button onclick="addEkaToList('fixed')" style="width:100%;margin-top:10px;padding:8px;border:1px dashed var(--gold);border-radius:8px;background:#fffbf0;font-size:.76rem;font-weight:700;color:var(--navy);cursor:pointer;font-family:inherit">➕ Pievienot šo ēku objekta sarakstam</button>
 </div>
 <div id="ar-jaunbuve-note" style="text-align:center;padding:14px 10px">
   <div style="font-size:1.6rem;margin-bottom:6px">📦</div>
   <div style="font-weight:700;color:var(--navy);margin-bottom:4px">Jaunbūves cena = izvēlies paketi</div>
-  <div style="font-size:.78rem;color:var(--muted)">L1 / L2 / L3 paketes ar cenu un saturu — zemāk ⬇</div>
+  <div style="font-size:.78rem;color:var(--muted)">L1–L4 paketes ar cenu un saturu — zemāk ⬇</div>
 </div>
+<!-- VAIRĀKAS ĒKAS OBJEKTĀ -->
+<div id="multi-eku-panel" style="display:none;margin-top:12px;border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:0 10px 10px 0;padding:12px 14px;background:#fcfcfa"></div>
 </div>
 
 <!-- PROJEKTA PASE -->
@@ -1361,6 +1372,7 @@ body[data-artype="jaunbuve"] #ar-jaunbuve-note{display:block}
     <button class="pkg-offer-btn" onclick="copyPkgToOffer()">
       ✓ Iekļaut piedāvājumā — <span id="pkg-offer-text">—</span>
     </button>
+    <button onclick="addEkaToList('pkg')" style="width:100%;margin-top:8px;padding:8px;border:1px dashed rgba(255,255,255,.4);border-radius:8px;background:transparent;font-size:.74rem;font-weight:700;color:rgba(255,255,255,.85);cursor:pointer;font-family:inherit">➕ Pievienot šo ēku objekta sarakstam</button>
   </div>
 
   <!-- HIDDEN — old grid (legacy) -->
@@ -3698,6 +3710,69 @@ function docTypeFor(area, g){
   if (cat === 'dwelling' && sub === 'single') return area <= 200 ? 'pr' : 'bp'; // viena dzīvokļa māja — 200 m² robeža (7.2.1.)
   return 'bp';                                                               // daudzdzīvokļu, publiskās, ražošanas — 7.3.
 }
+// ── VAIRĀKAS ĒKAS OBJEKTĀ — saraksts ar kopsummu (MK 500 7. p.: viena iecere, augstākās grupas kārtība) ──
+window._ekas=[];
+function addEkaToList(src){
+  const typeSel=document.getElementById('ar-type');
+  const tname=typeSel.selectedOptions[0]?.text||typeSel.value;
+  const area=parseFloat(document.getElementById('ar-area').value)||0;
+  const floors=parseInt(document.getElementById('ar-floors').value)||1;
+  const cat=document.getElementById('ar-func').selectedOptions[0]?.dataset.cat||'dwelling';
+  const g=grp(area,floors,cat);
+  const grab=id=>parseInt((document.getElementById(id)?.textContent||'').replace(/[^\d]/g,''))||0;
+  let price=0,label=tname;
+  if(src==='pkg'){price=grab('pkg-final-price');label='Jaunbūve ('+(document.getElementById('pkg-selected-name')?.textContent||'pakete')+')';}
+  else if(src==='fixed'){price=grab('ar-fp-val');}
+  else{price=grab('ar-p-client');}
+  if(!area||!price) return;
+  window._ekas.push({t:label,area:area,g:g,price:price});
+  renderEkas();
+  document.getElementById('multi-eku-panel')?.scrollIntoView({block:'nearest',behavior:'smooth'});
+}
+function rmEka(i){window._ekas.splice(i,1);renderEkas();}
+function renderEkas(){
+  const p=document.getElementById('multi-eku-panel'); if(!p) return;
+  const arr=window._ekas;
+  if(!arr.length){p.style.display='none';p.innerHTML='';return;}
+  p.style.display='block';
+  const ranks={I:1,II:2,III:3};
+  const maxG=arr.reduce((m,e)=>ranks[e.g]>ranks[m]?e.g:m,'I');
+  const tot=arr.reduce((s,e)=>s+e.price,0);
+  let h='<div style="font-weight:800;color:var(--navy);font-size:.82rem;margin-bottom:6px">🏘 Ēkas objektā ('+arr.length+')</div>';
+  arr.forEach((e,i)=>{
+    h+='<div style="display:flex;justify-content:space-between;gap:8px;font-size:.76rem;padding:4px 0;border-bottom:1px dashed var(--border)"><span>'+(i+1)+'. '+e.t+' · '+e.area+' m² · '+e.g+' gr.</span><span style="white-space:nowrap"><strong>'+e.price.toLocaleString('lv-LV')+' EUR</strong> <a href="#" onclick="rmEka('+i+');return false" title="Noņemt" style="color:#b91c1c;text-decoration:none;margin-left:6px;font-weight:700">✕</a></span></div>';
+  });
+  h+='<div style="display:flex;justify-content:space-between;font-size:.88rem;font-weight:800;color:var(--navy);padding-top:7px"><span>KOPĀ objektam</span><span style="color:var(--gold)">'+tot.toLocaleString('lv-LV')+' EUR</span></div>';
+  h+='<div style="font-size:.66rem;color:var(--muted);margin-top:5px">⚖️ Juridiski visas ēkas var iesniegt vienā büvniecības iecerē — tad piemēro augstākās grupas ('+maxG+') kārtību (MK 500 7. p.).</div>';
+  p.innerHTML=h;
+}
+
+// ── KADASTRA IZPĒTES UZDEVUMS — noģenerē pašpietiekamu promptu Claude sesijai (volko-research) ──
+function copyKadastrsPrompt(){
+  const kad=(document.getElementById('ar-kadastrs')?.value||'').trim();
+  if(!kad){alert('Ievadi kadastra numuru');return;}
+  const typeSel=document.getElementById('ar-type');
+  const tname=typeSel?.selectedOptions[0]?.text||'';
+  const area=document.getElementById('ar-area')?.value||'';
+  const muni=document.getElementById('ar-muni-search')?.value||'';
+  const encs=[['c1','kultūras piemineklis/NKMP'],['c2','patvaļīga būvniecība/legalizācija'],['c3','kopīpašums'],['c4','robeža tuvāk par 4 m']]
+    .filter(x=>document.getElementById(x[0])?.checked).map(x=>x[1]).join(', ')||'nav atzīmēti';
+  const prompt=
+'Izpēti īpašumu ar kadastra numuru '+kad+' pirms projektēšanas darba uzsākšanas (Volko Engineering pirms-ESI izpēte).\n\n'+
+'Konteksts no kalkulatora: projekta veids — '+(tname||'nav norādīts')+'; platība ~'+(area||'?')+' m²; pašvaldība — '+(muni||'nav norādīta')+'; zināmie apgrūtinājumi: '+encs+'.\n\n'+
+'Izmeklē un apkopo:\n'+
+'1. kadastrs.lv — zemes vienības un būvju dati: platības, lietošanas mērķis, reģistrētās būves, to statuss.\n'+
+'2. zemesgramata.lv — īpašnieki, apgrūtinājumi, atzīmes, hipotēkas, servitūti.\n'+
+'3. Pašvaldības TIAN (geolatvija.lv / teritorijasplanojums.lv) — funkcionālā zona, atļautā izmantošana, apbūves parametri (blīvums, augstums, atkāpes), detālplānojuma prasība.\n'+
+'4. Aizsargjoslas (elektrolīnijas, gāze, ūdensobjekti, kultūras pieminekļi) — vai skar zemes gabalu.\n'+
+'5. Pašvaldības saistošie noteikumi — büvniecības nodevas apmērs un legalizācijas pastiprinātā (piem. 5×) nodeva, AR PRECĪZU noteikumu Nr. un linku uz likumi.lv.\n\n'+
+'Rezultāts: īsa atskaite latviski (riski 🔴/🟡/🟢, vai projekts/legalizācija šķiet iespējama, kas vēl jāpārbauda). Katram faktam — avota links. Ja ir klienta mape — saglabā atskaiti tur (Internets/ apakšmapē); ja nav, piedāvā izveidot ar volko-folders.';
+  navigator.clipboard.writeText(prompt).then(()=>{
+    const ok=document.getElementById('kadastrs-copied');
+    if(ok){ok.style.display='block';setTimeout(()=>{ok.style.display='none';},6000);}
+  }).catch(()=>{prompt2=window.prompt('Kopēšana neizdevās — nokopē manuāli:',prompt);});
+}
+
 // ── TERMIŅA PROGNOZE pēc tipa + dokumenta veida + grupas + apgrūtinājumiem + pašvaldības (mēneši) ──
 const DUR_DESIGN={jaunbuve:[2,4],tipveida:[1,1.5],"izmaiņu":[1,2],rekonstrukcija:[2,3.5],vienk:[0.5,1.5],"nojaukšana":[0.5,1],la:[2,4],lbv:[1,2],lbp:[2,3.5],lc:[1.5,2.5]};
 function estimateDuration(type,g,area){

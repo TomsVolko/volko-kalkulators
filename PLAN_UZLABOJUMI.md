@@ -25,7 +25,7 @@
 7. **Dzēst dublikātus**: legalizacija-paketes karte (A/B/C), ar-solution-paths (⚡💰🏆), auto-ieteikumi panelis (passport tabula to aizstāj; getRecs() paliek — passport lieto)
 8. **AI smadzeņu sinhronizācija** ar visu augstāk
 
-## FĀZE B — Konfigurators pēc Excel (liels darbs, atsevišķa sesija)
+## FĀZE B — Konfigurators pēc Excel ✅ IZDARĪTS 2026-06-10 (commit 28ac44f)
 
 - Avots: `Cena_21.03.2025_VV_.xlsm` lapas 1./2./3.līmenis (likme 30 €/h; Sheet1 ar 25 €/h ignorēt)
 - Ekstrakts → JS dati: ~150 pozīcijas, katrai {fāze: SKICE/VR/MBP/BP, nosaukums, stundas}
@@ -36,7 +36,7 @@
 - AU (autoruzraudzība) un EKSP (ekspertīzes labojumi) — opcionāli manuāli
 - UI: fāžu sekcijas sakļaujamas, pozīciju ķeksīši, cena reāllaikā; bez 20% (Excel GALA CENA tiešā)
 
-## FĀZE C — Vairākas ēkas
+## FĀZE C — Vairākas ēkas ✅ IZDARĪTS 2026-06-10
 
 - "➕ Pievienot ēku" — katrai: tips, platība, stāvi, funkcija → sava cena
 - Kopsumma + juridiskā piezīme: viena iecere, piemēro augstākās grupas kārtību (MK 500 7. p.)
@@ -47,12 +47,12 @@
 - Research aģenti pa pašvaldībām (sāk ar TOP ~15): TIAN links (geolatvija/teritorijasplanojums.lv), būvvaldes kontakti, nodevas apmērs, legalizācijas pastiprinātā nodeva (5× Rīgā — katrai pašvaldībai savs saistošo noteikumu Nr.), īpatnības (RVC, GNP, kāpu zona)
 - Struktūra: MUNI_INFO pārbūve no koef-grupām uz konkrētām pašvaldībām; pārējām fallback + atruna
 
-## FĀZE E — Kadastra Nr. + skillu integrācija
+## FĀZE E — Kadastra Nr. + skillu integrācija ✅ IZDARĪTS 2026-06-10 (prompta ģenerators)
 
 - Kalkulatorā lauks "Kadastra Nr." + poga "📋 Izpētes uzdevums" → noģenerē gatavu promptu (kadastrs.lv, zemesgrāmata, TIAN, aizsargjoslas) → Toms ielīmē Claude sesijā
 - volko-research skill papildināt ar "kadastra izpētes" režīmu → mini-ESI atskaite klienta mapē
 
-## FĀZE F — Likumu sargs v2 (neatkarīgs)
+## FĀZE F — Likumu sargs v2 ✅ IZDARĪTS 2026-06-10 (scheduled task SKILL.md v2)
 
 - Papildināt scheduled task `kalkulators-likumu-verifikacija`:
   1. Skenēt GAIDĀMOS grozījumus (pieņemti, vēl nav spēkā) — BL, MK 500, MK 529, LBN; likumi.lv "Saistītie dokumenti"/grozījumu saraksts
