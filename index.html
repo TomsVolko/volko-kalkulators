@@ -907,7 +907,11 @@ body { font-family:-apple-system,'Segoe UI',sans-serif; background:var(--bg); co
 .pkg-wizard.visible { display:block }
 
 /* Level selector pills */
-.pkg-pills { display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px }
+.pkg-pills { display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px }
+.pkg-phase{border:1px solid var(--border);border-radius:8px;padding:6px 10px;margin-bottom:8px;background:#fcfcfa}
+.pkg-phase summary::-webkit-details-marker{display:none}
+.pkg-phase summary{list-style:none;padding:4px 0}
+#pkg-mix-btn.active{border-style:solid;border-color:var(--gold);background:#fffbf0}
 .pkg-pill {
   border:2px solid var(--border);border-radius:10px;padding:11px;
   cursor:pointer;transition:all .15s;text-align:center;background:var(--card);
@@ -1283,7 +1287,7 @@ body[data-artype="jaunbuve"] #ar-jaunbuve-note{display:block}
 <div id="jaunbuve-paketes" class="card">
   <div class="card-title">🏗 Jaunbūve — Izvēlies paketi un konfigurē saturu</div>
   <div style="font-size:.78rem;color:var(--muted);margin-bottom:14px">
-    Platība: <strong id="pb-area-2">—</strong> m² · Atzīmē ko iekļaut · Noņem = redzēsi brīdinājumu · Cenas klientam (ar 20% rezervi)
+    Platība: <strong id="pb-area-2">—</strong> m² · Cena = stundas × 30 €/h × platības koef. (Excel kalkulatora loģika, bez rezerves) · Atzīmē ko iekļaut
   </div>
 
   <!-- LEVEL PILLS -->
@@ -1304,7 +1308,13 @@ body[data-artype="jaunbuve"] #ar-jaunbuve-note{display:block}
       <div class="pp-name">Premium</div>
       <div class="pp-price" id="pkg-price-L3">—</div>
     </div>
+    <div class="pkg-pill" id="pkg-pill-L4" onclick="selectPkg('L4')">
+      <div class="pp-code">L4</div>
+      <div class="pp-name">Premium+</div>
+      <div class="pp-price" id="pkg-price-L4">—</div>
+    </div>
   </div>
+  <button id="pkg-mix-btn" onclick="togglePkgMix()" style="width:100%;margin:-6px 0 14px;padding:8px;border:1px dashed var(--border);border-radius:8px;background:#fff;font-size:.76rem;font-weight:700;color:var(--navy);cursor:pointer;font-family:inherit">🔀 MIX — jaukt pozīcijas no visiem līmeņiem</button>
 
   <!-- ITEMS LIST -->
   <div id="pkg-items-list" class="pkg-items"></div>
@@ -1315,11 +1325,11 @@ body[data-artype="jaunbuve"] #ar-jaunbuve-note{display:block}
       <div>
         <div class="pkg-sum-label">Klientam piedāvāt</div>
         <div class="pkg-sum-price" id="pkg-final-price">—</div>
-        <div class="pkg-sum-int">Iekšējā: <span id="pkg-final-int">—</span></div>
+        <div class="pkg-sum-int">Aprēķins: <span id="pkg-final-int">—</span></div>
       </div>
       <div style="text-align:right">
         <div class="pkg-sum-label" id="pkg-selected-name">—</div>
-        <div class="pkg-sum-note">bez PVN · 20% rezerve tirgošanai</div>
+        <div class="pkg-sum-note">bez PVN · Excel kalkulatora cena</div>
       </div>
     </div>
     <div class="pkg-warn-count hidden" id="pkg-warn-count">
@@ -2784,16 +2794,8 @@ function renderEbnTable(){
 }
 
 // ─── DATI ────────────────────────────────────────────────────
-const PAKETES_BRACKS = [
-    { max:60,  L1:3100, L2:3900,  L3:6100  },
-    { max:100, L1:3550, L2:4450,  L3:6950  },
-    { max:160, L1:4000, L2:5000,  L3:7850  },
-    { max:220, L1:4450, L2:5600,  L3:8700  },
-    { max:300, L1:4900, L2:6150,  L3:9550  },
-    { max:400, L1:5750, L2:7250,  L3:11300 },
-    { max:Infinity, L1:8900, L2:11150, L3:17400 },
-];
-
+// (PAKETES_BRACKS fiksētās pakešu cenas dzēstas 2026-06-10 — jaunbūves cenas tagad rēķina
+//  Excel klona konfigurators: EXCEL_PKG stundas × 30 €/h × platības koeficients.)
 
 // PILNS PAPILDU PAKALPOJUMU MENU — pieejams visiem projekta tipiem.
 // NOD nav iekļauts (atsevišķs līgums pēc būvniecības). Urgency nosaka pa tipiem (SVC_URG); pārējie → if_needed.
@@ -2837,7 +2839,6 @@ function getRecs(type){
 
 const R_REKON = [30,28,26,24,22,20,19,18,17,16,14];
 const BRACKS  = [30,60,90,120,150,180,210,240,270,300,Infinity];
-function getPakete(a){ for(const b of PAKETES_BRACKS) if(a<=b.max) return b; return PAKETES_BRACKS[PAKETES_BRACKS.length-1]; }
 function calcLegAR(area, svc){
     const g=grpPrice(area,1), gC=GC[g], rate=R_REKON[bi(area)];
     const base=area*rate*gC;
@@ -2850,22 +2851,11 @@ function calcLegAR(area, svc){
 function _renderARPanelsBase(type, area, svcCoef) {
     svcCoef = svcCoef || 1.00;
 
-    // 1. Jaunbūves paketes
+    // 1. Jaunbūves paketes (cenas un saturu zīmē Excel klona konfigurators — initPkgWizard)
     const jb = document.getElementById('jaunbuve-paketes');
     if (type === 'jaunbuve' && area > 0) {
         jb.classList.add('visible');
-        const pb = getPakete(area);
         const pbEl = document.getElementById('pb-area'); if (pbEl) pbEl.textContent = area;
-        // Legacy hidden grid (jaunais konfigurators rāda pkg-price-* caur initPkgWizard) — droši guard
-        [
-            ['l1', pb.L1],
-            ['l2', pb.L2],
-            ['l3', pb.L3],
-        ].forEach(([id, int]) => {
-            const cli = r50(int * 1.20);
-            const cEl = document.getElementById('pf-' + id + '-cli'); if (cEl) cEl.textContent = eur(cli);
-            const iEl = document.getElementById('pf-' + id + '-int'); if (iEl) iEl.textContent = eur(int);
-        });
     } else {
         jb.classList.remove('visible');
     }
@@ -4536,229 +4526,167 @@ updateNodCalc();
 
 
 // ══════════════════════════════════════════════════════════════
-// JAUNBŪVES PAKETES KONFIGURĒTĀJS
+// JAUNBŪVES PAKEŠU KONFIGURĒTĀJS — pilns Excel klons (Cena_21.03.2025_VV_.xlsm)
+// Cena = stundas × 30 €/h × platības koeficients. 4 līmeņi (I–IV) + MIX. BEZ 20% rezerves.
 // ══════════════════════════════════════════════════════════════
 
-const PAKETES_BR = [
-    {max:60,  L1:3100, L2:3900,  L3:6100},
-    {max:100, L1:3550, L2:4450,  L3:6950},
-    {max:160, L1:4000, L2:5000,  L3:7850},
-    {max:220, L1:4450, L2:5600,  L3:8700},
-    {max:300, L1:4900, L2:6150,  L3:9550},
-    {max:400, L1:5750, L2:7250,  L3:11300},
-    {max:Infinity, L1:8900, L2:11150, L3:17400},
-];
-
-// All possible items across all levels
-// level: which level first includes this item
-// obligats: cannot be deselected
-// warning: shown when unchecked
-// note: shown when obligats=true (why it's mandatory)
-const PKG_ITEMS_ALL = [
-    { id:'skice_2d',     name:'1× 2D skice (pamata plāns)', level:'L1', obligats:false,
-      warning:'Bez 2D skices klients nevar vizuāli saprast plānojumu pirms apstiprināšanas. Risks: vēlāk dārgas izmaiņas.' },
-    { id:'viz_3d_l1',    name:'1× 3D vizualizācija', level:'L1', obligats:false,
-      warning:'Bez 3D klients neredz kā māja izskatīsies. Var rasties pārpratumi → dārgas projekta izmaiņas.' },
-    { id:'viz_3d_l2',    name:'2× 3D varianti (nevis 1×)', level:'L2', obligats:false,
-      warning:'Tikai 1× 3D variants. 2 varianti ļauj klientam izvēlēties stilistiku pirms projekta sākšanas.' },
-    { id:'viz_3d_l3',    name:'3× 3D varianti (nevis 2×)', level:'L3', obligats:false,
-      warning:'Tikai 2× 3D varianti. Maksimāla stila izvēle iekļauta L3.' },
-    { id:'vr_l1',        name:'VR tūre (360° apskate telefonā)', level:'L1', obligats:false,
-      warning:'Bez VR tūres klients mazāk iesaistās projektā. Pārpratumu risks palielinās.' },
-    { id:'vr_l3',        name:'2× VR tūres (interjers + eksterjers)', level:'L3', obligats:false,
-      warning:'Tikai 1× VR tūre. L3 ietver arī interjera VR tūri.' },
-    { id:'ar_project',   name:'Arhitektūras projekts (plāni, fasādes)', level:'L1', obligats:true,
-      note:'OBLIGĀTS — bez AR projekta nav iespējams iesniegt BIS. Pamats visam.' },
-    { id:'ar_griezums_l1', name:'1 griezums', level:'L1', obligats:true,
-      note:'Obligāts minimums BIS iesniegumam.' },
-    { id:'ar_griezumi_l2', name:'4 griezumi + 4 mezgli (nevis 1+0)', level:'L2', obligats:false,
-      warning:'Tikai 1 griezums un bez mezgliem. Büvniekam var rasties jautājumi → papildu izmaksas büvlaikā.' },
-    { id:'ar_griezumi_l3', name:'7 griezumi, kāpnes, 8 mezgli (nevis 4+4)', level:'L3', obligats:false,
-      warning:'4 griezumi un 4 mezgli. L3 ietver kāpnes un pilnīgu mezglu dokumentāciju.' },
-    { id:'galv_plans',   name:'Galvenais plāns + situācijas apliecinājums', level:'L1', obligats:true,
-      note:'OBLIGĀTS BIS iesniegumam — ēkas novietojums zemes gabalā.' },
-    { id:'gp_vertik',    name:'GP ar vertikālo plānojumu un žogu', level:'L2', obligats:false,
-      warning:'Bez vertikālā plānojuma grūtāk kontrolēt apbüves niveles un atkāpes.' },
-    { id:'buvapjomi',    name:'Büvapjomu saraksts (precīzs materiālu daudzums)', level:'L3', obligats:false,
-      warning:'L3 ietver büvapjomu sarakstu. Var iegūt precīzu büvniecības tāmi no büvnieka.' },
-    { id:'izmaksu_l2',   name:'Orientējoša celtniecības izmaksu prognoze', level:'L2', obligats:false,
-      warning:'Bez izmaksu prognozes klients var nebūt sagatavots büvniecības budžetam.' },
-    { id:'izmaksu_l3',   name:'Izmaksu prognoze ar detalizētiem papildinājumiem', level:'L3', obligats:false,
-      warning:'L3 ietver detalizētāku izmaksu prognozi.' },
-    { id:'bk_2d',        name:'BK 2D (pamata konstruktīvie aprēķini)', level:'L1', obligats:false,
-      warning:'BEZ BK: büvnieks bez konstruktīvajiem aprēķiniem! Büvniecības kļūdu un drošības risks.' },
-    { id:'bk_l2',        name:'BK 3D LOD200 (precīzāks par BK 2D)', level:'L2', obligats:false,
-      warning:'BK 2D ir mazāk detalizēts. LOD200 ļauj büvniekam precīzāk plānot materiālus.' },
-    { id:'bk_l3',        name:'BK 3D LOD300 (ražošanas precizitāte)', level:'L3', obligats:false,
-      warning:'LOD200 nav pietiekami precīzs CLT/koka karkasa ražošanai. LOD300 = kļūdu risks minimāls.' },
-    { id:'eps_base',     name:'Energosertifikāts EPS (bāzes novērtējums)', level:'L1', obligats:false,
-      warning:'BEZ EPS: NEVAR saņemt NOD (nodošanu ekspluatācijā)! Māja paliks juridiski "nepabeigta"!' },
-    { id:'eps_nde',      name:'Gandrīz nulles enerģijas sertifikāts (augstākā klase)', level:'L3', obligats:false,
-      warning:'Bāzes EPS. L3 ietver augstākās klases sertifikātu — zemāki komunālie, augstāka mājas vērtība.' },
-    { id:'kor_l1',       name:'1 korekciju kārta', level:'L1', obligats:false,
-      warning:'1 korekcija. Papildu izmaiņas pec tās maksā atsevišķi.' },
-    { id:'kor_l2',       name:'2 korekciju kārtas (nevis 1×)', level:'L2', obligats:false,
-      warning:'Tikai 1 korekcija. 2. korekciju kārta palīdz precizēt projektu bez papildu izmaksām.' },
-    { id:'kor_l3',       name:'3 korekciju kārtas (nevis 2×)', level:'L3', obligats:false,
-      warning:'2 korekciju kārtas. Maksimāla elastība L3.' },
-];
-
-// Which items appear in each level
-const LEVEL_ITEMS = {
-    L1: ['skice_2d','viz_3d_l1','vr_l1','ar_project','ar_griezums_l1','galv_plans','bk_2d','eps_base','kor_l1'],
-    L2: ['skice_2d','viz_3d_l1','viz_3d_l2','vr_l1','ar_project','ar_griezumi_l2','galv_plans','gp_vertik','izmaksu_l2','bk_l2','eps_base','kor_l2'],
-    L3: ['skice_2d','viz_3d_l1','viz_3d_l2','viz_3d_l3','vr_l1','vr_l3','ar_project','ar_griezumi_l3','galv_plans','gp_vertik','buvapjomi','izmaksu_l3','bk_l3','eps_nde','kor_l3'],
-};
+const PKG_RATE = 30; // €/h (Excel LIKME)
+const PKG_KOEF = [[60,0.7],[100,0.8],[160,0.9],[250,1.0],[400,1.1],[700,1.3],[1200,2.0],[Infinity,3.0]];
+function pkgKoef(a){ for (const kk of PKG_KOEF) if (a<=kk[0]) return kk[1]; return 3.0; }
+const EXCEL_PKG = {"common":[{"n":"Konsultācija","h":2},{"n":"Piedāvājuma sagatavošana","h":1},{"n":"2. Konsultācija ar liguma parasktisanu","h":2},{"n":"Analīze un PU","h":8},{"n":"AR un BK paraksti","h":9},{"n":"Papildu saziņa ar klientu līdz darba uzsakšanai","h":4}],"manual":[{"n":"TI (ierakstīt cenu manuāli)"},{"n":"GI (ierakstīt cenu manuāli)"},{"n":"UKT (ierakstīt cenu manuāli)"},{"n":"UK (ierakstīt cenu manuāli)"},{"n":"AVK (ierakstīt cenu manuāli)"},{"n":"ELT (ierakstīt cenu manuāli)"},{"n":"EL (ierakstīt cenu manuāli)"},{"n":"ESS (ierakstīt cenu manuāli)"},{"n":"T (ierakstīt cenu manuāli)"},{"n":"TS-CD (ierakstīt cenu manuāli)"},{"n":"TS-L (ierakstīt cenu manuāli)"},{"n":"UPP (3.gr.ēkām, ierakstīt cenu manuāli)"},{"n":"Papildu sadaļa (opcionāli, ierakstīt cenu manuāli)"},{"n":"Autoruzruadzība (opcionāli, ierakstīt cenu manuāli)"},{"n":"Ekspertīzes labojumi (izvertēt, ierakstīt cenu manuāli)"}],"levels":{"L1":[{"ph":"SKICE","n":"2D skice","h":4},{"ph":"SKICE","n":"3D skice","h":12},{"ph":"SKICE","n":"3d skices parbaude","h":2},{"ph":"SKICE","n":"Korekcijas 3D skicei","h":2},{"ph":"SKICE","n":"Korekcijas 1 karta skice pec VR","h":2},{"ph":"SKICE","n":"Korekcijas 2. kārta MBP sakuma","h":2},{"ph":"SKICE","n":"Apstiprinājuma protokols pirms MBP","h":2},{"ph":"VR","n":"VR - tūres veidošana","h":8},{"ph":"VR","n":"VR - tūre ar klientu","h":2},{"ph":"MBP","n":"MBP rasējumi (AR: Plāni, Fasādes, Griezums 1x, Jumta plāns)","h":24},{"ph":"MBP","n":"GP","h":8},{"ph":"MBP","n":"SA","h":2},{"ph":"MBP","n":"Pārbaude","h":2},{"ph":"MBP","n":"Labojumi pēc pārbaudes","h":4},{"ph":"MBP","n":"MBP klienta izskatīšanai","h":1},{"ph":"MBP","n":"Korekcijas MBP","h":4},{"ph":"MBP","n":"Vispārīga daļa / BIS","h":4},{"ph":"BP","n":"Vispārīga daļa +SA / precizējumi","h":2},{"ph":"BP","n":"AR 1x papildu griezums","h":4},{"ph":"BP","n":"AR logu/durvju specifikācija","h":4},{"ph":"BP","n":"Principiālie mezgli no ražotajiem","h":4},{"ph":"BP","n":"BK (2D)","h":45},{"ph":"BP","n":"ES-P (Bāzes)","h":14},{"ph":"BP","n":"DOP","h":4},{"ph":"BP","n":"Pārbaude","h":2},{"ph":"BP","n":"Labojumi pēc pārbaudes","h":2},{"ph":"BP","n":"BP klienta izskatei","h":1},{"ph":"BP","n":"Labojumi MBP pēc klienta komentāriem","h":2},{"ph":"BP","n":"Projektu vadība (zvani, e-pasti, BIS iesniegšana)","h":8},{"ph":"BP","n":"Neparedzamo lietu risinājumi","h":4}],"L2":[{"ph":"SKICE","n":"2D skice","h":8},{"ph":"SKICE","n":"3D skice I","h":16},{"ph":"SKICE","n":"Sapulce /protokols","h":2},{"ph":"SKICE","n":"3D skice II vai Izmaiņu 3D skice","h":16},{"ph":"SKICE","n":"Sapulce /protokols","h":2},{"ph":"SKICE","n":"Korekcijas 1. kārta","h":4},{"ph":"SKICE","n":"Sapulce/protokols","h":2},{"ph":"SKICE","n":"Korekcijas 2. kārta","h":4},{"ph":"SKICE","n":"Izmaksu salidzīnājums - prasītos skiadorjumu, kas tas ir","h":8},{"ph":"SKICE","n":"Apstiprinājuma protokoli","h":2},{"ph":"VR","n":"VR - tūres veidošana","h":8},{"ph":"VR","n":"VR - tūre ar klientu","h":2},{"ph":"MBP","n":"MBP rasējumi (AR: Plāni, Fasādes, Griezums, Jumta plāns)","h":24},{"ph":"MBP","n":"GP","h":8},{"ph":"MBP","n":"SA","h":4},{"ph":"MBP","n":"Pārbaude","h":2},{"ph":"MBP","n":"Labojumi pēc pārbaudes","h":2},{"ph":"MBP","n":"MBP klienta izskatīšanai/ sazina","h":1},{"ph":"MBP","n":"Labojumi MBP pēc klienta komentāriem","h":2},{"ph":"MBP","n":"Izmaksu salidzīnājums","h":0},{"ph":"MBP","n":"Korekcijas no klienta MBP stadija","h":4},{"ph":"MBP","n":"Vispārīga daļa / BIS","h":4},{"ph":"BP","n":"Ar adaptacija pec BK +Skaidrojošais / precizējumi","h":4},{"ph":"BP","n":"AR papildu griezumi + 4 gab. max","h":8},{"ph":"BP","n":"AR logu/durvju specifikācija","h":6},{"ph":"BP","n":"Galvenie mezgli: kore + dzega vai parapets, logu montāža, cokols(siena-pamati) jeb līdz. 4 gab.","h":16},{"ph":"BP","n":"BK (3D LOD 200)","h":60},{"ph":"BP","n":"ES-P (Bāzes)","h":14},{"ph":"BP","n":"Projektu vadība papildus (zvani, e-pasti, BIS iesniegšana)","h":8},{"ph":"BP","n":"GP (vert.plan. un zogs)","h":4},{"ph":"BP","n":"DOP","h":4},{"ph":"BP","n":"Pārbaude","h":2},{"ph":"BP","n":"Labojumi pēc pārbaudes","h":4},{"ph":"BP","n":"BP klienta izskatei / sazina","h":1},{"ph":"BP","n":"Labojumi MBP pēc klienta komentāriem","h":2},{"ph":"BP","n":"Projektu vadība (zvani, e-pasti, BIS iesniegšana)","h":8},{"ph":"BP","n":"Neparedzamo lietu risinājumi","h":5}],"L3":[{"ph":"SKICE","n":"2D skices","h":8},{"ph":"SKICE","n":"3D skice I","h":16},{"ph":"SKICE","n":"Sapulce /protokols","h":2},{"ph":"SKICE","n":"3D skice II vai Izmaiņu 3D skice","h":16},{"ph":"SKICE","n":"Sapulce /protokols","h":2},{"ph":"SKICE","n":"3D skice III vai Izmaiņu 3D skice","h":16},{"ph":"SKICE","n":"Sapulce /protokols","h":2},{"ph":"SKICE","n":"Korekcijas 1. kārta","h":4},{"ph":"SKICE","n":"Sapulce/protokols","h":2},{"ph":"SKICE","n":"Korekcijas 2. kārta","h":4},{"ph":"SKICE","n":"Sapulce/protokols","h":2},{"ph":"SKICE","n":"Korekcijas 3. kārta","h":4},{"ph":"SKICE","n":"Izmaksu salidzīnājums","h":8},{"ph":"SKICE","n":"Izmaksu salidzīnājumu papildinājums","h":4},{"ph":"SKICE","n":"Apstiprinājuma protokoli","h":2},{"ph":"VR","n":"VR - tūres veidošana","h":8},{"ph":"VR","n":"VR - tūre ar klientu","h":2},{"ph":"VR","n":"VR - tūres veidošana pēc labojumiem","h":3},{"ph":"VR","n":"VR - tūre ar klientu","h":1},{"ph":"MBP","n":"MBP rasējumi (AR: Plāni, Fasādes, Griezums, Jumta plāns)","h":24},{"ph":"MBP","n":"GP","h":8},{"ph":"MBP","n":"SA","h":4},{"ph":"MBP","n":"Pārbaude","h":4},{"ph":"MBP","n":"Labojumi pēc pārbaudes","h":4},{"ph":"MBP","n":"MBP klienta izskatīšana- vajadzētu skaidorjumu šim","h":2},{"ph":"MBP","n":"Korekcijas MBP","h":4},{"ph":"MBP","n":"Pārbaude","h":4},{"ph":"MBP","n":"Labojumi pēc pārbaudes","h":4},{"ph":"MBP","n":"Vispārīga daļa","h":4},{"ph":"MBP/BP","n":"Korekcijas no klienta I","h":4},{"ph":"MBP/BP","n":"Korekcijas no klienta II","h":4},{"ph":"BP","n":"Vispārīga daļa +Skaidrojošais / precizējumi AR","h":2},{"ph":"BP","n":"AR papildu griezumi +7 gab.","h":24},{"ph":"BP","n":"AR logu/durvju specifikācija","h":8},{"ph":"BP","n":"Konstrukciju sastāvi","h":8},{"ph":"BP","n":"ARD Kāpnes - detalizācija","h":8},{"ph":"BP","n":"Mezgli max. 8 gab.","h":32},{"ph":"BP","n":"Korekcijas no klienta III (pie BP)","h":4},{"ph":"BP","n":"BK (3D LOD 300)","h":120},{"ph":"BP","n":"ES-P (Gandrīz nulles enerģijas ēkas detalizēts aprēķins)","h":20},{"ph":"BP","n":"BA (Būvniecības apjomi)","h":16},{"ph":"BP","n":"DOP","h":4},{"ph":"BP","n":"Korekcijas no klienta","h":8},{"ph":"BP","n":"Pārbaude","h":2},{"ph":"BP","n":"Labojumi pēc pārbaudes","h":4},{"ph":"BP","n":"Projektu vadība papildus (zvani, e-pasti, BIS iesniegšana)","h":16},{"ph":"BP","n":"Neparedzamo lietu risinājumi","h":10}],"L4":[{"ph":"SKICE","n":"2D skices","h":16},{"ph":"SKICE","n":"SKICE 3D I","h":16},{"ph":"SKICE","n":"Sapulce /protokols","h":2},{"ph":"SKICE","n":"SKICE 3D II vai Izmaiņu 3D skice","h":16},{"ph":"SKICE","n":"Sapulce /protokols","h":2},{"ph":"SKICE","n":"SKICE 3D III vai Izmaiņu 3D skice","h":16},{"ph":"SKICE","n":"Sapulce /protokols","h":2},{"ph":"SKICE","n":"SKICE 3D IV vai Izmaiņu 3D skice","h":16},{"ph":"SKICE","n":"Sapulce /protokols","h":2},{"ph":"SKICE","n":"Korekcijas 1. kārta","h":4},{"ph":"SKICE","n":"Sapulce/protokols","h":2},{"ph":"SKICE","n":"Korekcijas 2. kārta","h":4},{"ph":"SKICE","n":"Sapulce/protokols","h":2},{"ph":"SKICE","n":"Korekcijas 3. kārta","h":4},{"ph":"SKICE","n":"Sapulce/protokols","h":2},{"ph":"SKICE","n":"Korekcijas 4. kārta","h":4},{"ph":"SKICE","n":"Izmaksu salidzīnājums","h":8},{"ph":"SKICE","n":"Izmaksu salidzīnājumu papildinājums I","h":4},{"ph":"SKICE","n":"Izmaksu salidzīnājumu papildinājums II","h":4},{"ph":"SKICE","n":"Izmaksu salidzīnājumu papildinājums III","h":4},{"ph":"VR","n":"VR - tūres veidošana","h":8},{"ph":"VR","n":"VR - tūre ar klientu","h":2},{"ph":"VR","n":"VR - tūres veidošana pēc labojumiem","h":8},{"ph":"VR","n":"VR - tūre ar klientu","h":2},{"ph":"MBP","n":"MBP rasējumi (AR: Plāni, Fasādes, Griezums, Jumta plāns)","h":24},{"ph":"MBP","n":"GP + vertikalais planojums + savietotais","h":16},{"ph":"MBP","n":"SA","h":4},{"ph":"MBP","n":"Pārbaude","h":4},{"ph":"MBP","n":"Labojumi pēc pārbaudes","h":4},{"ph":"MBP","n":"MBP klienta izskate","h":2},{"ph":"MBP","n":"Korekcijas MBP I","h":4},{"ph":"MBP","n":"Korekcijas MBP II","h":4},{"ph":"MBP","n":"Korekcijas MBP III","h":4},{"ph":"MBP","n":"Korekcijas MBP IV","h":4},{"ph":"MBP","n":"Pārbaude","h":4},{"ph":"MBP","n":"Labojumi pēc pārbaudes","h":4},{"ph":"MBP","n":"Vispārīga daļa","h":4},{"ph":"MBP/BP","n":"Izmaiņas MBP","h":16},{"ph":"BP","n":"Vispārīga daļa +Skaidrojošais / precizējumi AR","h":4},{"ph":"BP","n":"AR papildu griezumi","h":24},{"ph":"BP","n":"AR logu/durvju specifikācija","h":8},{"ph":"BP","n":"Konstrukciju sastāvi","h":16},{"ph":"BP","n":"ARD Kāpnes + citu elementu detalizācija","h":32},{"ph":"BP","n":"Mēzgli - (visi, kas nepieciešami kvalitatīvai būvniecībai)","h":32},{"ph":"BP","n":"Izmaiņas no klienta BP pirms BK ~30% izpildes","h":30},{"ph":"BP","n":"BK (3D LOD 400)","h":150},{"ph":"BP","n":"EP-S (Pasīvas ēkas detalizēts aprēķins)","h":80},{"ph":"BP","n":"BA","h":16},{"ph":"BP","n":"DOP","h":8},{"ph":"BP","n":"Korekcijas no klienta I","h":8},{"ph":"BP","n":"Korekcijas no klienta II","h":8},{"ph":"VR","n":"VR - tūres veidošana BP stadijā ar tīkliem","h":16},{"ph":"VR","n":"VR - tūre ar klientu","h":2},{"ph":"VR","n":"VR - tūres veidošana pēc labojumiem BP / ar tīkliem","h":16},{"ph":"VR","n":"VR - tūre ar klientu","h":2},{"ph":"BP","n":"Pārbaude","h":2},{"ph":"BP","n":"Labojumi pēc pārbaudes","h":4},{"ph":"BP","n":"Projektu vadība papildus (zvani, e-pasti, BIS iesniegšana)","h":16},{"ph":"BP","n":"Neparedzamo lietu risinājumi","h":16}]}};
+const PKG_NAMES = {L1:'L1 Standarta',L2:'L2 Uzlabots',L3:'L3 Premium',L4:'L4 Premium+'};
+const PKG_PHASES = [['SKICE','📝 Skices fāze'],['VR','🥽 VR tūres'],['MBP','📐 Min. būvprojekts (MBP)'],['BP','🏗 Būvprojekts (BP)'],['MBP/BP','📐 MBP/BP korekcijas']];
 
 let currentPkg = 'L2';
-let pkgChecked = {};  // {itemId: true/false}
+let pkgMix = false;
+let pkgChecked = {};      // {"L2:14": true}
 let currentPkgArea = 0;
 
-function getPkgPrice(level, area) {
-    const br = PAKETES_BR.find(b => area <= b.max) || PAKETES_BR[PAKETES_BR.length-1];
-    return br[level];
+function pkgLevelHours(level){ return EXCEL_PKG.levels[level].reduce((s,i)=>s+i.h,0); }
+function pkgCommonHours(){ return EXCEL_PKG.common.reduce((s,i)=>s+i.h,0); }
+function pkgManualSum(){
+  let s=0;
+  document.querySelectorAll('.pkg-man-inp').forEach(inp=>{ s+=parseFloat(inp.value)||0; });
+  return s;
 }
-
-function initPkgChecked(level) {
-    pkgChecked = {};
-    (LEVEL_ITEMS[level] || []).forEach(id => { pkgChecked[id] = true; });
+function pkgFullPrice(level, area){ // pill cena: pilns bloks + kopējais
+  const k=pkgKoef(area);
+  return r50((pkgLevelHours(level)+pkgCommonHours())*PKG_RATE*k);
 }
+function initPkgChecked(level){
+  pkgChecked={};
+  EXCEL_PKG.levels[level].forEach((_,i)=>{ pkgChecked[level+':'+i]=true; });
+}
+function selectPkg(level){
+  currentPkg=level;
+  initPkgChecked(level);
+  ['L1','L2','L3','L4'].forEach(l=>{
+    const p=document.getElementById('pkg-pill-'+l);
+    if(p) p.classList.toggle('active', l===level);
+  });
+  renderPkgItems();
+  updatePkgSummary();
+}
+function togglePkgMix(){
+  pkgMix=!pkgMix;
+  const b=document.getElementById('pkg-mix-btn');
+  if(b){ b.classList.toggle('active',pkgMix); b.textContent=pkgMix?'🔀 MIX ieslēgts — rādu visus līmeņus':'🔀 MIX — jaukt pozīcijas no visiem līmeņiem'; }
+  renderPkgItems();
+  updatePkgSummary();
+}
+function togglePkgItem(key){
+  pkgChecked[key]=!pkgChecked[key];
+  renderPkgItems();
+  updatePkgSummary();
+}
+function pkgRowHtml(level,i,item,k){
+  const key=level+':'+i;
+  const on=!!pkgChecked[key];
+  const price=Math.round(item.h*PKG_RATE*k);
+  return '<label class="pkg-item '+(on?'':'unchecked')+'" style="cursor:pointer">'
+    +'<input type="checkbox" '+(on?'checked':'')+' onchange="togglePkgItem(\''+key+'\')">'
+    +'<div style="flex:1;display:flex;justify-content:space-between;gap:10px;align-items:baseline">'
+    +'<span class="pi-name">'+item.n+'</span>'
+    +'<span style="white-space:nowrap;font-size:.72rem;color:var(--muted)">'+item.h+' h · <strong style="color:var(--navy)">'+price+' €</strong></span>'
+    +'</div></label>';
+}
+function renderPkgItems(){
+  const c=document.getElementById('pkg-items-list');
+  if(!c) return;
+  const k=pkgKoef(currentPkgArea);
+  let html='';
 
-function selectPkg(level) {
-    currentPkg = level;
-    initPkgChecked(level);
-    ['L1','L2','L3'].forEach(l => {
-        const p = document.getElementById('pkg-pill-'+l);
-        if (p) p.classList.toggle('active', l === level);
+  // Kopējais bloks — vienmēr cenā
+  const commonSum=Math.round(pkgCommonHours()*PKG_RATE*k);
+  html+='<details class="pkg-phase" open><summary class="pkg-section-title" style="cursor:pointer">📌 Visos līmeņos (vienmēr iekļauts) — '+commonSum+' €</summary>';
+  EXCEL_PKG.common.forEach(it=>{
+    html+='<div class="pkg-item obligats"><input type="checkbox" checked disabled><div style="flex:1;display:flex;justify-content:space-between;gap:10px"><span class="pi-name">'+it.n+'</span><span style="white-space:nowrap;font-size:.72rem;color:var(--muted)">'+it.h+' h · <strong style="color:var(--navy)">'+Math.round(it.h*PKG_RATE*k)+' €</strong></span></div></div>';
+  });
+  html+='</details>';
+
+  // Līmeņu bloki: aktīvais (vai visi, ja MIX) — grupēti pa fāzēm
+  const levelsToShow = pkgMix ? ['L1','L2','L3','L4'] : [currentPkg];
+  levelsToShow.forEach(level=>{
+    const items=EXCEL_PKG.levels[level];
+    if(pkgMix) html+='<div class="pkg-section-title" style="margin-top:14px">'+PKG_NAMES[level]+' — pozīcijas</div>';
+    PKG_PHASES.forEach(pp=>{
+      const ph=pp[0],label=pp[1];
+      const idxs=[];
+      items.forEach((it,i)=>{ if(it.ph===ph) idxs.push([it,i]); });
+      if(!idxs.length) return;
+      let checkedCnt=0; idxs.forEach(x=>{ if(pkgChecked[level+':'+x[1]]) checkedCnt++; });
+      html+='<details class="pkg-phase" '+(pkgMix?'':'open')+'><summary class="pkg-section-title" style="cursor:pointer">'+label+' <span style="font-weight:400;color:var(--muted)">('+checkedCnt+'/'+idxs.length+')</span></summary>';
+      idxs.forEach(x=>{ html+=pkgRowHtml(level,x[1],x[0],k); });
+      html+='</details>';
     });
-    renderPkgItems();
-    updatePkgSummary();
+  });
+
+  // Inženiertīkli un papildu — manuālas cenas (saglabā ievadītās vērtības pāri renderiem)
+  const manVals={};
+  document.querySelectorAll('.pkg-man-inp').forEach(inp=>{ manVals[inp.id]=inp.value; });
+  html+='<details class="pkg-phase"><summary class="pkg-section-title" style="cursor:pointer">🔌 Inženiertīkli un papildu (cena manuāli)</summary>'
+    +'<div style="font-size:.7rem;color:var(--muted);margin:4px 0 8px">Ievadi apakšuzņēmēja/sadaļas cenu EUR — pieskaitās kopsummai bez koeficienta.</div>';
+  EXCEL_PKG.manual.forEach((m,i)=>{
+    const v=manVals['pkg-man-'+i]||'';
+    html+='<div class="pkg-item" style="display:flex;align-items:center;gap:10px"><span class="pi-name" style="flex:1">'+m.n+'</span><input type="number" class="pkg-man-inp" id="pkg-man-'+i+'" min="0" step="50" placeholder="0" value="'+v+'" style="width:90px;padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-family:inherit" oninput="updatePkgSummary()"></div>';
+  });
+  html+='</details>';
+  c.innerHTML=html;
 }
-
-function renderPkgItems() {
-    const container = document.getElementById('pkg-items-list');
-    if (!container) return;
-    const levelItems = LEVEL_ITEMS[currentPkg] || [];
-    const prevLevel = currentPkg === 'L2' ? 'L1' : currentPkg === 'L3' ? 'L2' : null;
-
-    let html = '';
-    let lastSection = '';
-
-    levelItems.forEach(id => {
-        const item = PKG_ITEMS_ALL.find(x => x.id === id);
-        if (!item) return;
-        const isNew = prevLevel && !LEVEL_ITEMS[prevLevel]?.includes(id);
-        const isChecked = pkgChecked[id] !== false;
-
-        // Section header
-        let section = '';
-        if (['skice_2d','viz_3d_l1','viz_3d_l2','viz_3d_l3','vr_l1','vr_l3'].includes(id)) section = '🎨 Vizualizācija un skices';
-        else if (['ar_project','ar_griezums_l1','ar_griezumi_l2','ar_griezumi_l3','galv_plans','gp_vertik','buvapjomi'].includes(id)) section = '📐 Arhitektūras projekts (AR)';
-        else if (['izmaksu_l2','izmaksu_l3'].includes(id)) section = '💰 Izmaksu plānošana';
-        else if (['bk_2d','bk_l2','bk_l3'].includes(id)) section = '🏗 Büvkonstrukcijas (BK)';
-        else if (['eps_base','eps_nde'].includes(id)) section = '⚡ Energosertifikāts (EPS)';
-        else if (['kor_l1','kor_l2','kor_l3'].includes(id)) section = '✏️ Korekciju kārtas';
-
-        if (section && section !== lastSection) {
-            html += `<div class="pkg-section-title">${section}</div>`;
-            lastSection = section;
-        }
-
-        const classes = ['pkg-item',
-            item.obligats ? 'obligats' : '',
-            !isChecked ? 'unchecked' : '',
-            isNew ? 'new-in-level' : ''
-        ].filter(Boolean).join(' ');
-
-        const newTag = isNew ? '<span class="pi-tag new">JAUNS</span>' : '';
-        const obligatTag = item.obligats ? '<span class="pi-tag obligat">OBLIGĀTS</span>' : '';
-
-        html += `<div class="${classes}">
-            <input type="checkbox" checked disabled title="Iekļauts paketē (cena fiksēta)">
-            <div>
-                <div class="pi-name">${item.name}${obligatTag}${newTag}</div>
-                ${item.obligats ? `<div class="pi-note">📋 ${item.note}</div>` : ''}
-                <div class="pi-warn">⚠ ${item.warning || ''}</div>
-            </div>
-        </div>`;
-    });
-
-    container.innerHTML = html;
+function updatePkgSummary(){
+  const area=currentPkgArea;
+  if(!area) return;
+  const k=pkgKoef(area);
+  let hrs=pkgCommonHours();
+  Object.keys(pkgChecked).forEach(key=>{
+    if(!pkgChecked[key]) return;
+    const parts=key.split(':');
+    const it=(EXCEL_PKG.levels[parts[0]]||[])[+parts[1]];
+    if(it) hrs+=it.h;
+  });
+  const total=r50(hrs*PKG_RATE*k)+Math.round(pkgManualSum());
+  const setPEl=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
+  setPEl('pkg-final-price', total.toLocaleString('lv-LV')+' EUR');
+  setPEl('pkg-final-int', hrs+' h × '+PKG_RATE+' € × '+k.toFixed(1)+' koef.');
+  setPEl('pkg-selected-name', PKG_NAMES[currentPkg]+(pkgMix?' + MIX':''));
+  setPEl('pkg-offer-text', total.toLocaleString('lv-LV')+' EUR');
+  const lvlItems=EXCEL_PKG.levels[currentPkg]||[];
+  let unchecked=0; lvlItems.forEach((_,i)=>{ if(!pkgChecked[currentPkg+':'+i]) unchecked++; });
+  const warnEl=document.getElementById('pkg-warn-count');
+  const warnNum=document.getElementById('pkg-warn-num');
+  if(warnEl) warnEl.classList.toggle('hidden', unchecked===0);
+  if(warnNum) warnNum.textContent=unchecked;
 }
-
-function togglePkgItem(id) {
-    const item = PKG_ITEMS_ALL.find(x => x.id === id);
-    if (!item || item.obligats) return;
-    pkgChecked[id] = !pkgChecked[id];
-    renderPkgItems();
-    updatePkgSummary();
+function initPkgWizard(area){
+  const areaChanged = area!==currentPkgArea;
+  currentPkgArea=area;
+  ['L1','L2','L3','L4'].forEach(l=>{
+    const el=document.getElementById('pkg-price-'+l);
+    if(el) el.textContent=pkgFullPrice(l,area).toLocaleString('lv-LV')+' EUR';
+  });
+  const areaEl=document.getElementById('pb-area-2');
+  if(areaEl) areaEl.textContent=area;
+  let first=false;
+  if(Object.keys(pkgChecked).length===0){ initPkgChecked(currentPkg); first=true; }
+  if(areaChanged||first) renderPkgItems();
+  ['L1','L2','L3','L4'].forEach(l=>{
+    const p=document.getElementById('pkg-pill-'+l);
+    if(p) p.classList.toggle('active', l===currentPkg);
+  });
+  updatePkgSummary();
 }
-
-function updatePkgSummary() {
-    const area = currentPkgArea;
-    if (!area) return;
-    const baseInt = getPkgPrice(currentPkg, area);
-    const baseCli = Math.round(baseInt * 1.20 / 50) * 50;
-
-    // Count unchecked (non-obligats)
-    const levelItems = LEVEL_ITEMS[currentPkg] || [];
-    const unchecked = levelItems.filter(id => {
-        const item = PKG_ITEMS_ALL.find(x => x.id === id);
-        return item && !item.obligats && pkgChecked[id] === false;
-    }).length;
-
-    const nameMap = {L1:'L1 Standarta', L2:'L2 Uzlabots', L3:'L3 Premium'};
-
-    const setPEl = (id, val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
-    setPEl('pkg-final-price', baseCli.toLocaleString('lv-LV') + ' EUR');
-    setPEl('pkg-final-int', baseInt.toLocaleString('lv-LV') + ' EUR');
-    setPEl('pkg-selected-name', nameMap[currentPkg]);
-    setPEl('pkg-offer-text', baseCli.toLocaleString('lv-LV') + ' EUR');
-
-    const warnEl = document.getElementById('pkg-warn-count');
-    const warnNum = document.getElementById('pkg-warn-num');
-    if (warnEl) warnEl.classList.toggle('hidden', unchecked === 0);
-    if (warnNum) warnNum.textContent = unchecked;
-}
-
-function initPkgWizard(area) {
-    currentPkgArea = area;
-    // Update prices in pills
-    ['L1','L2','L3'].forEach(l => {
-        const el = document.getElementById('pkg-price-'+l);
-        if (el) {
-            const int = getPkgPrice(l, area);
-            const cli = Math.round(int * 1.20 / 50) * 50;
-            el.textContent = cli.toLocaleString('lv-LV') + ' EUR';
-        }
-    });
-    // Update area display
-    const areaEl = document.getElementById('pb-area-2');
-    if (areaEl) areaEl.textContent = area;
-
-    // Init with current level
-    if (!pkgChecked || Object.keys(pkgChecked).length === 0) {
-        initPkgChecked(currentPkg);
-    }
-    // Activate current pill
-    selectPkg(currentPkg);
-}
-
-function copyPkgToOffer() {
-    // Update the main price display to match selected package
-    const area = currentPkgArea;
-    const baseInt = getPkgPrice(currentPkg, area);
-    const baseCli = Math.round(baseInt * 1.20 / 50) * 50;
-    const priceEl = document.getElementById('ar-p-client');
-    const intEl = document.getElementById('ar-p-int');
-    if (priceEl) priceEl.textContent = eur(baseCli);
-    if (intEl) intEl.textContent = eur(baseInt);
-    // Flash confirmation
-    const btn = event.currentTarget;
-    const orig = btn.textContent;
-    btn.textContent = '✓ Pievienots piedāvājumam!';
-    btn.style.background = 'var(--green)';
-    setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 2000);
+function copyPkgToOffer(){
+  const txt=document.getElementById('pkg-final-price');
+  const t=txt?txt.textContent:'—';
+  const priceEl=document.getElementById('ar-p-client');
+  const intEl=document.getElementById('ar-p-int');
+  if(priceEl) priceEl.textContent=t;
+  if(intEl) intEl.textContent=t;
+  const btn=event.currentTarget;
+  const orig=btn.textContent;
+  btn.textContent='✓ Pievienots piedāvājumam!';
+  btn.style.background='var(--green)';
+  setTimeout(function(){btn.textContent=orig;btn.style.background='';},2000);
 }
 
 // Hook into renderARPanels to init wizard

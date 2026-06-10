@@ -1,0 +1,981 @@
+{
+ "common": [
+  {
+   "n": "Konsultācija",
+   "h": 2
+  },
+  {
+   "n": "Piedāvājuma sagatavošana",
+   "h": 1
+  },
+  {
+   "n": "2. Konsultācija ar liguma parasktisanu",
+   "h": 2
+  },
+  {
+   "n": "Analīze un PU",
+   "h": 8
+  },
+  {
+   "n": "AR un BK paraksti",
+   "h": 9
+  },
+  {
+   "n": "Papildu saziņa ar klientu līdz darba uzsakšanai",
+   "h": 4
+  }
+ ],
+ "manual": [
+  {
+   "n": "TI (ierakstīt cenu manuāli)",
+   "ph": "SKICE"
+  },
+  {
+   "n": "GI (ierakstīt cenu manuāli)",
+   "ph": "BP"
+  },
+  {
+   "n": "UKT (ierakstīt cenu manuāli)",
+   "ph": "BP"
+  },
+  {
+   "n": "UK (ierakstīt cenu manuāli)",
+   "ph": "BP"
+  },
+  {
+   "n": "AVK (ierakstīt cenu manuāli)",
+   "ph": "BP"
+  },
+  {
+   "n": "ELT (ierakstīt cenu manuāli)",
+   "ph": "BP"
+  },
+  {
+   "n": "EL (ierakstīt cenu manuāli)",
+   "ph": "BP"
+  },
+  {
+   "n": "ESS (ierakstīt cenu manuāli)",
+   "ph": "BP"
+  },
+  {
+   "n": "T (ierakstīt cenu manuāli)",
+   "ph": "BP"
+  },
+  {
+   "n": "TS-CD (ierakstīt cenu manuāli)",
+   "ph": "BP"
+  },
+  {
+   "n": "TS-L (ierakstīt cenu manuāli)",
+   "ph": "BP"
+  },
+  {
+   "n": "UPP (3.gr.ēkām, ierakstīt cenu manuāli)",
+   "ph": "BP"
+  },
+  {
+   "n": "Papildu sadaļa (opcionāli, ierakstīt cenu manuāli)",
+   "ph": "BP"
+  },
+  {
+   "n": "Papildu sadaļa (opcionāli, ierakstīt cenu manuāli)",
+   "ph": "BP"
+  },
+  {
+   "n": "Papildu sadaļa (opcionāli, ierakstīt cenu manuāli)",
+   "ph": "BP"
+  },
+  {
+   "n": "Papildu sadaļa (opcionāli, ierakstīt cenu manuāli)",
+   "ph": "BP"
+  },
+  {
+   "n": "Papildu sadaļa (opcionāli, ierakstīt cenu manuāli)",
+   "ph": "BP"
+  },
+  {
+   "n": "Autoruzruadzība (opcionāli, ierakstīt cenu manuāli)",
+   "ph": "AU"
+  },
+  {
+   "n": "Ekspertīzes labojumi (izvertēt, ierakstīt cenu manuāli)",
+   "ph": "EKSP"
+  }
+ ],
+ "levels": {
+  "L1": [
+   {
+    "ph": "SKICE",
+    "n": "2D skice",
+    "h": 4
+   },
+   {
+    "ph": "SKICE",
+    "n": "3D skice",
+    "h": 12
+   },
+   {
+    "ph": "SKICE",
+    "n": "3d skices parbaude",
+    "h": 2
+   },
+   {
+    "ph": "SKICE",
+    "n": "Korekcijas 3D skicei",
+    "h": 2
+   },
+   {
+    "ph": "SKICE",
+    "n": "Korekcijas 1 karta skice pec VR",
+    "h": 2
+   },
+   {
+    "ph": "SKICE",
+    "n": "Korekcijas 2. kārta MBP sakuma",
+    "h": 2
+   },
+   {
+    "ph": "SKICE",
+    "n": "Apstiprinājuma protokols pirms MBP",
+    "h": 2
+   },
+   {
+    "ph": "VR",
+    "n": "VR - tūres veidošana",
+    "h": 8
+   },
+   {
+    "ph": "VR",
+    "n": "VR - tūre ar klientu",
+    "h": 2
+   },
+   {
+    "ph": "MBP",
+    "n": "MBP rasējumi (AR: Plāni, Fasādes, Griezums 1x, Jumta plāns)",
+    "h": 24
+   },
+   {
+    "ph": "MBP",
+    "n": "GP",
+    "h": 8
+   },
+   {
+    "ph": "MBP",
+    "n": "SA",
+    "h": 2
+   },
+   {
+    "ph": "MBP",
+    "n": "Pārbaude",
+    "h": 2
+   },
+   {
+    "ph": "MBP",
+    "n": "Labojumi pēc pārbaudes",
+    "h": 4
+   },
+   {
+    "ph": "MBP",
+    "n": "MBP klienta izskatīšanai",
+    "h": 1
+   },
+   {
+    "ph": "MBP",
+    "n": "Korekcijas MBP",
+    "h": 4
+   },
+   {
+    "ph": "MBP",
+    "n": "Vispārīga daļa / BIS",
+    "h": 4
+   },
+   {
+    "ph": "BP",
+    "n": "Vispārīga daļa +SA / precizējumi",
+    "h": 2
+   },
+   {
+    "ph": "BP",
+    "n": "AR 1x papildu griezums",
+    "h": 4
+   },
+   {
+    "ph": "BP",
+    "n": "AR logu/durvju specifikācija",
+    "h": 4
+   },
+   {
+    "ph": "BP",
+    "n": "Principiālie mezgli no ražotajiem",
+    "h": 4
+   },
+   {
+    "ph": "BP",
+    "n": "BK (2D)",
+    "h": 45
+   },
+   {
+    "ph": "BP",
+    "n": "ES-P (Bāzes)",
+    "h": 14
+   },
+   {
+    "ph": "BP",
+    "n": "DOP",
+    "h": 4
+   },
+   {
+    "ph": "BP",
+    "n": "Pārbaude",
+    "h": 2
+   },
+   {
+    "ph": "BP",
+    "n": "Labojumi pēc pārbaudes",
+    "h": 2
+   },
+   {
+    "ph": "BP",
+    "n": "BP klienta izskatei",
+    "h": 1
+   },
+   {
+    "ph": "BP",
+    "n": "Labojumi MBP pēc klienta komentāriem",
+    "h": 2
+   },
+   {
+    "ph": "BP",
+    "n": "Projektu vadība (zvani, e-pasti, BIS iesniegšana)",
+    "h": 8
+   },
+   {
+    "ph": "BP",
+    "n": "Neparedzamo lietu risinājumi",
+    "h": 4
+   }
+  ],
+  "L2": [
+   {
+    "ph": "SKICE",
+    "n": "2D skice",
+    "h": 8
+   },
+   {
+    "ph": "SKICE",
+    "n": "3D skice I",
+    "h": 16
+   },
+   {
+    "ph": "SKICE",
+    "n": "Sapulce /protokols",
+    "h": 2
+   },
+   {
+    "ph": "SKICE",
+    "n": "3D skice II vai Izmaiņu 3D skice",
+    "h": 16
+   },
+   {
+    "ph": "SKICE",
+    "n": "Sapulce /protokols",
+    "h": 2
+   },
+   {
+    "ph": "SKICE",
+    "n": "Korekcijas 1. kārta",
+    "h": 4
+   },
+   {
+    "ph": "SKICE",
+    "n": "Sapulce/protokols",
+    "h": 2
+   },
+   {
+    "ph": "SKICE",
+    "n": "Korekcijas 2. kārta",
+    "h": 4
+   },
+   {
+    "ph": "SKICE",
+    "n": "Izmaksu salidzīnājums - prasītos skiadorjumu, kas tas ir",
+    "h": 8
+   },
+   {
+    "ph": "SKICE",
+    "n": "Apstiprinājuma protokoli",
+    "h": 2
+   },
+   {
+    "ph": "VR",
+    "n": "VR - tūres veidošana",
+    "h": 8
+   },
+   {
+    "ph": "VR",
+    "n": "VR - tūre ar klientu",
+    "h": 2
+   },
+   {
+    "ph": "MBP",
+    "n": "MBP rasējumi (AR: Plāni, Fasādes, Griezums, Jumta plāns)",
+    "h": 24
+   },
+   {
+    "ph": "MBP",
+    "n": "GP",
+    "h": 8
+   },
+   {
+    "ph": "MBP",
+    "n": "SA",
+    "h": 4
+   },
+   {
+    "ph": "MBP",
+    "n": "Pārbaude",
+    "h": 2
+   },
+   {
+    "ph": "MBP",
+    "n": "Labojumi pēc pārbaudes",
+    "h": 2
+   },
+   {
+    "ph": "MBP",
+    "n": "MBP klienta izskatīšanai/ sazina",
+    "h": 1
+   },
+   {
+    "ph": "MBP",
+    "n": "Labojumi MBP pēc klienta komentāriem",
+    "h": 2
+   },
+   {
+    "ph": "MBP",
+    "n": "Izmaksu salidzīnājums",
+    "h": 0
+   },
+   {
+    "ph": "MBP",
+    "n": "Korekcijas no klienta MBP stadija",
+    "h": 4
+   },
+   {
+    "ph": "MBP",
+    "n": "Vispārīga daļa / BIS",
+    "h": 4
+   },
+   {
+    "ph": "BP",
+    "n": "Ar adaptacija pec BK +Skaidrojošais / precizējumi",
+    "h": 4
+   },
+   {
+    "ph": "BP",
+    "n": "AR papildu griezumi + 4 gab. max",
+    "h": 8
+   },
+   {
+    "ph": "BP",
+    "n": "AR logu/durvju specifikācija",
+    "h": 6
+   },
+   {
+    "ph": "BP",
+    "n": "Galvenie mezgli: kore + dzega vai parapets, logu montāža, cokols(siena-pamati) jeb līdz. 4 gab.",
+    "h": 16
+   },
+   {
+    "ph": "BP",
+    "n": "BK (3D LOD 200)",
+    "h": 60
+   },
+   {
+    "ph": "BP",
+    "n": "ES-P (Bāzes)",
+    "h": 14
+   },
+   {
+    "ph": "BP",
+    "n": "Projektu vadība papildus (zvani, e-pasti, BIS iesniegšana)",
+    "h": 8
+   },
+   {
+    "ph": "BP",
+    "n": "GP (vert.plan. un zogs)",
+    "h": 4
+   },
+   {
+    "ph": "BP",
+    "n": "DOP",
+    "h": 4
+   },
+   {
+    "ph": "BP",
+    "n": "Pārbaude",
+    "h": 2
+   },
+   {
+    "ph": "BP",
+    "n": "Labojumi pēc pārbaudes",
+    "h": 4
+   },
+   {
+    "ph": "BP",
+    "n": "BP klienta izskatei / sazina",
+    "h": 1
+   },
+   {
+    "ph": "BP",
+    "n": "Labojumi MBP pēc klienta komentāriem",
+    "h": 2
+   },
+   {
+    "ph": "BP",
+    "n": "Projektu vadība (zvani, e-pasti, BIS iesniegšana)",
+    "h": 8
+   },
+   {
+    "ph": "BP",
+    "n": "Neparedzamo lietu risinājumi",
+    "h": 5
+   }
+  ],
+  "L3": [
+   {
+    "ph": "SKICE",
+    "n": "2D skices",
+    "h": 8
+   },
+   {
+    "ph": "SKICE",
+    "n": "3D skice I",
+    "h": 16
+   },
+   {
+    "ph": "SKICE",
+    "n": "Sapulce /protokols",
+    "h": 2
+   },
+   {
+    "ph": "SKICE",
+    "n": "3D skice II vai Izmaiņu 3D skice",
+    "h": 16
+   },
+   {
+    "ph": "SKICE",
+    "n": "Sapulce /protokols",
+    "h": 2
+   },
+   {
+    "ph": "SKICE",
+    "n": "3D skice III vai Izmaiņu 3D skice",
+    "h": 16
+   },
+   {
+    "ph": "SKICE",
+    "n": "Sapulce /protokols",
+    "h": 2
+   },
+   {
+    "ph": "SKICE",
+    "n": "Korekcijas 1. kārta",
+    "h": 4
+   },
+   {
+    "ph": "SKICE",
+    "n": "Sapulce/protokols",
+    "h": 2
+   },
+   {
+    "ph": "SKICE",
+    "n": "Korekcijas 2. kārta",
+    "h": 4
+   },
+   {
+    "ph": "SKICE",
+    "n": "Sapulce/protokols",
+    "h": 2
+   },
+   {
+    "ph": "SKICE",
+    "n": "Korekcijas 3. kārta",
+    "h": 4
+   },
+   {
+    "ph": "SKICE",
+    "n": "Izmaksu salidzīnājums",
+    "h": 8
+   },
+   {
+    "ph": "SKICE",
+    "n": "Izmaksu salidzīnājumu papildinājums",
+    "h": 4
+   },
+   {
+    "ph": "SKICE",
+    "n": "Apstiprinājuma protokoli",
+    "h": 2
+   },
+   {
+    "ph": "VR",
+    "n": "VR - tūres veidošana",
+    "h": 8
+   },
+   {
+    "ph": "VR",
+    "n": "VR - tūre ar klientu",
+    "h": 2
+   },
+   {
+    "ph": "VR",
+    "n": "VR - tūres veidošana pēc labojumiem",
+    "h": 3
+   },
+   {
+    "ph": "VR",
+    "n": "VR - tūre ar klientu",
+    "h": 1
+   },
+   {
+    "ph": "MBP",
+    "n": "MBP rasējumi (AR: Plāni, Fasādes, Griezums, Jumta plāns)",
+    "h": 24
+   },
+   {
+    "ph": "MBP",
+    "n": "GP",
+    "h": 8
+   },
+   {
+    "ph": "MBP",
+    "n": "SA",
+    "h": 4
+   },
+   {
+    "ph": "MBP",
+    "n": "Pārbaude",
+    "h": 4
+   },
+   {
+    "ph": "MBP",
+    "n": "Labojumi pēc pārbaudes",
+    "h": 4
+   },
+   {
+    "ph": "MBP",
+    "n": "MBP klienta izskatīšana- vajadzētu skaidorjumu šim",
+    "h": 2
+   },
+   {
+    "ph": "MBP",
+    "n": "Korekcijas MBP",
+    "h": 4
+   },
+   {
+    "ph": "MBP",
+    "n": "Pārbaude",
+    "h": 4
+   },
+   {
+    "ph": "MBP",
+    "n": "Labojumi pēc pārbaudes",
+    "h": 4
+   },
+   {
+    "ph": "MBP",
+    "n": "Vispārīga daļa",
+    "h": 4
+   },
+   {
+    "ph": "MBP/BP",
+    "n": "Korekcijas no klienta I",
+    "h": 4
+   },
+   {
+    "ph": "MBP/BP",
+    "n": "Korekcijas no klienta II",
+    "h": 4
+   },
+   {
+    "ph": "BP",
+    "n": "Vispārīga daļa +Skaidrojošais / precizējumi AR",
+    "h": 2
+   },
+   {
+    "ph": "BP",
+    "n": "AR papildu griezumi +7 gab.",
+    "h": 24
+   },
+   {
+    "ph": "BP",
+    "n": "AR logu/durvju specifikācija",
+    "h": 8
+   },
+   {
+    "ph": "BP",
+    "n": "Konstrukciju sastāvi",
+    "h": 8
+   },
+   {
+    "ph": "BP",
+    "n": "ARD Kāpnes - detalizācija",
+    "h": 8
+   },
+   {
+    "ph": "BP",
+    "n": "Mezgli max. 8 gab.",
+    "h": 32
+   },
+   {
+    "ph": "BP",
+    "n": "Korekcijas no klienta III (pie BP)",
+    "h": 4
+   },
+   {
+    "ph": "BP",
+    "n": "BK (3D LOD 300)",
+    "h": 120
+   },
+   {
+    "ph": "BP",
+    "n": "ES-P (Gandrīz nulles enerģijas ēkas detalizēts aprēķins)",
+    "h": 20
+   },
+   {
+    "ph": "BP",
+    "n": "BA (Būvniecības apjomi)",
+    "h": 16
+   },
+   {
+    "ph": "BP",
+    "n": "DOP",
+    "h": 4
+   },
+   {
+    "ph": "BP",
+    "n": "Korekcijas no klienta",
+    "h": 8
+   },
+   {
+    "ph": "BP",
+    "n": "Pārbaude",
+    "h": 2
+   },
+   {
+    "ph": "BP",
+    "n": "Labojumi pēc pārbaudes",
+    "h": 4
+   },
+   {
+    "ph": "BP",
+    "n": "Projektu vadība papildus (zvani, e-pasti, BIS iesniegšana)",
+    "h": 16
+   },
+   {
+    "ph": "BP",
+    "n": "Neparedzamo lietu risinājumi",
+    "h": 10
+   }
+  ],
+  "L4": [
+   {
+    "ph": "SKICE",
+    "n": "2D skices",
+    "h": 16
+   },
+   {
+    "ph": "SKICE",
+    "n": "SKICE 3D I",
+    "h": 16
+   },
+   {
+    "ph": "SKICE",
+    "n": "Sapulce /protokols",
+    "h": 2
+   },
+   {
+    "ph": "SKICE",
+    "n": "SKICE 3D II vai Izmaiņu 3D skice",
+    "h": 16
+   },
+   {
+    "ph": "SKICE",
+    "n": "Sapulce /protokols",
+    "h": 2
+   },
+   {
+    "ph": "SKICE",
+    "n": "SKICE 3D III vai Izmaiņu 3D skice",
+    "h": 16
+   },
+   {
+    "ph": "SKICE",
+    "n": "Sapulce /protokols",
+    "h": 2
+   },
+   {
+    "ph": "SKICE",
+    "n": "SKICE 3D IV vai Izmaiņu 3D skice",
+    "h": 16
+   },
+   {
+    "ph": "SKICE",
+    "n": "Sapulce /protokols",
+    "h": 2
+   },
+   {
+    "ph": "SKICE",
+    "n": "Korekcijas 1. kārta",
+    "h": 4
+   },
+   {
+    "ph": "SKICE",
+    "n": "Sapulce/protokols",
+    "h": 2
+   },
+   {
+    "ph": "SKICE",
+    "n": "Korekcijas 2. kārta",
+    "h": 4
+   },
+   {
+    "ph": "SKICE",
+    "n": "Sapulce/protokols",
+    "h": 2
+   },
+   {
+    "ph": "SKICE",
+    "n": "Korekcijas 3. kārta",
+    "h": 4
+   },
+   {
+    "ph": "SKICE",
+    "n": "Sapulce/protokols",
+    "h": 2
+   },
+   {
+    "ph": "SKICE",
+    "n": "Korekcijas 4. kārta",
+    "h": 4
+   },
+   {
+    "ph": "SKICE",
+    "n": "Izmaksu salidzīnājums",
+    "h": 8
+   },
+   {
+    "ph": "SKICE",
+    "n": "Izmaksu salidzīnājumu papildinājums I",
+    "h": 4
+   },
+   {
+    "ph": "SKICE",
+    "n": "Izmaksu salidzīnājumu papildinājums II",
+    "h": 4
+   },
+   {
+    "ph": "SKICE",
+    "n": "Izmaksu salidzīnājumu papildinājums III",
+    "h": 4
+   },
+   {
+    "ph": "VR",
+    "n": "VR - tūres veidošana",
+    "h": 8
+   },
+   {
+    "ph": "VR",
+    "n": "VR - tūre ar klientu",
+    "h": 2
+   },
+   {
+    "ph": "VR",
+    "n": "VR - tūres veidošana pēc labojumiem",
+    "h": 8
+   },
+   {
+    "ph": "VR",
+    "n": "VR - tūre ar klientu",
+    "h": 2
+   },
+   {
+    "ph": "MBP",
+    "n": "MBP rasējumi (AR: Plāni, Fasādes, Griezums, Jumta plāns)",
+    "h": 24
+   },
+   {
+    "ph": "MBP",
+    "n": "GP + vertikalais planojums + savietotais",
+    "h": 16
+   },
+   {
+    "ph": "MBP",
+    "n": "SA",
+    "h": 4
+   },
+   {
+    "ph": "MBP",
+    "n": "Pārbaude",
+    "h": 4
+   },
+   {
+    "ph": "MBP",
+    "n": "Labojumi pēc pārbaudes",
+    "h": 4
+   },
+   {
+    "ph": "MBP",
+    "n": "MBP klienta izskate",
+    "h": 2
+   },
+   {
+    "ph": "MBP",
+    "n": "Korekcijas MBP I",
+    "h": 4
+   },
+   {
+    "ph": "MBP",
+    "n": "Korekcijas MBP II",
+    "h": 4
+   },
+   {
+    "ph": "MBP",
+    "n": "Korekcijas MBP III",
+    "h": 4
+   },
+   {
+    "ph": "MBP",
+    "n": "Korekcijas MBP IV",
+    "h": 4
+   },
+   {
+    "ph": "MBP",
+    "n": "Pārbaude",
+    "h": 4
+   },
+   {
+    "ph": "MBP",
+    "n": "Labojumi pēc pārbaudes",
+    "h": 4
+   },
+   {
+    "ph": "MBP",
+    "n": "Vispārīga daļa",
+    "h": 4
+   },
+   {
+    "ph": "MBP/BP",
+    "n": "Izmaiņas MBP",
+    "h": 16
+   },
+   {
+    "ph": "BP",
+    "n": "Vispārīga daļa +Skaidrojošais / precizējumi AR",
+    "h": 4
+   },
+   {
+    "ph": "BP",
+    "n": "AR papildu griezumi",
+    "h": 24
+   },
+   {
+    "ph": "BP",
+    "n": "AR logu/durvju specifikācija",
+    "h": 8
+   },
+   {
+    "ph": "BP",
+    "n": "Konstrukciju sastāvi",
+    "h": 16
+   },
+   {
+    "ph": "BP",
+    "n": "ARD Kāpnes + citu elementu detalizācija",
+    "h": 32
+   },
+   {
+    "ph": "BP",
+    "n": "Mēzgli - (visi, kas nepieciešami kvalitatīvai būvniecībai)",
+    "h": 32
+   },
+   {
+    "ph": "BP",
+    "n": "Izmaiņas no klienta BP pirms BK ~30% izpildes",
+    "h": 30
+   },
+   {
+    "ph": "BP",
+    "n": "BK (3D LOD 400)",
+    "h": 150
+   },
+   {
+    "ph": "BP",
+    "n": "EP-S (Pasīvas ēkas detalizēts aprēķins)",
+    "h": 80
+   },
+   {
+    "ph": "BP",
+    "n": "BA",
+    "h": 16
+   },
+   {
+    "ph": "BP",
+    "n": "DOP",
+    "h": 8
+   },
+   {
+    "ph": "BP",
+    "n": "Korekcijas no klienta I",
+    "h": 8
+   },
+   {
+    "ph": "BP",
+    "n": "Korekcijas no klienta II",
+    "h": 8
+   },
+   {
+    "ph": "VR",
+    "n": "VR - tūres veidošana BP stadijā ar tīkliem",
+    "h": 16
+   },
+   {
+    "ph": "VR",
+    "n": "VR - tūre ar klientu",
+    "h": 2
+   },
+   {
+    "ph": "VR",
+    "n": "VR - tūres veidošana pēc labojumiem BP / ar tīkliem",
+    "h": 16
+   },
+   {
+    "ph": "VR",
+    "n": "VR - tūre ar klientu",
+    "h": 2
+   },
+   {
+    "ph": "BP",
+    "n": "Pārbaude",
+    "h": 2
+   },
+   {
+    "ph": "BP",
+    "n": "Labojumi pēc pārbaudes",
+    "h": 4
+   },
+   {
+    "ph": "BP",
+    "n": "Projektu vadība papildus (zvani, e-pasti, BIS iesniegšana)",
+    "h": 16
+   },
+   {
+    "ph": "BP",
+    "n": "Neparedzamo lietu risinājumi",
+    "h": 16
+   }
+  ]
+ }
+}
