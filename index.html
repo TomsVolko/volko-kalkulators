@@ -2570,9 +2570,11 @@ document.getElementById("pi").addEventListener("keydown",e=>{if(e.key==="Enter")
 if(sessionStorage.getItem("va")){document.getElementById("lock").style.display="none";document.getElementById("app").style.display="block";}
 function switchTab(id,btn){document.querySelectorAll(".tab-panel").forEach(t=>t.classList.remove("active"));document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));document.getElementById("tab-"+id).classList.add("active");btn.classList.add("active");}
 
-// AR apakštaba (Toms 2026-06-10): Jaunbūve = TIKAI jaunbūve (+tipveida). Viss darbs ar esošu ēku → Legalizācija.
+// AR apakštaba (Toms 2026-06-10): Jaunbūve = TIKAI jaunbūve (+tipveida). Esoša ēka/legalizācija = konkrētie projektu veidi,
+// ar kuriem legalizē (izmaiņu/pārbūve/atjaunošana/nojaukšana). Teorētiskie la/lbv/lbp/lc tipi izņemti no izvēlnes
+// (Toms: "mēs viņus nekad neizmantosim") — to dati kodā paliek. Legalizācijas konteksts = c2 apgrūtinājuma ķeksis (+10%).
 const AR_TYPES_NEW='<option value="jaunbuve">Jaunbūve</option><option value="tipveida">Tipveida projekts (atkārtoti izmantojams)</option>';
-const AR_TYPES_LEG='<optgroup label="Nereģistrēta būvniecība (jāsakārto)"><option value="la">Patvaļīga būvniecība — ēka bez atļaujas</option><option value="lbv">Nereģistrētas izmaiņas — vienkāršotas</option><option value="lbp">Nereģistrētas izmaiņas — pilnas</option><option value="lc">Funkcijas maiņa</option></optgroup><optgroup label="Plānoti darbi esošā ēkā"><option value="izmaiņu">Izmaiņu projekts</option><option value="rekonstrukcija">Rekonstrukcija / pārbūve</option><option value="vienk">Vienkāršota atjaunošana</option><option value="nojaukšana">Nojaukšanas projekts</option></optgroup>';
+const AR_TYPES_LEG='<option value="izmaiņu">Izmaiņu projekts</option><option value="rekonstrukcija">Rekonstrukcija / pārbūve</option><option value="vienk">Vienkāršota atjaunošana</option><option value="nojaukšana">Nojaukšanas projekts</option>';
 window._arMode='jaunbuve';
 function arMode(mode,btn){
   window._arMode=mode;
@@ -2580,7 +2582,7 @@ function arMode(mode,btn){
   if(btn)btn.classList.add("active");
   const sel=document.getElementById("ar-type");
   sel.innerHTML=mode==='legalizacija'?AR_TYPES_LEG:AR_TYPES_NEW;
-  sel.value=mode==='legalizacija'?'la':'jaunbuve';
+  sel.value=mode==='legalizacija'?'rekonstrukcija':'jaunbuve';
   const lbl=document.getElementById("ar-type-lbl");
   if(lbl)lbl.textContent=mode==='legalizacija'?'Projekta veids — esoša ēka / legalizācija':'Projekta tips — jaunbūve';
   calcAR();
