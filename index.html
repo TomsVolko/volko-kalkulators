@@ -4535,6 +4535,65 @@ const PKG_KOEF = [[60,0.7],[100,0.8],[160,0.9],[250,1.0],[400,1.1],[700,1.3],[12
 function pkgKoef(a){ for (const kk of PKG_KOEF) if (a<=kk[0]) return kk[1]; return 3.0; }
 const EXCEL_PKG = {"common":[{"n":"Konsultācija","h":2},{"n":"Piedāvājuma sagatavošana","h":1},{"n":"2. Konsultācija ar liguma parasktisanu","h":2},{"n":"Analīze un PU","h":8},{"n":"AR un BK paraksti","h":9},{"n":"Papildu saziņa ar klientu līdz darba uzsakšanai","h":4}],"manual":[{"n":"TI (ierakstīt cenu manuāli)"},{"n":"GI (ierakstīt cenu manuāli)"},{"n":"UKT (ierakstīt cenu manuāli)"},{"n":"UK (ierakstīt cenu manuāli)"},{"n":"AVK (ierakstīt cenu manuāli)"},{"n":"ELT (ierakstīt cenu manuāli)"},{"n":"EL (ierakstīt cenu manuāli)"},{"n":"ESS (ierakstīt cenu manuāli)"},{"n":"T (ierakstīt cenu manuāli)"},{"n":"TS-CD (ierakstīt cenu manuāli)"},{"n":"TS-L (ierakstīt cenu manuāli)"},{"n":"UPP (3.gr.ēkām, ierakstīt cenu manuāli)"},{"n":"Papildu sadaļa (opcionāli, ierakstīt cenu manuāli)"},{"n":"Autoruzruadzība (opcionāli, ierakstīt cenu manuāli)"},{"n":"Ekspertīzes labojumi (izvertēt, ierakstīt cenu manuāli)"}],"levels":{"L1":[{"ph":"SKICE","n":"2D skice","h":4},{"ph":"SKICE","n":"3D skice","h":12},{"ph":"SKICE","n":"3d skices parbaude","h":2},{"ph":"SKICE","n":"Korekcijas 3D skicei","h":2},{"ph":"SKICE","n":"Korekcijas 1 karta skice pec VR","h":2},{"ph":"SKICE","n":"Korekcijas 2. kārta MBP sakuma","h":2},{"ph":"SKICE","n":"Apstiprinājuma protokols pirms MBP","h":2},{"ph":"VR","n":"VR - tūres veidošana","h":8},{"ph":"VR","n":"VR - tūre ar klientu","h":2},{"ph":"MBP","n":"MBP rasējumi (AR: Plāni, Fasādes, Griezums 1x, Jumta plāns)","h":24},{"ph":"MBP","n":"GP","h":8},{"ph":"MBP","n":"SA","h":2},{"ph":"MBP","n":"Pārbaude","h":2},{"ph":"MBP","n":"Labojumi pēc pārbaudes","h":4},{"ph":"MBP","n":"MBP klienta izskatīšanai","h":1},{"ph":"MBP","n":"Korekcijas MBP","h":4},{"ph":"MBP","n":"Vispārīga daļa / BIS","h":4},{"ph":"BP","n":"Vispārīga daļa +SA / precizējumi","h":2},{"ph":"BP","n":"AR 1x papildu griezums","h":4},{"ph":"BP","n":"AR logu/durvju specifikācija","h":4},{"ph":"BP","n":"Principiālie mezgli no ražotajiem","h":4},{"ph":"BP","n":"BK (2D)","h":45},{"ph":"BP","n":"ES-P (Bāzes)","h":14},{"ph":"BP","n":"DOP","h":4},{"ph":"BP","n":"Pārbaude","h":2},{"ph":"BP","n":"Labojumi pēc pārbaudes","h":2},{"ph":"BP","n":"BP klienta izskatei","h":1},{"ph":"BP","n":"Labojumi MBP pēc klienta komentāriem","h":2},{"ph":"BP","n":"Projektu vadība (zvani, e-pasti, BIS iesniegšana)","h":8},{"ph":"BP","n":"Neparedzamo lietu risinājumi","h":4}],"L2":[{"ph":"SKICE","n":"2D skice","h":8},{"ph":"SKICE","n":"3D skice I","h":16},{"ph":"SKICE","n":"Sapulce /protokols","h":2},{"ph":"SKICE","n":"3D skice II vai Izmaiņu 3D skice","h":16},{"ph":"SKICE","n":"Sapulce /protokols","h":2},{"ph":"SKICE","n":"Korekcijas 1. kārta","h":4},{"ph":"SKICE","n":"Sapulce/protokols","h":2},{"ph":"SKICE","n":"Korekcijas 2. kārta","h":4},{"ph":"SKICE","n":"Izmaksu salidzīnājums - prasītos skiadorjumu, kas tas ir","h":8},{"ph":"SKICE","n":"Apstiprinājuma protokoli","h":2},{"ph":"VR","n":"VR - tūres veidošana","h":8},{"ph":"VR","n":"VR - tūre ar klientu","h":2},{"ph":"MBP","n":"MBP rasējumi (AR: Plāni, Fasādes, Griezums, Jumta plāns)","h":24},{"ph":"MBP","n":"GP","h":8},{"ph":"MBP","n":"SA","h":4},{"ph":"MBP","n":"Pārbaude","h":2},{"ph":"MBP","n":"Labojumi pēc pārbaudes","h":2},{"ph":"MBP","n":"MBP klienta izskatīšanai/ sazina","h":1},{"ph":"MBP","n":"Labojumi MBP pēc klienta komentāriem","h":2},{"ph":"MBP","n":"Izmaksu salidzīnājums","h":0},{"ph":"MBP","n":"Korekcijas no klienta MBP stadija","h":4},{"ph":"MBP","n":"Vispārīga daļa / BIS","h":4},{"ph":"BP","n":"Ar adaptacija pec BK +Skaidrojošais / precizējumi","h":4},{"ph":"BP","n":"AR papildu griezumi + 4 gab. max","h":8},{"ph":"BP","n":"AR logu/durvju specifikācija","h":6},{"ph":"BP","n":"Galvenie mezgli: kore + dzega vai parapets, logu montāža, cokols(siena-pamati) jeb līdz. 4 gab.","h":16},{"ph":"BP","n":"BK (3D LOD 200)","h":60},{"ph":"BP","n":"ES-P (Bāzes)","h":14},{"ph":"BP","n":"Projektu vadība papildus (zvani, e-pasti, BIS iesniegšana)","h":8},{"ph":"BP","n":"GP (vert.plan. un zogs)","h":4},{"ph":"BP","n":"DOP","h":4},{"ph":"BP","n":"Pārbaude","h":2},{"ph":"BP","n":"Labojumi pēc pārbaudes","h":4},{"ph":"BP","n":"BP klienta izskatei / sazina","h":1},{"ph":"BP","n":"Labojumi MBP pēc klienta komentāriem","h":2},{"ph":"BP","n":"Projektu vadība (zvani, e-pasti, BIS iesniegšana)","h":8},{"ph":"BP","n":"Neparedzamo lietu risinājumi","h":5}],"L3":[{"ph":"SKICE","n":"2D skices","h":8},{"ph":"SKICE","n":"3D skice I","h":16},{"ph":"SKICE","n":"Sapulce /protokols","h":2},{"ph":"SKICE","n":"3D skice II vai Izmaiņu 3D skice","h":16},{"ph":"SKICE","n":"Sapulce /protokols","h":2},{"ph":"SKICE","n":"3D skice III vai Izmaiņu 3D skice","h":16},{"ph":"SKICE","n":"Sapulce /protokols","h":2},{"ph":"SKICE","n":"Korekcijas 1. kārta","h":4},{"ph":"SKICE","n":"Sapulce/protokols","h":2},{"ph":"SKICE","n":"Korekcijas 2. kārta","h":4},{"ph":"SKICE","n":"Sapulce/protokols","h":2},{"ph":"SKICE","n":"Korekcijas 3. kārta","h":4},{"ph":"SKICE","n":"Izmaksu salidzīnājums","h":8},{"ph":"SKICE","n":"Izmaksu salidzīnājumu papildinājums","h":4},{"ph":"SKICE","n":"Apstiprinājuma protokoli","h":2},{"ph":"VR","n":"VR - tūres veidošana","h":8},{"ph":"VR","n":"VR - tūre ar klientu","h":2},{"ph":"VR","n":"VR - tūres veidošana pēc labojumiem","h":3},{"ph":"VR","n":"VR - tūre ar klientu","h":1},{"ph":"MBP","n":"MBP rasējumi (AR: Plāni, Fasādes, Griezums, Jumta plāns)","h":24},{"ph":"MBP","n":"GP","h":8},{"ph":"MBP","n":"SA","h":4},{"ph":"MBP","n":"Pārbaude","h":4},{"ph":"MBP","n":"Labojumi pēc pārbaudes","h":4},{"ph":"MBP","n":"MBP klienta izskatīšana- vajadzētu skaidorjumu šim","h":2},{"ph":"MBP","n":"Korekcijas MBP","h":4},{"ph":"MBP","n":"Pārbaude","h":4},{"ph":"MBP","n":"Labojumi pēc pārbaudes","h":4},{"ph":"MBP","n":"Vispārīga daļa","h":4},{"ph":"MBP/BP","n":"Korekcijas no klienta I","h":4},{"ph":"MBP/BP","n":"Korekcijas no klienta II","h":4},{"ph":"BP","n":"Vispārīga daļa +Skaidrojošais / precizējumi AR","h":2},{"ph":"BP","n":"AR papildu griezumi +7 gab.","h":24},{"ph":"BP","n":"AR logu/durvju specifikācija","h":8},{"ph":"BP","n":"Konstrukciju sastāvi","h":8},{"ph":"BP","n":"ARD Kāpnes - detalizācija","h":8},{"ph":"BP","n":"Mezgli max. 8 gab.","h":32},{"ph":"BP","n":"Korekcijas no klienta III (pie BP)","h":4},{"ph":"BP","n":"BK (3D LOD 300)","h":120},{"ph":"BP","n":"ES-P (Gandrīz nulles enerģijas ēkas detalizēts aprēķins)","h":20},{"ph":"BP","n":"BA (Būvniecības apjomi)","h":16},{"ph":"BP","n":"DOP","h":4},{"ph":"BP","n":"Korekcijas no klienta","h":8},{"ph":"BP","n":"Pārbaude","h":2},{"ph":"BP","n":"Labojumi pēc pārbaudes","h":4},{"ph":"BP","n":"Projektu vadība papildus (zvani, e-pasti, BIS iesniegšana)","h":16},{"ph":"BP","n":"Neparedzamo lietu risinājumi","h":10}],"L4":[{"ph":"SKICE","n":"2D skices","h":16},{"ph":"SKICE","n":"SKICE 3D I","h":16},{"ph":"SKICE","n":"Sapulce /protokols","h":2},{"ph":"SKICE","n":"SKICE 3D II vai Izmaiņu 3D skice","h":16},{"ph":"SKICE","n":"Sapulce /protokols","h":2},{"ph":"SKICE","n":"SKICE 3D III vai Izmaiņu 3D skice","h":16},{"ph":"SKICE","n":"Sapulce /protokols","h":2},{"ph":"SKICE","n":"SKICE 3D IV vai Izmaiņu 3D skice","h":16},{"ph":"SKICE","n":"Sapulce /protokols","h":2},{"ph":"SKICE","n":"Korekcijas 1. kārta","h":4},{"ph":"SKICE","n":"Sapulce/protokols","h":2},{"ph":"SKICE","n":"Korekcijas 2. kārta","h":4},{"ph":"SKICE","n":"Sapulce/protokols","h":2},{"ph":"SKICE","n":"Korekcijas 3. kārta","h":4},{"ph":"SKICE","n":"Sapulce/protokols","h":2},{"ph":"SKICE","n":"Korekcijas 4. kārta","h":4},{"ph":"SKICE","n":"Izmaksu salidzīnājums","h":8},{"ph":"SKICE","n":"Izmaksu salidzīnājumu papildinājums I","h":4},{"ph":"SKICE","n":"Izmaksu salidzīnājumu papildinājums II","h":4},{"ph":"SKICE","n":"Izmaksu salidzīnājumu papildinājums III","h":4},{"ph":"VR","n":"VR - tūres veidošana","h":8},{"ph":"VR","n":"VR - tūre ar klientu","h":2},{"ph":"VR","n":"VR - tūres veidošana pēc labojumiem","h":8},{"ph":"VR","n":"VR - tūre ar klientu","h":2},{"ph":"MBP","n":"MBP rasējumi (AR: Plāni, Fasādes, Griezums, Jumta plāns)","h":24},{"ph":"MBP","n":"GP + vertikalais planojums + savietotais","h":16},{"ph":"MBP","n":"SA","h":4},{"ph":"MBP","n":"Pārbaude","h":4},{"ph":"MBP","n":"Labojumi pēc pārbaudes","h":4},{"ph":"MBP","n":"MBP klienta izskate","h":2},{"ph":"MBP","n":"Korekcijas MBP I","h":4},{"ph":"MBP","n":"Korekcijas MBP II","h":4},{"ph":"MBP","n":"Korekcijas MBP III","h":4},{"ph":"MBP","n":"Korekcijas MBP IV","h":4},{"ph":"MBP","n":"Pārbaude","h":4},{"ph":"MBP","n":"Labojumi pēc pārbaudes","h":4},{"ph":"MBP","n":"Vispārīga daļa","h":4},{"ph":"MBP/BP","n":"Izmaiņas MBP","h":16},{"ph":"BP","n":"Vispārīga daļa +Skaidrojošais / precizējumi AR","h":4},{"ph":"BP","n":"AR papildu griezumi","h":24},{"ph":"BP","n":"AR logu/durvju specifikācija","h":8},{"ph":"BP","n":"Konstrukciju sastāvi","h":16},{"ph":"BP","n":"ARD Kāpnes + citu elementu detalizācija","h":32},{"ph":"BP","n":"Mēzgli - (visi, kas nepieciešami kvalitatīvai būvniecībai)","h":32},{"ph":"BP","n":"Izmaiņas no klienta BP pirms BK ~30% izpildes","h":30},{"ph":"BP","n":"BK (3D LOD 400)","h":150},{"ph":"BP","n":"EP-S (Pasīvas ēkas detalizēts aprēķins)","h":80},{"ph":"BP","n":"BA","h":16},{"ph":"BP","n":"DOP","h":8},{"ph":"BP","n":"Korekcijas no klienta I","h":8},{"ph":"BP","n":"Korekcijas no klienta II","h":8},{"ph":"VR","n":"VR - tūres veidošana BP stadijā ar tīkliem","h":16},{"ph":"VR","n":"VR - tūre ar klientu","h":2},{"ph":"VR","n":"VR - tūres veidošana pēc labojumiem BP / ar tīkliem","h":16},{"ph":"VR","n":"VR - tūre ar klientu","h":2},{"ph":"BP","n":"Pārbaude","h":2},{"ph":"BP","n":"Labojumi pēc pārbaudes","h":4},{"ph":"BP","n":"Projektu vadība papildus (zvani, e-pasti, BIS iesniegšana)","h":16},{"ph":"BP","n":"Neparedzamo lietu risinājumi","h":16}]}};
 const PKG_NAMES = {L1:'L1 Standarta',L2:'L2 Uzlabots',L3:'L3 Premium',L4:'L4 Premium+'};
+// Pozīciju paskaidrojumi — kas tas ir un kam vajadzīgs (rāda zem nosaukuma)
+const PKG_GLOSS=[
+  [/^2D skice/i,'Plakanais telpu plānojums ar izmēriem — pirmais solis, lai klients redz izvietojumu.'],
+  [/3d skices parbaude/i,'Iekšējā kvalitātes pārbaude pirms rādīšanas klientam.'],
+  [/^(3D skice|SKICE 3D)/i,'Ēkas 3D modelis — klients redz māju pirms projektēšanas. II/III/IV = papildu varianti vai izmaiņu versijas.'],
+  [/^Korekcijas no klienta|^Izmaiņas (MBP|no klienta)/i,'Klienta pieprasītās izmaiņas attiecīgajā stadijā — iekļautas cenā.'],
+  [/^Korekcijas/i,'Labojumu kārta pēc klienta komentāriem — iekļauta cenā, vēlāk nav strīdu par "vēl vienu labojumu".'],
+  [/^Apstiprinājuma protokol/i,'Klienta rakstisks apstiprinājums pirms nākamās fāzes — pasargā abas puses no vēlākiem strīdiem.'],
+  [/Sapulce/i,'Tikšanās ar klientu + lēmumu protokols — apstiprinājumi rakstiski.'],
+  [/^VR - tūres veidošana/i,'Virtuālās realitātes tūres sagatavošana — klients "izstaigā" māju 360° telefonā vai brillēs.'],
+  [/^VR - tūre ar klientu/i,'VR seanss kopā ar klientu — izrunā iespaidus un vajadzīgās izmaiņas uzreiz.'],
+  [/^MBP rasējumi/i,'Būvprojekts minimālā sastāvā — plāni, fasādes, griezums, jumta plāns. Pamats BIS iesniegšanai.'],
+  [/^GP/i,'Ģenerālplāns — ēkas novietojums zemes gabalā ar piesaistēm un attālumiem līdz robežām.'],
+  [/^SA$/i,'Situācijas plāns — objekta novietojums plašākā apkārtnē.'],
+  [/^Pārbaude$/i,'Iekšējā kvalitātes kontrole pirms nodošanas klientam / BIS.'],
+  [/^Labojumi pēc pārbaudes/i,'Kļūdu izlabošana pēc iekšējās pārbaudes.'],
+  [/klienta izskat/i,'Versija klientam izskatīšanai un komentāriem.'],
+  [/^Labojumi MBP/i,'Labojumi pēc klienta komentāriem MBP stadijā.'],
+  [/^Vispārīga daļa/i,'Projekta tekstuālā daļa — skaidrojošais apraksts, rādītāji, normatīvu atbilstība, BIS noformējums.'],
+  [/^Ar adaptacija pec BK/i,'AR daļas pielāgošana pēc konstruktīvajiem aprēķiniem — arhitektūra saskaņota ar BK.'],
+  [/papildu griezum/i,'Papildu šķērsgriezumi — vairāk konstruktīvās skaidrības būvniekam, mazāk jautājumu būvlaukumā.'],
+  [/logu\/durvju specifikācija/i,'Logu un durvju saraksts ar izmēriem un vēršanās pusēm — gatavs pasūtīšanai ražotājam.'],
+  [/^Konstrukciju sastāvi/i,'Sienu/jumta/grīdu kārtu apraksti (materiāli, biezumi) — siltumtehnikai un būvniekam.'],
+  [/Kāpnes/i,'Kāpņu detalizēti rasējumi — pakāpieni, margas; izgatavošanai un montāžai.'],
+  [/mezgli/i,'Konstruktīvie mezgli (kore, dzega, cokols, logu montāža u.c.) — KĀ būvniekam pareizi savienot konstrukcijas.'],
+  [/^BK \(2D\)/i,'Būvkonstrukcijas 2D — pamatu, pārsegumu, jumta nesošo elementu aprēķini un rasējumi.'],
+  [/LOD 200/i,'BK 3D modelī (LOD200) — pamata detalizācija; precīzāka materiālu plānošana nekā 2D.'],
+  [/LOD 300/i,'BK 3D (LOD300) — ražošanas precizitāte (CLT, kopnes); minimāls kļūdu risks būvlaukumā.'],
+  [/LOD 400/i,'BK 3D (LOD400) — maksimālā detalizācija ar visiem savienojumiem; rūpnieciskai ražošanai.'],
+  [/^ES-P \(Bāzes\)/i,'Energoefektivitātes aprēķins (pagaidu energosertifikāts) — obligāts apkurināmai jaunbūvei BIS.'],
+  [/Gandrīz nulles/i,'Gandrīz nulles enerģijas ēkas detalizēts aprēķins — augstāka energoklase, zemāki apkures rēķini.'],
+  [/Pasīvas ēkas/i,'Pasīvās ēkas energoaprēķins — maksimālā energoefektivitāte.'],
+  [/^DOP$/i,'Darbu organizēšanas projekts — kā organizēs būvdarbus (piekļuve, nožogojums, drošība). Prasa BIS pie būvprojekta.'],
+  [/^BA( |$)|Būvniecības apjomi/i,'Būvapjomu saraksts — precīzi materiālu un darbu daudzumi tāmei; ļauj godīgi salīdzināt būvnieku piedāvājumus.'],
+  [/^Izmaksu salidzīnājum/i,'Orientējoša būvniecības izmaksu prognoze — klients zina gaidāmo budžetu pirms būvniecības.'],
+  [/^Projektu vadība/i,'Zvani, e-pasti, BIS iesniegšana, atbildes būvvaldei — projekta administrēšana līdz akceptam.'],
+  [/^Neparedzamo lietu/i,'Rezerve neparedzētiem jautājumiem (būvvaldes prasības, sīkas izmaiņas) — bez papildu rēķina.'],
+  [/^Konsultācija/i,'Sākotnējā tikšanās — vajadzību un situācijas noskaidrošana.'],
+  [/^Piedāvājuma sagatavošana/i,'Piedāvājuma izstrāde ar cenu un saturu.'],
+  [/^2\. Konsultācija/i,'Otrā tikšanās — piedāvājuma izrunāšana un līguma parakstīšana.'],
+  [/^Analīze un PU/i,'Situācijas analīze un projektēšanas uzdevuma (PU) sagatavošana — ko tieši projektēs.'],
+  [/^AR un BK paraksti/i,'Sertificētu speciālistu paraksti uz projekta — bez tiem BIS nepieņem.'],
+  [/^Papildu saziņa/i,'Saziņa ar klientu līdz darba uzsākšanai — jautājumi, dokumenti.'],
+  [/^TI /i,'Topogrāfiskā izpēte — zemes virsmas uzmērīšana (sertificēts mērnieks). Pamats projektēšanai.'],
+  [/^GI /i,'Ģeotehniskā izpēte — grunts urbumi un nestspējas noteikšana pamatu projektēšanai.'],
+  [/^UKT /i,'Ūdensapgādes un kanalizācijas ārējie tīkli — pieslēgums centralizētajiem tīkliem.'],
+  [/^UK /i,'Ūdensvads un kanalizācija — iekšējā sistēma ēkā.'],
+  [/^AVK /i,'Apkure, ventilācija, kondicionēšana — iekšējo inženiersistēmu projekts.'],
+  [/^ELT /i,'Elektroapgāde — ārējais pieslēgums un elektrotīklu daļa.'],
+  [/^EL /i,'Elektroinstalācija — iekšējā elektrosistēma ēkā.'],
+  [/^ESS /i,'Elektronisko sakaru sistēmas — internets, TV, signalizācija.'],
+  [/^T \(/i,'Tehnoloģiskā daļa — specifiskām funkcijām (precizē projektā).'],
+  [/^TS-/i,'Specializēta inženiersadaļa — cena no apakšuzņēmēja (precizē projektā).'],
+  [/^UPP /i,'Ugunsdrošības pasākumu pārskats — obligāts 3. grupas ēkām.'],
+  [/^Autoruzruadzība|^Autoruzraudzība/i,'Autoruzraudzība — projektētājs uzrauga, lai būvē pēc projekta. Aizsargā kvalitāti.'],
+  [/^Ekspertīzes labojumi/i,'Projekta labojumi pēc neatkarīgas ekspertīzes atzinuma (ja ekspertīze nepieciešama).'],
+  [/^Papildu sadaļa/i,'Brīva pozīcija jebkuram papildu darbam — ievadi cenu.'],
+];
+function pkgDesc(n){ for(const g of PKG_GLOSS) if(g[0].test(n)) return g[1]; return ''; }
 const PKG_PHASES = [['SKICE','📝 Skices fāze'],['VR','🥽 VR tūres'],['MBP','📐 Min. būvprojekts (MBP)'],['BP','🏗 Būvprojekts (BP)'],['MBP/BP','📐 MBP/BP korekcijas']];
 
 let currentPkg = 'L2';
@@ -4583,10 +4642,13 @@ function pkgRowHtml(level,i,item,k){
   const key=level+':'+i;
   const on=!!pkgChecked[key];
   const price=Math.round(item.h*PKG_RATE*k);
+  const d=pkgDesc(item.n);
   return '<label class="pkg-item '+(on?'':'unchecked')+'" style="cursor:pointer">'
     +'<input type="checkbox" '+(on?'checked':'')+' onchange="togglePkgItem(\''+key+'\')">'
     +'<div style="flex:1;display:flex;justify-content:space-between;gap:10px;align-items:baseline">'
-    +'<span class="pi-name">'+item.n+'</span>'
+    +'<span><span class="pi-name">'+item.n+'</span>'
+    +(d?'<div style="font-size:.66rem;color:var(--muted);margin-top:1px;line-height:1.35">'+d+'</div>':'')
+    +'</span>'
     +'<span style="white-space:nowrap;font-size:.72rem;color:var(--muted)">'+item.h+' h · <strong style="color:var(--navy)">'+price+' €</strong></span>'
     +'</div></label>';
 }
@@ -4600,7 +4662,8 @@ function renderPkgItems(){
   const commonSum=Math.round(pkgCommonHours()*PKG_RATE*k);
   html+='<details class="pkg-phase" open><summary class="pkg-section-title" style="cursor:pointer">📌 Visos līmeņos (vienmēr iekļauts) — '+commonSum+' €</summary>';
   EXCEL_PKG.common.forEach(it=>{
-    html+='<div class="pkg-item obligats"><input type="checkbox" checked disabled><div style="flex:1;display:flex;justify-content:space-between;gap:10px"><span class="pi-name">'+it.n+'</span><span style="white-space:nowrap;font-size:.72rem;color:var(--muted)">'+it.h+' h · <strong style="color:var(--navy)">'+Math.round(it.h*PKG_RATE*k)+' €</strong></span></div></div>';
+    const d=pkgDesc(it.n);
+    html+='<div class="pkg-item obligats"><input type="checkbox" checked disabled><div style="flex:1;display:flex;justify-content:space-between;gap:10px"><span><span class="pi-name">'+it.n+'</span>'+(d?'<div style="font-size:.66rem;color:var(--muted);margin-top:1px;line-height:1.35">'+d+'</div>':'')+'</span><span style="white-space:nowrap;font-size:.72rem;color:var(--muted)">'+it.h+' h · <strong style="color:var(--navy)">'+Math.round(it.h*PKG_RATE*k)+' €</strong></span></div></div>';
   });
   html+='</details>';
 
@@ -4628,7 +4691,8 @@ function renderPkgItems(){
     +'<div style="font-size:.7rem;color:var(--muted);margin:4px 0 8px">Ievadi apakšuzņēmēja/sadaļas cenu EUR — pieskaitās kopsummai bez koeficienta.</div>';
   EXCEL_PKG.manual.forEach((m,i)=>{
     const v=manVals['pkg-man-'+i]||'';
-    html+='<div class="pkg-item" style="display:flex;align-items:center;gap:10px"><span class="pi-name" style="flex:1">'+m.n+'</span><input type="number" class="pkg-man-inp" id="pkg-man-'+i+'" min="0" step="50" placeholder="0" value="'+v+'" style="width:90px;padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-family:inherit" oninput="updatePkgSummary()"></div>';
+    const d=pkgDesc(m.n);
+    html+='<div class="pkg-item" style="display:flex;align-items:center;gap:10px"><span style="flex:1"><span class="pi-name">'+m.n+'</span>'+(d?'<div style="font-size:.66rem;color:var(--muted);margin-top:1px;line-height:1.35">'+d+'</div>':'')+'</span><input type="number" class="pkg-man-inp" id="pkg-man-'+i+'" min="0" step="50" placeholder="0" value="'+v+'" style="width:90px;padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-family:inherit" oninput="updatePkgSummary()"></div>';
   });
   html+='</details>';
   c.innerHTML=html;
