@@ -2663,7 +2663,14 @@ function auth(){
 }
 document.getElementById("pi").addEventListener("keydown",e=>{if(e.key==="Enter")auth();document.getElementById("pe").textContent="";});
 if(sessionStorage.getItem("va")){document.getElementById("lock").style.display="none";document.getElementById("app").style.display="block";}
-function switchTab(id,btn){document.querySelectorAll(".tab-panel").forEach(t=>t.classList.remove("active"));document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));document.getElementById("tab-"+id).classList.add("active");btn.classList.add("active");}
+function switchTab(id,btn){document.querySelectorAll(".tab-panel").forEach(t=>t.classList.remove("active"));document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));document.getElementById("tab-"+id).classList.add("active");btn.classList.add("active");
+  // Atgriežoties uz AR — ja BK kalkulatorā mainījusies pozīciju summa, pārrēķina (BK cena atjauninas)
+  if(id==='ar' && document.getElementById('ar-type') && document.getElementById('ar-type').value){
+    const bkT=(typeof bkItems!=='undefined')?bkItems.reduce((s,it)=>s+(it.cena||0),0):0;
+    if(bkT!==window._lastBkTotalSeen && typeof calcAR==='function') calcAR();
+  }
+}
+function gotoBkTab(){ const b=[...document.querySelectorAll('.tab-btn')].find(x=>/BK/.test(x.textContent)); if(b) b.click(); }
 
 // AR apakštaba (Toms 2026-06-10): Jaunbūve = TIKAI jaunbūve (+tipveida). Esoša ēka/legalizācija = konkrētie projektu veidi,
 // ar kuriem legalizē (izmaiņu/pārbūve/atjaunošana/nojaukšana). Teorētiskie la/lbv/lbp/lc tipi izņemti no izvēlnes
@@ -4308,20 +4315,35 @@ function renderPassport(type, area, floors, muniName, svcCoef) {
       if_needed:   '<span style="color:var(--muted)">○ Ja attiecas</span> '
     };
     // Servisa cena = bāze × pašvaldības koef. (BEZ 20% rezerves). Toms var pārrakstīt (saglabājas localStorage _svcPrice).
+    // BK: ja BK kalkulatorā (Raita) pievienotas pozīcijas — cena = to summa (precīzais avots); citādi raupjš novērtējums.
     const svcOv = window._svcPrice || {};
+    const bkTotal = (typeof bkItems!=='undefined' && bkItems.length) ? bkItems.reduce((s,it)=>s+(it.cena||0),0) : 0;
+    window._lastBkTotalSeen = bkTotal;
     const svcRows = (getRecs(type) || [])
       .map(r => {
         let cli = r.priceFn ? r.priceFn(area, svcCoef) : 0;
         const edited = svcOv[r.id] != null;
+        let fromBK = false;
         if (edited) cli = svcOv[r.id];
-        return { id:r.id, name:r.name, cli:cli, int:cli, urg:r.urgency, edited:edited };
+        else if (r.id==='bk' && bkTotal>0) { cli = bkTotal; fromBK = true; }
+        return { id:r.id, name:r.name, cli:cli, int:cli, urg:r.urgency, edited:edited, fromBK:fromBK };
       })
       .filter(x => x.cli > 0)
       .sort((a,b) => urgRank[a.urg] - urgRank[b.urg]);
     // AR rinda — nav rediģējama (nāk no formulas, sk. galveno cenu)
     const arRow = (name, val) => `<tr><td class="ct-name"><label style="display:flex;gap:7px;align-items:flex-start;cursor:pointer"><input type="checkbox" class="pp-item-cb" data-int="${val}" data-cli="${val}" checked data-base="1" onchange="recalcOffer()"><span>${name}</span></label></td><td class="ct-price">${val.toLocaleString('lv-LV')} EUR</td></tr>`;
     // Servisa rinda — cena rediģējama (input)
-    const svcRow = (s) => { const cbid='cb-svc-'+s.id; return `<tr><td class="ct-name"><label style="display:flex;gap:7px;align-items:flex-start;cursor:pointer"><input type="checkbox" id="${cbid}" class="pp-item-cb" data-int="${s.int}" data-cli="${s.cli}" onchange="recalcOffer()"><span>${urgBadge[s.urg]||''}${s.name}</span></label></td><td class="ct-price" style="white-space:nowrap"><input type="number" min="0" step="50" value="${s.cli}" class="svc-price-inp" data-svc="${s.id}" data-cb="${cbid}" onchange="editSvcPrice(this)" title="Maini cenu — saglabājas${s.edited?' (mainīta)':''}" style="width:74px;text-align:right;padding:3px 5px;border:1px solid ${s.edited?'var(--gold)':'var(--border)'};border-radius:5px;font-family:inherit;font-size:.78rem"> EUR</td></tr>`; };
+    const svcRow = (s) => {
+      const cbid='cb-svc-'+s.id;
+      let note='';
+      if (s.id==='bk') {
+        note = s.fromBK
+          ? `<div style="font-size:.64rem;color:#166534;margin-top:1px;padding-left:23px">📐 No BK kalkulatora (${bkItems.length} poz.) · <a href="#" onclick="gotoBkTab();return false" style="color:#2563eb">mainīt</a></div>`
+          : `<div style="font-size:.64rem;color:var(--muted);margin-top:1px;padding-left:23px">📐 Raupjš novērtējums · precīzi → <a href="#" onclick="gotoBkTab();return false" style="color:#2563eb">BK kalkulators</a></div>`;
+      }
+      const hi = (s.edited||s.fromBK) ? 'var(--gold)' : 'var(--border)';
+      return `<tr><td class="ct-name"><label style="display:flex;gap:7px;align-items:flex-start;cursor:pointer"><input type="checkbox" id="${cbid}" class="pp-item-cb" data-int="${s.int}" data-cli="${s.cli}" onchange="recalcOffer()"><span>${urgBadge[s.urg]||''}${s.name}</span></label>${note}</td><td class="ct-price" style="white-space:nowrap;vertical-align:top"><input type="number" min="0" step="50" value="${s.cli}" class="svc-price-inp" data-svc="${s.id}" data-cb="${cbid}" onchange="editSvcPrice(this)" title="Maini cenu — saglabājas${s.edited?' (mainīta)':''}" style="width:74px;text-align:right;padding:3px 5px;border:1px solid ${hi};border-radius:5px;font-family:inherit;font-size:.78rem"> EUR</td></tr>`;
+    };
     let html = '<tr><td colspan="2" style="font-size:.7rem;color:var(--muted);padding-bottom:4px">Atzīmē, ko iekļaut · papildpakalpojumu cenas vari mainīt (saglabājas pārlūkā). <a href="#" onclick="resetSvcPrices();return false" style="color:#2563eb">↺ atjaunot aprēķinātās</a></td></tr>';
     if (mainPrice) { const arI = parseInt(mainPrice); html += arRow('AR projekts (Volko)', arI); }
     svcRows.forEach(s => html += svcRow(s));
