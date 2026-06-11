@@ -1216,9 +1216,8 @@ body[data-artype="jaunbuve"] #ar-jaunbuve-note{display:block}
 <div class="p-box-val" id="ar-p-client">—</div>
 <div class="p-box-note">bez PVN · AR projekts</div>
 </div>
-<div class="p-int"><span>Iekšējā cena (minimums)</span><strong id="ar-p-int">—</strong></div>
+<div class="p-int" style="display:none"><span>Iekšējā cena</span><strong id="ar-p-int">—</strong></div>
 <div class="brkd" id="ar-brkd"></div>
-<div class="hint-box" id="ar-hint"></div>
 <button onclick="addEkaToList('formula')" style="width:100%;margin-top:10px;padding:8px;border:1px dashed var(--gold);border-radius:8px;background:#fffbf0;font-size:.76rem;font-weight:700;color:var(--navy);cursor:pointer;font-family:inherit">➕ Pievienot šo ēku objekta sarakstam</button>
 </div>
 <div id="ar-p-fixed" style="display:none">
@@ -2795,7 +2794,6 @@ function calcAR(){
   document.getElementById("ar-p-int").textContent=eur(totInt);
   let bh=`<div class="br"><span>Likme (${rKey})</span><span>${rate} €/m²</span></div><div class="br"><span>Platība</span><span>${area} m²</span></div><div class="br"><span>Funkcija</span><span>×${fCoef.toFixed(2)}</span></div><div class="br"><span>Sarežģītība (cenu grupa ${gP})</span><span>×${gCoef.toFixed(2)}</span></div>${g!==gP?`<div class="br"><span style="color:var(--muted);font-size:.7rem">ℹ️ Juridiski ${g} grupa (MK 500), cenai lieto ${gP} gr. likmi</span><span></span></div>`:""}<div class="br"><span>Pašvaldība</span><span>×${muni.p.toFixed(2)}</span></div>${encs>0?`<div class="br"><span>Apgrūtinājumi (${encs}×10%)</span><span>×${eCoef.toFixed(2)}</span></div>`:""}<div class="br tot"><span>AR projekts</span><span>${eur(arInt)}</span></div>`;
   document.getElementById("ar-brkd").innerHTML=bh;
-  document.getElementById("ar-hint").innerHTML=`<strong>Piedāvājumā:</strong> "no <strong>${totCli.toLocaleString("lv-LV")}</strong> EUR + PVN"`;
   window._lastArInt=arInt; // legalizācijas paketes lieto šo pašu AR cenu (konsistencei ar galveno)
   renderARPanels(type,area,muni.s);
   const _mname = document.getElementById("ar-muni-search")?.value || window._arMuniName || "";
