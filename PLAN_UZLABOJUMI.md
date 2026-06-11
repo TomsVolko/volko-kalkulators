@@ -42,7 +42,7 @@
 - Kopsumma + juridiskā piezīme: viena iecere, piemēro augstākās grupas kārtību (MK 500 7. p.)
 - Aizstāj pašreizējo "Ēku skaits ×n" (kas der tikai vienādām ēkām)
 
-## FĀZE D — Pašvaldību dati
+## FĀZE D — Pašvaldību dati ✅ IZDARĪTS 2026-06-10 (16 pašvaldības, agentu izpēte)
 
 - Research aģenti pa pašvaldībām (sāk ar TOP ~15): TIAN links (geolatvija/teritorijasplanojums.lv), būvvaldes kontakti, nodevas apmērs, legalizācijas pastiprinātā nodeva (5× Rīgā — katrai pašvaldībai savs saistošo noteikumu Nr.), īpatnības (RVC, GNP, kāpu zona)
 - Struktūra: MUNI_INFO pārbūve no koef-grupām uz konkrētām pašvaldībām; pārējām fallback + atruna

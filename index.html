@@ -4364,6 +4364,78 @@ function bldgStep(d){
 
 
 
+// ── PAŠVALDĪBU DATI (Fāze D, izpēte 2026-06-10; avoti: pašvaldību lapas, likumi.lv, geolatvija.lv) ──
+// status: 'ok' = avots apstiprināts ar linku; 'prec' = orientējoši, precizēt būvvaldē
+const MUNI_DATA=[
+ {k:['rīga','riga'],n:'Rīga',tian:'https://geolatvija.lv/geo/tapis',bv:'pad@riga.lv · Amatu iela 4 · 67105800',
+  sn:'RD-22-164-sn (2022): paskaidrojuma raksta akcepts 50 € fiz. / 100 € jur.',snUrl:'https://www.riga.lv/lv/jaunums/no-1-decembra-riga-tiek-ieviesta-nodeva-par-buvniecibas-ieceres-akceptu-paskaidrojuma-raksta',
+  leg:'5× nodeva par patvaļīgu būvniecību (vēsturiski SN Nr. 147; vai jaunajos RD-22-164 saglabāta — precizēt!)',
+  notes:['RVC vēsturiskais centrs — NKMP visām izmaiņām (SN Nr. 38, 220)','Detālplānojums daudziem projektiem'],status:'ok'},
+ {k:['mārup','marup','babīt','babit'],n:'Mārupes novads',tian:'https://www.marupe.lv/lv/marupes-novada-pasvaldiba/attistiba-un-planosana/teritorijas-planojums',bv:'buvvalde@marupe.lv · Mazcenu aleja 35, Jaunmārupe · 67149863',
+  sn:'SN 19/2025: nodeva pēc platības 30 € (≤50 m²) … 160 € (>2000 m²)',snUrl:'https://likumi.lv/ta/id/361747',
+  leg:'Paaugstināta legalizācijas nodeva avotos nav atrasta — pārbaudīt būvvaldē',
+  notes:['Jauns teritorijas plānojums 2024–2036 izstrādē'],status:'ok'},
+ {k:['ķekav','kekav','baloz'],n:'Ķekavas novads',tian:'https://kekava.lv/kategorija/teritorijas-planojumi/',bv:'buvvalde@kekava.lv · Gaismas iela 19 k.9-1 · 67935800',
+  sn:'SN 53/2021: paskaidrojuma raksts 25 €; būvatļauja pēc formulas',snUrl:'https://likumi.lv/ta/id/328928',
+  leg:'Paaugstināta legalizācijas nodeva avotos nav atrasta — pārbaudīt būvvaldē',notes:[],status:'ok'},
+ {k:['salaspil'],n:'Salaspils novads',tian:'https://www.salaspils.lv/lv/teritorijas-planosana',bv:'buvvalde@salaspils.lv · Līvzemes iela 8 · 67981013',
+  sn:'SN 3/2019: paskaidrojuma raksta akcepts 30 €; būvatļauja pēc formulas (precizēt — avota links nedrošs)',snUrl:'',
+  leg:'Paaugstināta legalizācijas nodeva avotos nav atrasta — pārbaudīt būvvaldē',notes:['TIAN ietver trokšņa aizsardzības zonas'],status:'prec'},
+ {k:['ādaž','adaz','carnikav'],n:'Ādažu novads',tian:'https://www.adazunovads.lv/lv/teritorijas-planojums',bv:'buvvalde@adazunovads.lv · Gaujas iela 33A · 67895708',
+  sn:'SN 9/2023: ieceres akcepts 100 €; novada iedzīvotājiem (3+ g.) −20%',snUrl:'https://likumi.lv/ta/id/341142',
+  leg:'Paaugstināta legalizācijas nodeva avotos nav atrasta — pārbaudīt būvvaldē',notes:['Jauns teritorijas plānojums 2025–2037 izstrādē'],status:'ok'},
+ {k:['ropaž','ropaz','garkaln','stopiņ','stopin','ulbrok'],n:'Ropažu novads',tian:'https://www.ropazi.lv/lv/teritorijas-planojumi',bv:'novada.dome@ropazi.lv · Sporta iela 2, Ropaži · 27885518',
+  sn:'SN 22/22 un 38/22 — apmēri avotos nav atrasti, precizēt būvvaldē',snUrl:'https://likumi.lv/ta/id/335718',
+  leg:'Paaugstināta legalizācijas nodeva avotos nav atrasta — pārbaudīt būvvaldē',notes:['Apvienotā novada TP izstrādē (līdz 31.12.2025)'],status:'prec'},
+ {k:['olain'],n:'Olaines novads',tian:'https://www.olaine.lv/lv/pasvaldiba/attistibas-planosanas-dokumenti/olaines-novada-teritorijas-planojums',bv:'buvvalde@olaine.lv · Zemgales iela 33 · 66954899',
+  sn:'SN 15/2024: privātmājai 30–50 €; citām grupām 160–600 €',snUrl:'https://likumi.lv/ta/id/355772',
+  leg:'Paaugstināta legalizācijas nodeva avotos nav atrasta — pārbaudīt būvvaldē',notes:[],status:'ok'},
+ {k:['jūrmal','jurmal'],n:'Jūrmala',tian:'https://www.jurmala.lv/lv/teritorijas-planojums-teritorijas-izmantosanas-un-apbuves-noteikumi',bv:'pasts@jurmala.lv · Jomas iela 1/5 · 67093816',
+  sn:'SN 19: 1–2 dzīvokļu ēka ≤400 m² — 200 €; citas II gr. 600 €; III gr. 1000 €',snUrl:'https://likumi.lv/ta/id/353246',
+  leg:'Paaugstināta legalizācijas nodeva avotos nav atrasta — pārbaudīt būvvaldē',
+  notes:['Krasta kāpu aizsargjosla — būvniecība stipri ierobežota','Pilsētbūvniecības pieminekļi (vasarnīcu kompleksi)','Koka ēku īpašās prasības (kulturtelpa@jurmala.lv)'],status:'ok'},
+ {k:['siguld'],n:'Siguldas novads',tian:'https://sigulda.lv/attistiba/attistibas-planosanas-dokumenti/teritorijas-planojums/',bv:'buvvalde@sigulda.lv · Zinātnes iela 7 · 22433054',
+  sn:'Nodevu SN avotos nav droši atrasts — precizēt būvvaldē',snUrl:'',
+  leg:'Paaugstināta legalizācijas nodeva avotos nav atrasta — pārbaudīt būvvaldē',notes:['Gaujas Nacionālais parks — saskaņošana ar Dabas aizsardzības pārvaldi (MK Nr. 317, 2024)'],status:'prec'},
+ {k:['ogre','ogres','ikšķil','ikskil','ķegum','kegum','lielvārd','lielvard'],n:'Ogres novads',tian:'https://geolatvija.lv/geo/tapis',bv:'ogredome@ogresnovads.lv · Brīvības iela 33, Ogre · 65071160',
+  sn:'Aktuālie nodevu SN avotos nav droši atrasti (vecie zaudējuši spēku) — precizēt būvvaldē',snUrl:'',
+  leg:'Paaugstināta legalizācijas nodeva avotos nav atrasta — pārbaudīt būvvaldē',notes:[],status:'prec'},
+ {k:['jelgavas nov','ozolniek'],n:'Jelgavas novads',tian:'https://www.jelgavasnovads.lv/lv/apstiprinats-0',bv:'Pasta iela 37, Jelgava · 63024921',
+  sn:'SN Nr. 31: privātmāja 70 €, pārbūve 50 €',snUrl:'https://likumi.lv/ta/id/338263',
+  leg:'Paaugstināta legalizācijas nodeva avotos nav atrasta; neekspluatētiem objektiem 3% NĪN',notes:['Jauns TP spēkā no 23.01.2025 (SN Nr. 25)'],status:'ok'},
+ {k:['jelgava'],n:'Jelgava (valstspilsēta)',tian:'https://geolatvija.lv/geo/tapis',bv:'pasts@jelgava.lv · Lielā iela 11 · 63005522',
+  sn:'SN 24-27: privātmājas jaunbūve 100 €, pārbūve/atjaunošana 70 €',snUrl:'https://likumi.lv/ta/id/354040',
+  leg:'Paaugstināta legalizācijas nodeva avotos nav atrasta — pārbaudīt būvvaldē',notes:[],status:'ok'},
+ {k:['tukum','kandav'],n:'Tukuma novads',tian:'https://geolatvija.lv/geo/tapis',bv:'dome@tukums.lv · Talsu iela 4 · 63132890',
+  sn:'SN Nr. 12: ieceres akcepts 60 €; būvatļauja II gr. 250 € (privātmājām −50%)',snUrl:'https://likumi.lv/ta/id/352768',
+  leg:'Paaugstināta legalizācijas nodeva avotos nav atrasta — pārbaudīt būvvaldē',notes:['Jauns TP 1. redakcija apspriešanā'],status:'ok'},
+ {k:['cēs','ces','līgatn','ligatn','priekuļ','priekul'],n:'Cēsu novads',tian:'https://www.cesis.lv/lv/attistiba/dokumenti/teritorijas-planojumi-72500/',bv:'buvvalde@cesunovads.lv · Raunas iela 4, Cēsis · 68803924',
+  sn:'SN Nr. 12 (2022): II–III gr. büvatļauja 60–120 €; akcepts 20 €',snUrl:'https://www.vestnesis.lv/op/2022/86.12',
+  leg:'Paaugstināta legalizācijas nodeva avotos nav atrasta — pārbaudīt būvvaldē',notes:['Cēsu vecpilsēta — īpašas apbūves prasības'],status:'ok'},
+ {k:['bausk','iecav','rundāl','rundal','vecumniek'],n:'Bauskas novads',tian:'https://www.bauskasnovads.lv/lv/bauskas-novada-teritorijas-planojums',bv:'buvvalde@bauskasnovads.lv · Uzvaras iela 1, Bauska · 27805229',
+  sn:'Nodevu SN un apmēri avotos nav droši atrasti — precizēt būvvaldē',snUrl:'',
+  leg:'Paaugstināta legalizācijas nodeva avotos nav atrasta — pārbaudīt būvvaldē',notes:['Bauskas vēsturiskais centrs — īpašas prasības','Jauns TP 2. redakcija apspriešanā'],status:'prec'},
+ {k:['saulkrast','sēj','sej'],n:'Saulkrastu novads',tian:'https://saulkrasti.lv/wp-content/uploads/2023/07/TIAN_20230701.pdf',bv:'buvvalde@saulkrasti.lv · Raiņa iela 8 · 67142519',
+  sn:'SN 24/2025: pēc formulas, privātmājai orientējoši ~45 € (precizēt — avota links nedrošs)',snUrl:'',
+  leg:'Paaugstināta legalizācijas nodeva avotos nav atrasta — pārbaudīt būvvaldē',
+  notes:['Krasta kāpu aizsargjosla — DzS1 zonā jaunas dzīvojamās ēkas >150 m² liegtas (Aizsargjoslu lik. 36. p.)'],status:'prec'}
+];
+function muniDetailHtml(name){
+  if(!name) return '';
+  const q=name.toLowerCase();
+  const m=MUNI_DATA.find(d=>d.k.some(kw=>q.includes(kw)));
+  if(!m) return '';
+  let h='<hr style="border:none;border-top:1px dashed var(--border);margin:8px 0">';
+  h+='<div class="muni-info-title">🏛 '+m.n+' — büvniecības dati'+(m.status==='prec'?' <span style="font-size:.62rem;color:#b45309">(orientējoši — precizēt büvvaldē)</span>':'')+'</div>';
+  h+='<div class="muni-note">📐 <a href="'+m.tian+'" target="_blank" style="color:#2563eb">TIAN / teritorijas plānojums</a></div>';
+  h+='<div class="muni-note">📧 Büvvalde: '+m.bv+'</div>';
+  h+='<div class="muni-note">💶 Nodeva: '+(m.snUrl?'<a href="'+m.snUrl+'" target="_blank" style="color:#2563eb">'+m.sn+'</a>':m.sn)+'</div>';
+  h+='<div class="muni-warn">⚖️ Legalizācija: '+m.leg+'</div>';
+  m.notes.forEach(nn=>{h+='<div class="muni-note">ℹ️ '+nn+'</div>';});
+  h+='<div style="font-size:.62rem;color:var(--muted);margin-top:4px">Dati: 2026-06 izpēte. Pirms piedāvājuma — pārbaudi aktuālos saistošos noteikumus.</div>';
+  return h;
+}
+
 // ── AR MUNICIPALITY INFO ──────────────────────────────────────
 const MUNI_INFO = {
   '{"p":1.20,"s":1.05}': {
@@ -4444,12 +4516,18 @@ function showMuniInfo(val) {
   const panel = document.getElementById('ar-muni-info-panel');
   if (!panel) return;
   const data = MUNI_INFO[val];
-  if (!data) { panel.classList.remove('visible'); return; }
+  const mname = document.getElementById('ar-muni-search')?.value || window._arMuniName || '';
+  const detail = muniDetailHtml(mname);
+  let html = '';
+  if (data) {
+    html += `<div class="muni-info-title">📍 ${data.name}</div>`;
+    data.notes.forEach(n => { html += `<div class="muni-note">${n}</div>`; });
+    data.warnings.forEach(w => { html += `<div class="muni-warn">${w}</div>`; });
+    html += `<div class="muni-time-badge">⏱ Tipiskais termiņš: ${data.time}</div>`;
+  }
+  html += detail;
+  if (!html) { panel.classList.remove('visible'); return; }
   panel.classList.add('visible');
-  let html = `<div class="muni-info-title">📍 ${data.name}</div>`;
-  data.notes.forEach(n => { html += `<div class="muni-note">${n}</div>`; });
-  data.warnings.forEach(w => { html += `<div class="muni-warn">${w}</div>`; });
-  html += `<div class="muni-time-badge">⏱ Tipiskais termiņš: ${data.time}</div>`;
   panel.innerHTML = html;
 }
 
