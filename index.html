@@ -907,7 +907,9 @@ body { font-family:-apple-system,'Segoe UI',sans-serif; background:var(--bg); co
 .pkg-wizard.visible { display:block }
 
 /* Level selector pills */
-.pkg-pills { display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px }
+.pkg-pills { display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px }
+.pkg-pill .pp-tagline{font-size:.62rem;color:var(--muted);margin:2px 0 0;line-height:1.25}
+.pkg-pill.active .pp-tagline{color:rgba(255,255,255,.55)}
 .pkg-phase{border:1px solid var(--border);border-radius:8px;padding:6px 10px;margin-bottom:8px;background:#fcfcfa}
 .pkg-phase summary::-webkit-details-marker{display:none}
 .pkg-phase summary{list-style:none;padding:4px 0}
@@ -1305,23 +1307,21 @@ body[data-artype="jaunbuve"] #ar-jaunbuve-note{display:block}
     <div class="pkg-pill" id="pkg-pill-L1" onclick="selectPkg('L1')">
       <div class="pp-code">L1</div>
       <div class="pp-name">Standarta</div>
+      <div class="pp-tagline">Pamata — būvatļaujai</div>
       <div class="pp-price" id="pkg-price-L1">—</div>
     </div>
     <div class="pkg-pill best" id="pkg-pill-L2" onclick="selectPkg('L2')">
       <span class="pkg-best-tag">IETEICAMS</span>
       <div class="pp-code">L2 ⭐</div>
       <div class="pp-name">Uzlabots</div>
+      <div class="pp-tagline">Pilns — būvniecībai</div>
       <div class="pp-price" id="pkg-price-L2">—</div>
     </div>
     <div class="pkg-pill" id="pkg-pill-L3" onclick="selectPkg('L3')">
       <div class="pp-code">L3</div>
       <div class="pp-name">Premium</div>
+      <div class="pp-tagline">Maksimālā detalizācija</div>
       <div class="pp-price" id="pkg-price-L3">—</div>
-    </div>
-    <div class="pkg-pill" id="pkg-pill-L4" onclick="selectPkg('L4')">
-      <div class="pp-code">L4</div>
-      <div class="pp-name">Premium+</div>
-      <div class="pp-price" id="pkg-price-L4">—</div>
     </div>
   </div>
   <button id="pkg-mix-btn" onclick="togglePkgMix()" style="width:100%;margin:-6px 0 10px;padding:8px;border:1px dashed var(--border);border-radius:8px;background:#fff;font-size:.76rem;font-weight:700;color:var(--navy);cursor:pointer;font-family:inherit">🔀 MIX — jaukt pozīcijas no visiem līmeņiem</button>
@@ -1331,22 +1331,22 @@ body[data-artype="jaunbuve"] #ar-jaunbuve-note{display:block}
     <summary class="pkg-section-title" style="cursor:pointer">📊 Ar ko līmeņi atšķiras? (salīdzinājuma tabula)</summary>
     <div style="overflow-x:auto">
     <table style="width:100%;border-collapse:collapse;font-size:.72rem;margin-top:6px">
-      <tr style="border-bottom:2px solid var(--border)"><th style="text-align:left;padding:5px 6px"></th><th style="padding:5px 6px">L1</th><th style="padding:5px 6px;background:#fffbf0">L2 ⭐</th><th style="padding:5px 6px">L3</th><th style="padding:5px 6px">L4</th></tr>
-      <tr style="border-bottom:1px solid var(--border)"><td style="padding:4px 6px;text-align:left">3D skiču varianti</td><td style="text-align:center">1</td><td style="text-align:center;background:#fffbf0">2</td><td style="text-align:center">3</td><td style="text-align:center">4</td></tr>
-      <tr style="border-bottom:1px solid var(--border)"><td style="padding:4px 6px;text-align:left">Korekciju kārtas</td><td style="text-align:center">2</td><td style="text-align:center;background:#fffbf0">2</td><td style="text-align:center">3</td><td style="text-align:center">4</td></tr>
-      <tr style="border-bottom:1px solid var(--border)"><td style="padding:4px 6px;text-align:left">VR tūres</td><td style="text-align:center">1</td><td style="text-align:center;background:#fffbf0">1</td><td style="text-align:center">2</td><td style="text-align:center">4 (arī ar tīkliem)</td></tr>
-      <tr style="border-bottom:1px solid var(--border)"><td style="padding:4px 6px;text-align:left">Papildu griezumi (BP)</td><td style="text-align:center">1</td><td style="text-align:center;background:#fffbf0">līdz 4</td><td style="text-align:center">+7</td><td style="text-align:center">visi vajadzīgie</td></tr>
-      <tr style="border-bottom:1px solid var(--border)"><td style="padding:4px 6px;text-align:left">Konstruktīvie mezgli</td><td style="text-align:center">no ražotājiem</td><td style="text-align:center;background:#fffbf0">galvenie 4</td><td style="text-align:center">8</td><td style="text-align:center">visi</td></tr>
-      <tr style="border-bottom:1px solid var(--border)"><td style="padding:4px 6px;text-align:left">Kāpņu detalizācija</td><td style="text-align:center">—</td><td style="text-align:center;background:#fffbf0">—</td><td style="text-align:center">✓</td><td style="text-align:center">✓ + citi elementi</td></tr>
-      <tr style="border-bottom:1px solid var(--border)"><td style="padding:4px 6px;text-align:left">Konstrukciju sastāvi</td><td style="text-align:center">—</td><td style="text-align:center;background:#fffbf0">—</td><td style="text-align:center">✓</td><td style="text-align:center">✓</td></tr>
-      <tr style="border-bottom:1px solid var(--border)"><td style="padding:4px 6px;text-align:left">BK (konstrukcijas)</td><td style="text-align:center">2D</td><td style="text-align:center;background:#fffbf0">3D LOD200</td><td style="text-align:center">3D LOD300</td><td style="text-align:center">3D LOD400</td></tr>
-      <tr style="border-bottom:1px solid var(--border)"><td style="padding:4px 6px;text-align:left">Energoaprēķins</td><td style="text-align:center">bāzes</td><td style="text-align:center;background:#fffbf0">bāzes</td><td style="text-align:center">gandrīz nulles</td><td style="text-align:center">pasīvā ēka</td></tr>
-      <tr style="border-bottom:1px solid var(--border)"><td style="padding:4px 6px;text-align:left">Būvapjomi (BA) tāmei</td><td style="text-align:center">—</td><td style="text-align:center;background:#fffbf0">—</td><td style="text-align:center">✓</td><td style="text-align:center">✓</td></tr>
-      <tr style="border-bottom:1px solid var(--border)"><td style="padding:4px 6px;text-align:left">Izmaksu prognoze</td><td style="text-align:center">—</td><td style="text-align:center;background:#fffbf0">✓</td><td style="text-align:center">✓ +papild.</td><td style="text-align:center">✓ +3 papild.</td></tr>
-      <tr><td style="padding:4px 6px;text-align:left">Ģenerālplāns (GP)</td><td style="text-align:center">pamata</td><td style="text-align:center;background:#fffbf0">+vert. plānojums, žogs</td><td style="text-align:center">pamata</td><td style="text-align:center">+vert. +savietotais</td></tr>
+      <tr style="border-bottom:2px solid var(--border)"><th style="text-align:left;padding:5px 6px"></th><th style="padding:5px 6px">L1 Standarta</th><th style="padding:5px 6px;background:#fffbf0">L2 Uzlabots ⭐</th><th style="padding:5px 6px">L3 Premium</th></tr>
+      <tr style="border-bottom:1px solid var(--border)"><td style="padding:4px 6px;text-align:left">3D skiču varianti</td><td style="text-align:center">1</td><td style="text-align:center;background:#fffbf0">2</td><td style="text-align:center">3</td></tr>
+      <tr style="border-bottom:1px solid var(--border)"><td style="padding:4px 6px;text-align:left">Korekciju kārtas</td><td style="text-align:center">2</td><td style="text-align:center;background:#fffbf0">2</td><td style="text-align:center">3</td></tr>
+      <tr style="border-bottom:1px solid var(--border)"><td style="padding:4px 6px;text-align:left">VR tūres</td><td style="text-align:center">1</td><td style="text-align:center;background:#fffbf0">1</td><td style="text-align:center">2</td></tr>
+      <tr style="border-bottom:1px solid var(--border)"><td style="padding:4px 6px;text-align:left">Papildu griezumi (BP)</td><td style="text-align:center">1</td><td style="text-align:center;background:#fffbf0">līdz 4</td><td style="text-align:center">+7</td></tr>
+      <tr style="border-bottom:1px solid var(--border)"><td style="padding:4px 6px;text-align:left">Konstruktīvie mezgli</td><td style="text-align:center">no ražotājiem</td><td style="text-align:center;background:#fffbf0">galvenie 4</td><td style="text-align:center">8 + kāpnes</td></tr>
+      <tr style="border-bottom:1px solid var(--border)"><td style="padding:4px 6px;text-align:left">Kāpņu detalizācija</td><td style="text-align:center">—</td><td style="text-align:center;background:#fffbf0">—</td><td style="text-align:center">✓</td></tr>
+      <tr style="border-bottom:1px solid var(--border)"><td style="padding:4px 6px;text-align:left">Konstrukciju sastāvi</td><td style="text-align:center">—</td><td style="text-align:center;background:#fffbf0">—</td><td style="text-align:center">✓</td></tr>
+      <tr style="border-bottom:1px solid var(--border)"><td style="padding:4px 6px;text-align:left">BK (konstrukcijas)</td><td style="text-align:center">2D</td><td style="text-align:center;background:#fffbf0">3D LOD200</td><td style="text-align:center">3D LOD300</td></tr>
+      <tr style="border-bottom:1px solid var(--border)"><td style="padding:4px 6px;text-align:left">Energoaprēķins</td><td style="text-align:center">bāzes</td><td style="text-align:center;background:#fffbf0">bāzes</td><td style="text-align:center">gandrīz nulles</td></tr>
+      <tr style="border-bottom:1px solid var(--border)"><td style="padding:4px 6px;text-align:left">Būvapjomi (BA) tāmei</td><td style="text-align:center">—</td><td style="text-align:center;background:#fffbf0">—</td><td style="text-align:center">✓</td></tr>
+      <tr style="border-bottom:1px solid var(--border)"><td style="padding:4px 6px;text-align:left">Izmaksu prognoze</td><td style="text-align:center">—</td><td style="text-align:center;background:#fffbf0">✓</td><td style="text-align:center">✓ +papild.</td></tr>
+      <tr><td style="padding:4px 6px;text-align:left">Ģenerālplāns (GP)</td><td style="text-align:center">pamata</td><td style="text-align:center;background:#fffbf0">+vert. plānojums, žogs</td><td style="text-align:center">+vert. +savietotais</td></tr>
     </table>
     </div>
-    <div style="font-size:.68rem;color:var(--muted);margin-top:6px">Saturs no Excel kalkulatora līmeņu blokiem. Stundas: L1 207 h · L2 297 h · L3 488 h · L4 764 h (ieskaitot kopējo bloku).</div>
+    <div style="font-size:.68rem;color:var(--muted);margin-top:6px">Saturs no Excel kalkulatora līmeņu blokiem. Stundas: L1 207 h · L2 297 h · L3 488 h (ieskaitot kopējo bloku).</div>
   </details>
 
   <!-- ITEMS LIST -->
@@ -4873,11 +4873,8 @@ const PKG_LEVEL_INFO={
   L2:{kam:'Tipiskā izvēle — vairāk variantu, drošāka konstrukciju daļa, izmaksu prognoze.',
     inc:['2 skiču varianti + sapulces ar protokoliem pēc katra soļa','Būvniecības izmaksu salīdzinājums','Galvenie mezgli (kore, dzega, cokols, logi — 4 gab.)','BK 3D LOD200','GP ar vertikālo plānojumu un žogu','AR adaptācija pēc BK aprēķiniem'],
     nav:['Kāpņu detalizācija','Konstrukciju sastāvi','Būvapjomi (BA)','BK LOD300 ražošanas precizitāte','Gandrīz nulles energoaprēķins']},
-  L3:{kam:'Sarežģītākai vai lielākai mājai — pilna detalizācija būvniekam un tāmei.',
+  L3:{kam:'Sarežģītākai vai lielākai mājai — pilna detalizācija būvniekam un tāmei (augstākais līmenis).',
     inc:['3 skiču varianti, 3 korekciju kārtas','2 VR tūres (arī pēc labojumiem)','+7 griezumi, 8 mezgli, kāpņu detalizācija, konstrukciju sastāvi','BK 3D LOD300 (ražošanas precizitāte)','Gandrīz nulles enerģijas aprēķins','Būvapjomi (BA) — precīzai tāmei'],
-    nav:['BK LOD400 (rūpnieciskā ražošana)','Pasīvās ēkas aprēķins','VR ar inženiertīkliem BP stadijā','4. korekciju kārta']},
-  L4:{kam:'Premium / pasīvā māja, rūpnieciskā ražošana (CLT) — maksimālā detalizācija.',
-    inc:['4 skiču varianti, 4 korekciju kārtas','4 VR tūres (arī BP stadijā ar tīkliem)','Visi mezgli + visu elementu detalizācija','BK 3D LOD400 — gatavs rūpnieciskai ražošanai','Pasīvās ēkas energoaprēķins','Izmaiņas no klienta pat līdz BK ~30% izpildei'],
     nav:[]}
 };
 function pkgLevelSummaryHtml(level){
@@ -4916,7 +4913,7 @@ function initPkgChecked(level){
 function selectPkg(level){
   currentPkg=level;
   initPkgChecked(level);
-  ['L1','L2','L3','L4'].forEach(l=>{
+  ['L1','L2','L3'].forEach(l=>{
     const p=document.getElementById('pkg-pill-'+l);
     if(p) p.classList.toggle('active', l===level);
   });
@@ -4968,7 +4965,7 @@ function renderPkgItems(){
   html+='</details>';
 
   // Līmeņu bloki: aktīvais (vai visi, ja MIX) — grupēti pa fāzēm
-  const levelsToShow = pkgMix ? ['L1','L2','L3','L4'] : [currentPkg];
+  const levelsToShow = pkgMix ? ['L1','L2','L3'] : [currentPkg];
   levelsToShow.forEach(level=>{
     const items=EXCEL_PKG.levels[level];
     if(pkgMix) html+='<div class="pkg-section-title" style="margin-top:14px">'+PKG_NAMES[level]+' — pozīcijas</div>';
@@ -5024,7 +5021,7 @@ function updatePkgSummary(){
 function initPkgWizard(area){
   const areaChanged = area!==currentPkgArea;
   currentPkgArea=area;
-  ['L1','L2','L3','L4'].forEach(l=>{
+  ['L1','L2','L3'].forEach(l=>{
     const el=document.getElementById('pkg-price-'+l);
     if(el) el.textContent=pkgFullPrice(l,area).toLocaleString('lv-LV')+' EUR';
   });
@@ -5033,7 +5030,7 @@ function initPkgWizard(area){
   let first=false;
   if(Object.keys(pkgChecked).length===0){ initPkgChecked(currentPkg); first=true; }
   if(areaChanged||first) renderPkgItems();
-  ['L1','L2','L3','L4'].forEach(l=>{
+  ['L1','L2','L3'].forEach(l=>{
     const p=document.getElementById('pkg-pill-'+l);
     if(p) p.classList.toggle('active', l===currentPkg);
   });
@@ -5338,6 +5335,9 @@ function renderARPanels(type, area, svcCoef) {
     // ── ANIMATION LOOP ─────────────────────────────────────────
     const clock = new THREE.Clock();
     function animate() {
+        // Aptur 3D fona renderēšanu, kad lietotājs ielogojies (lock paslēpts) — taupa GPU, novērš melnā ekrāna mirgoni
+        const lock = document.getElementById('lock');
+        if (!lock || lock.style.display === 'none') { return; }
         requestAnimationFrame(animate);
         const t = clock.getElapsedTime();
 
