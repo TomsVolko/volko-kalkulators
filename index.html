@@ -2888,19 +2888,19 @@ function renderEbnTable(){
 const SVC_MENU=[
   { id:'esi', name:'ESI — Juridiskā esošās situācijas izpēte', when:'Sarežģītiem projektiem — neskaidra zona, aizsargjoslas, kopīpašums, funkcijas maiņa.',
     why:'Pārbauda zonu (TIAN), robežas, ZG pirms naudas tērēšanas projektā. Vienkāršos gadījumos nav nepieciešama.',
-    priceFn:(a,s)=>r50(SVC_BASE.esi*s*1.20) },
+    priceFn:(a,s)=>r50(SVC_BASE.esi*s) },
   { id:'taa', name:'TAA — Tehniskā apsekošana', when:'Esošām ēkām pirms projekta.',
     why:'Novērtē konstruktīvo drošību. Var atklāt slēptas problēmas; legalizācijā novērš nojaukšanas risku.',
-    priceFn:(a,s)=>r50(SVC_BASE.taa*s*1.20) },
+    priceFn:(a,s)=>r50(SVC_BASE.taa*s) },
   { id:'bk', name:'BK — Būvkonstrukcijas', when:'Ja skar nesošās konstrukcijas vai >100 m² / 2+ stāvi.',
     why:'Pamatu, jumta, pārsegumu aprēķini. Bez BK būvnieks nevar droši celties.',
-    priceFn:(a,s)=>r50((a<=100?SVC_BASE.bk_s:a<=250?SVC_BASE.bk_m:SVC_BASE.bk_l)*s*1.20) },
+    priceFn:(a,s)=>r50((a<=100?SVC_BASE.bk_s:a<=250?SVC_BASE.bk_m:SVC_BASE.bk_l)*s) },
   { id:'eps', name:'EPS — Energoefektivitātes pārskats', when:'Ēkām ar apkuri / siltināšanu.',
     why:'Apliecina enerģijas patēriņu. Nepieciešams apkurināmām ēkām; dažas pašvaldības pieprasa legalizācijai.',
-    priceFn:(a,s)=>r50(SVC_BASE.eps*s*1.20) },
+    priceFn:(a,s)=>r50(SVC_BASE.eps*s) },
   { id:'ti', name:'TI — Topogrāfija', when:'Ja nav aktuāla topogrāfija (vecāka par 3 g.) vai skar ārtelpu.',
     why:'Precīzs zemes reljefs un situācija. Vajadzīgs projektam ar ārējo teritoriju.',
-    priceFn:(a,s)=>r50(SVC_BASE.ti*s*1.20) },
+    priceFn:(a,s)=>r50(SVC_BASE.ti*s) },
 ];
 // Urgency override pa tipiem; kas nav norādīts → 'if_needed' (rādās zem "Ja attiecas")
 const SVC_URG={
@@ -4307,14 +4307,14 @@ function renderPassport(type, area, floors, muniName, svcCoef) {
       recommended: '<span style="color:#a16207;font-weight:700">⭐ Ieteicams</span> ',
       if_needed:   '<span style="color:var(--muted)">○ Ja attiecas</span> '
     };
-    // Servisa cenas rēķinātas pēc bāzes, BET Toms tās var pārrakstīt (saglabājas localStorage _svcPrice). data-cli=klientam, data-int=÷1.2.
+    // Servisa cena = bāze × pašvaldības koef. (BEZ 20% rezerves). Toms var pārrakstīt (saglabājas localStorage _svcPrice).
     const svcOv = window._svcPrice || {};
     const svcRows = (getRecs(type) || [])
       .map(r => {
         let cli = r.priceFn ? r.priceFn(area, svcCoef) : 0;
         const edited = svcOv[r.id] != null;
         if (edited) cli = svcOv[r.id];
-        return { id:r.id, name:r.name, cli:cli, int:Math.round(cli/1.2), urg:r.urgency, edited:edited };
+        return { id:r.id, name:r.name, cli:cli, int:cli, urg:r.urgency, edited:edited };
       })
       .filter(x => x.cli > 0)
       .sort((a,b) => urgRank[a.urg] - urgRank[b.urg]);
@@ -4328,8 +4328,7 @@ function renderPassport(type, area, floors, muniName, svcCoef) {
     html += `<tr><td class="ct-name" style="color:var(--muted)">○ NOD — atsevišķi pēc būvniecības (jauns līgums)</td><td class="ct-price" style="color:var(--muted)">—</td></tr>`;
     html += `<tr><td class="ct-name" style="color:var(--muted)">Valsts nodeva (BIS)</td><td class="ct-price" style="color:var(--muted)">~30 EUR</td></tr>`;
     html += `<tr class="sep"><td class="ct-name" style="font-weight:700">🏠 Ēku skaits objektā</td><td style="text-align:right;white-space:nowrap"><button type="button" class="pp-step" onclick="bldgStep(-1)">−</button> <span id="pp-bldg-count-lbl" style="font-weight:800;color:var(--navy);display:inline-block;min-width:18px;text-align:center">1</span> <button type="button" class="pp-step" onclick="bldgStep(1)">+</button><input type="hidden" id="pp-bldg-count" value="1"></td></tr>`;
-    html += `<tr><td class="ct-total">KOPĀ (iekšējā cena)</td><td class="ct-total-price" id="pp-total-int">—</td></tr>`;
-    html += `<tr><td class="ct-total" style="color:var(--gold)">Klientam piedāvāt</td><td class="ct-total-price" id="pp-total-cli" style="color:var(--gold)">—</td></tr>`;
+    html += `<tr><td class="ct-total" style="color:var(--gold)">KOPĀ — klientam piedāvāt</td><td class="ct-total-price" id="pp-total-cli" style="color:var(--gold)">—</td></tr>`;
     html += `<tr><td colspan="2" id="pp-bldg-note" style="font-size:.68rem;color:var(--muted);display:none"></td></tr>`;
     costTable.innerHTML = html;
     recalcOffer();
@@ -4355,7 +4354,7 @@ function editSvcPrice(inp){
   window._svcPrice[inp.dataset.svc]=cli;
   try{localStorage.setItem('volkoSvcPrice',JSON.stringify(window._svcPrice));}catch(e){}
   const cb=document.getElementById(inp.dataset.cb);
-  if(cb){cb.dataset.cli=cli;cb.dataset.int=Math.round(cli/1.2);}
+  if(cb){cb.dataset.cli=cli;cb.dataset.int=cli;}
   inp.style.borderColor='var(--gold)';
   recalcOffer();
 }
