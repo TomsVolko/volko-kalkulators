@@ -1158,7 +1158,7 @@ body[data-artype="jaunbuve"] #ar-jaunbuve-note{display:block}
 <option value="1.05" data-cat="dwelling" data-sub="single">Dvīņu māja</option><option value="1.10" data-cat="dwelling" data-sub="multi">Rindu māja</option>
 <option value="1.30" data-cat="dwelling" data-sub="multi">Daudzdzīvokļu māja</option>
 <option value="0.85" data-cat="dwelling" data-sub="single">Vasarnīca / dārza māja</option>
-<option value="0.70" data-cat="aux">Saimniecības ēka</option><option value="0.60" data-cat="aux">Garāža</option>
+<option value="0.70" data-cat="aux">Saimniecības ēka</option><option value="0.70" data-cat="aux" data-sub="pirts">Pirts (palīgēka)</option><option value="0.60" data-cat="aux">Garāža</option>
 <option value="0.65" data-cat="warehouse">Noliktava</option><option value="1.20" data-cat="public">Biroja ēka</option>
 <option value="1.25" data-cat="public">Tirdzniecības ēka</option>
 <option value="1.15" data-cat="public">Jaukta lietojuma ēka</option>
@@ -1211,6 +1211,7 @@ body[data-artype="jaunbuve"] #ar-jaunbuve-note{display:block}
 <div class="grp-badge" id="ar-grp-badge">—</div>
 <div class="grp-desc" id="ar-grp-desc">Ievadi platību un stāvu skaitu</div>
 </div>
+<div class="grp-desc" id="ar-bk-flag" style="margin-top:8px;font-weight:600"></div>
 </div>
 <div class="card">
 <div class="card-title">Cenas aprēķins</div>
@@ -2747,6 +2748,27 @@ function grpExplain(a,f,cat,g){
   }
   return "Ēka, kas neietilpst I un III grupā (MK 500 1.piel. 2.3.) — piem. tipiska dzīvojamā māja. Standarta kārtība: paskaidrojuma raksts vai būvprojekts atkarībā no darbu apjoma.";
 }
+// BK (būvkonstrukciju daļas) nepieciešamība — orientējoši, atvasināts no grupas/funkcijas/tipa.
+// Juridiski nozīmīgs: robežgadījumos gala vārds pēc TAA / Vladimira (sk. EBN tabulu).
+// BK = būvprojekta sastāvdaļa (MK 529). Vajadzīga, kad ieceres dokuments ir BŪVPROJEKTS,
+// nevis paskaidrojuma raksts. Slieksnis: II gr. ≤200 m² → PR (MK 529 7.2.), >200 m² → būvprojekts (7.3.).
+// Palīgēkas/I grupa/vienkāršotā atjaunošana → PR → BK daļa nav obligāta.
+function bkRequired(type,g,cat,area){
+  if(g==="III") return {f:'yes', t:'III grupai vajadzīgs būvprojekts → būvkonstrukciju (BK) daļa obligāta.'};
+  if(cat==="aux") return {f:'no', t:'Palīgēkai (pirts, saimniecības ēka, garāža) pietiek ar paskaidrojuma rakstu — atsevišķa BK daļa nav obligāta.'};
+  if(g==="I") return {f:'no', t:'I grupas ēkai pietiek ar paskaidrojuma rakstu — BK daļa nav obligāta.'};
+  if(type==="vienk") return {f:'no', t:'Vienkāršotā atjaunošanā nesošās konstrukcijas netiek skartas → BK daļa nav nepieciešama.'};
+  if(type==="jaunbuve" && area>200) return {f:'yes', t:'II grupas jaunbūvei >200 m² vajadzīgs būvprojekts (MK 529 7.3.) → BK daļa obligāta.'};
+  return {f:'cond', t:'Nosacīti — ja jāizstrādā būvprojekts (>200 m²) vai darbi skar nesošās konstrukcijas, BK daļa vajadzīga; mazākām izmaiņām ar paskaidrojuma rakstu — nē. TAA precizē.'};
+}
+function renderBkFlag(type,area,floors,cat){
+  const el=document.getElementById("ar-bk-flag"); if(!el) return;
+  if(!type||!(area>0)){ el.textContent=""; return; }
+  const g=grp(area,floors,cat), bk=bkRequired(type,g,cat,area);
+  const lbl=bk.f==='yes'?'🔴 Būvkonstrukcijas (BK): JĀ':bk.f==='no'?'✅ Būvkonstrukcijas (BK): nē':'⚠️ Būvkonstrukcijas (BK): nosacīti';
+  el.textContent=lbl+' — '+bk.t;
+  el.style.color=bk.f==='yes'?'#b91c1c':bk.f==='no'?'#15803d':'#b45309';
+}
 function bi(a){for(let i=0;i<AR_BRACKS.length;i++)if(a<=AR_BRACKS[i])return i;return AR_BRACKS.length-1;}
 function r50(n){return Math.round(n/50)*50;}
 function eur(n){return n.toLocaleString("lv-LV")+" EUR";}
@@ -2773,6 +2795,7 @@ function calcAR(){
     const g=grp(area,floors,cat);document.getElementById("ar-grp-badge").textContent=g+" grupa";
     document.getElementById("ar-grp-desc").textContent=grpExplain(area,floors,cat,g);
   }else{document.getElementById("ar-grp-badge").textContent="—";document.getElementById("ar-grp-desc").textContent="Ievadi platību un stāvu skaitu";}
+  renderBkFlag(type,area,floors,cat);
   const isLeg=isLegal(type);
   document.getElementById("legalizacija-steps").classList.toggle("visible",isLeg&&area>0);
   if(isLeg&&area>0)renderSteps(type,grp(area,floors,cat),muni.s);
