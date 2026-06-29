@@ -1140,8 +1140,9 @@ body[data-artype="jaunbuve"] #ar-jaunbuve-note{display:block}
 </select>
 <div class="info-card" id="ar-info-card"></div>
 </div>
-<div class="field"><label class="lbl">Platība (m²)</label>
-<input type="number" id="ar-area" placeholder="piem. 120" min="1" oninput="calcAR()"></div>
+<div class="field"><label class="lbl">Kopējā platība (m²)</label>
+<input type="number" id="ar-area" placeholder="piem. 120" min="1" oninput="calcAR()">
+<div style="font-size:.66rem;color:var(--muted);margin-top:3px">Kopējā (visu stāvu) platība — pēc tās 200 / 1000 / 2000 m² sliekšņi. I grupas 60 m² robeža = apbūves laukums (1 stāva ēkai tie sakrīt).</div></div>
 <div class="field"><label class="lbl">Stāvu skaits</label>
 <select id="ar-floors" onchange="calcAR()">
 <option value="1">1 stāvs</option><option value="2">2 stāvi</option>
@@ -1209,6 +1210,7 @@ body[data-artype="jaunbuve"] #ar-jaunbuve-note{display:block}
 <div class="grp-desc" id="ar-grp-desc">Ievadi platību un stāvu skaitu</div>
 </div>
 <div class="grp-desc" id="ar-bk-flag" style="margin-top:8px;font-weight:600"></div>
+<div style="font-size:.66rem;color:var(--muted);margin-top:6px">⚠ Ja ēkai ir vairāk nekā 1 apakšzemes (pagraba) stāvs → III grupa (MK 500 2.2.2.), kas šajā aprēķinā nav iekļauts.</div>
 </div>
 <div class="card">
 <div class="card-title">Cenas aprēķins</div>
@@ -2783,13 +2785,30 @@ function renderBkFlag(type,area,floors,cat){
 // Mērķis: izvēle nav atkarīga no manuāla minējuma — atvasina no platības / grupas / funkcijas.
 // Atsauces atkārtoti izmanto jau verificētās (docTypeFor, bkRequired); jaunus MK apakšpunktus NEIZDOMĀ.
 function pathReason(dt,g,cat,sub,area){
-  if(g==='III') return 'III grupas ēka → vienmēr būvprojekts + būvatļauja (MK Nr. 529 7.3.).';
-  if(g==='I') return 'I grupas ēka (vienstāva, apbūves laukums ≤60 m²) → vienkāršota kārtība, paskaidrojuma raksts.';
-  if(cat==='aux') return 'Palīgēka (saimniecības ēka, pirts, garāža) → paskaidrojuma raksts. Platība >60 m² ceļu NEMAINA — paliek paskaidrojuma raksts.';
+  const type=document.getElementById('ar-type')?.value||'jaunbuve';
+  // Esošas ēkas vienkāršie darbi
+  if(type==='vienk') return 'Vienkāršotā atjaunošana / pārbūve, neskarot nesošās konstrukcijas un nemainot apjomu — paskaidrojuma raksts jebkurai grupai (MK Nr. 529 7.²6./7.²8.).';
+  if(type==='izmaiņu') return 'Izmaiņas esošā ēkā (fasāde, ailas, plānojums) neskarot nesošās — paskaidrojuma raksts; ailām nesošajās konstrukcijās — paziņojums (7.¹2.). Apjoma vai funkcijas maiņa → būvprojekts.';
+  if(type==='nojaukšana') return g==='I'
+    ? 'I grupas ēkas nojaukšana — paziņojums par būvniecību (MK Nr. 529 7.¹3.).'
+    : 'II/III grupas ēkas nojaukšana — paskaidrojuma raksts (MK Nr. 529 7.²5.). Pēc nojaukšanas — kadastra datu aktualizācija.';
+  if(type==='lc') return 'Lietošanas veida (funkcijas) maiņa BEZ pārbūves — paskaidrojuma raksts (MK Nr. 529 7.²7.), ja pašvaldības TIAN atļauj jauno funkciju. Kopā ar pārbūvi → būvprojekts.';
+  // Pārbūve / rekonstrukcija / legalizācija
+  if(type==='rekonstrukcija'||type==='lbp'||type==='la'){
+    if(g==='III') return 'III grupas ēkas pārbūve → būvprojekts + būvatļauja (MK Nr. 529 7.³).';
+    if(g==='I') return 'I grupas ēkas pārbūve, nepārsniedzot I grupas rādītājus — paskaidrojuma raksts (MK Nr. 529 7.²4.).';
+    if(cat==='aux') return 'Palīgēkas / lauksaimniecības nedzīvojamās ēkas pārbūve, nemainot grupu — paskaidrojuma raksts (MK Nr. 529 7.²11.).';
+    if(cat==='dwelling'&&sub==='single') return 'Viena vai divu dzīvokļu mājas pārbūve, NEMAINOT lietošanas veidu un grupu — paskaidrojuma raksts (MK Nr. 529 7.²11.; pārbūvei nav 200 m² ierobežojuma). Ja maina apjomu/funkciju vai ceļ grupu → būvprojekts.';
+    return 'Daudzdzīvokļu / publiskas II grupas ēkas pārbūve → būvprojekts + būvatļauja (MK Nr. 529 7.³).';
+  }
+  // Jaunbūve / tipveida
+  if(g==='III') return 'III grupas ēka → būvprojekts + būvatļauja (MK Nr. 529 7.³).';
+  if(g==='I') return 'I grupas ēka (vienstāva, apbūves laukums ≤60 m²) → vienkāršotā kārtība: paziņojums vai paskaidrojuma raksts (dažām mazēkām/palīgēkām ārpus pilsētas — bez dokumentiem, 7.3.4.).';
+  if(cat==='aux') return 'Palīgēka / lauksaimniecības nedzīvojamā ēka — paskaidrojuma raksts neatkarīgi no platības (MK Nr. 529 7.²1.). 60 m² maina TIKAI būves grupu, ne dokumenta veidu.';
   if(cat==='dwelling'&&sub==='single') return area<=200
-    ? 'Viena dzīvokļa dzīvojamā māja ≤200 m² → paskaidrojuma raksts (MK Nr. 529 7.2.).'
-    : 'Viena dzīvokļa dzīvojamā māja >200 m² → būvprojekts + būvatļauja (MK Nr. 529 7.3.).';
-  return 'Daudzdzīvokļu / publiska / ražošanas ēka → būvprojekts + būvatļauja (MK Nr. 529 7.3.).';
+    ? 'Viena dzīvokļa dzīvojamā māja, kopējā platība ≤200 m² → paskaidrojuma raksts (MK Nr. 529 7.²1.).'
+    : 'Viena dzīvokļa dzīvojamā māja, kopējā platība >200 m² → būvprojekts + būvatļauja (MK Nr. 529 7.³).';
+  return 'Daudzdzīvokļu / publiska / noliktavas ēka → būvprojekts + būvatļauja (MK Nr. 529 7.³).';
 }
 function determineServices(type,g,cat,area){
   const enc=id=>document.getElementById(id)?.checked;
@@ -3878,14 +3897,30 @@ document.addEventListener('input', () => { if(aiPanelOpen) updateAIContext(); })
 
 // Ieceres dokumenta veids pēc MK 529 (EBN) 7.2./7.3. — izšķir GRUPA + FUNKCIJA (+ viena dzīvokļa 200 m² robeža 7.2.1.),
 // nevis platība vispār. Daudzdzīvokļu/publiskām II gr. ēkām vienmēr būvprojekts (sk. arī EBN_DATA JN13–JN19).
+// Ieceres dokuments PR (paskaidrojuma raksts / paziņojums = vienkāršotā kārtība) vs BP (būvprojekts + būvatļauja).
+// Verbatim MK Nr. 529 (Ēku būvnoteikumi) 7.²/7.³ punkts, aktuālā redakcija (ar 2025./2026. grozījumiem).
+// Darba veids ir būtisks: atjaunošana/vienk. pārbūve/nojaukšana/lietošanas maiņa = PR jebkurai grupai.
 function docTypeFor(area, g){
   const cat = window._arCat || 'dwelling';
   const sub = document.getElementById('ar-func')?.selectedOptions[0]?.dataset.sub || '';
+  const type = document.getElementById('ar-type')?.value || 'jaunbuve';
+  // Esošas ēkas vienkāršie darbi → paskaidrojuma raksts jebkurai grupai (7.²6./7.²8./7.²7.)
+  if (type==='vienk' || type==='izmaiņu' || type==='lbv' || type==='lc') return 'pr';
+  if (type==='nojaukšana') return 'pr';                                      // 7.²5. (I gr. — paziņojums 7.¹3.)
+  // Pārbūve / rekonstrukcija / legalizācija (7.²11. vs 7.³)
+  if (type==='rekonstrukcija' || type==='lbp' || type==='la'){
+    if (g === 'III') return 'bp';
+    if (g === 'I') return 'pr';                                             // 7.²4.
+    if (cat === 'aux') return 'pr';                                         // 7.²11. palīgēka / lauks. nedzīvojamā
+    if (cat === 'dwelling' && sub === 'single') return 'pr';               // 7.²11. viena/divu dzīvokļu (nemainot grupu) — pārbūvei nav 200 m² limita
+    return 'bp';                                                           // daudzdzīvokļu / publiska II → 7.³
+  }
+  // Jaunbūve / tipveida / novietošana (7.²1. / 7.³)
   if (g === 'III') return 'bp';
   if (g === 'I') return 'pr';
-  if (cat === 'aux') return 'pr';                                            // palīgēkas — 7.2.1.
-  if (cat === 'dwelling' && sub === 'single') return area <= 200 ? 'pr' : 'bp'; // viena dzīvokļa māja — 200 m² robeža (7.2.1.)
-  return 'bp';                                                               // daudzdzīvokļu, publiskās, ražošanas — 7.3.
+  if (cat === 'aux') return 'pr';                                          // 7.²1. palīgēka/lauks. nedzīvojamā — bez platības limita
+  if (cat === 'dwelling' && sub === 'single') return area <= 200 ? 'pr' : 'bp'; // 7.²1. viena dzīvokļa kopējā platība ≤200 m²
+  return 'bp';                                                             // daudzdzīvokļu / publiska / noliktava → 7.³
 }
 // ── VAIRĀKAS ĒKAS OBJEKTĀ — saraksts ar kopsummu (MK 500 7. p.: viena iecere, augstākās grupas kārtība) ──
 window._ekas=[];
