@@ -1134,12 +1134,9 @@ body[data-artype="jaunbuve"] #ar-jaunbuve-note{display:block}
 <div class="card-title">Ēkas parametri</div>
 <div class="field"><label class="lbl" id="ar-type-lbl">Projekta tips — jauns projekts</label>
 <select id="ar-type" onchange="calcAR()">
+<!-- Sākotnēji = Jaunbūves apakštaba (tikai jauni projekti). arMode() nomaina uz esošas ēkas tipiem, kad pārslēdz uz Legalizāciju. -->
 <option value="jaunbuve">Jaunbūve</option>
-<option value="izmaiņu">Izmaiņu projekts</option>
-<option value="rekonstrukcija">Rekonstrukcija / pārbūve</option>
-<option value="vienk">Vienkāršota atjaunošana</option>
-<option value="nojaukšana">Nojaukšanas projekts</option>
-<option value="tipveida">Tipveida projekts</option>
+<option value="tipveida">Tipveida projekts (atkārtoti izmantojams)</option>
 </select>
 <div class="info-card" id="ar-info-card"></div>
 </div>
@@ -1298,6 +1295,15 @@ body[data-artype="jaunbuve"] #ar-jaunbuve-note{display:block}
 </div>
 <div style="margin-top:16px">
 <div class="section-wrap">
+
+<!-- ══ AUTO-NOTEIKŠANA — ceļš (PR/BP) + pakalpojumi ar pamatojumu. Redzams arī konsultācijas skatā (NAV cons-hide). ══ -->
+<div id="ar-svc-auto" class="card" style="display:none;border-left:3px solid var(--gold);margin-bottom:16px">
+  <div class="card-title">🧭 Auto-noteikšana — ceļš un pakalpojumi</div>
+  <div style="font-size:.74rem;color:var(--muted);margin:-4px 0 12px">Ceļu un papildpakalpojumus nosaka automātiski no platības, būves grupas un funkcijas — lai izvēle nav atkarīga no manuāla minējuma.</div>
+  <div id="ar-svc-path"></div>
+  <div id="ar-svc-list" style="margin-top:12px"></div>
+  <div style="font-size:.66rem;color:var(--muted);font-style:italic;margin-top:11px;border-top:1px dashed var(--border);padding-top:8px">⚠ Orientējoši — robežgadījumos gala vārds pēc TAA un Vladimira. MK Nr. 529 apakšpunktus pārbaudi likumi.lv aktuālajā redakcijā pirms citēšanas klientam.</div>
+</div>
 
 <!-- ══ PIRMS SĀKAM — PĀRBAUDES SARAKSTS (dinamisks pēc projekta tipa) ══ -->
 <div id="ar-pre-checklist" class="pre-checklist cons-hide" style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px">
@@ -2769,6 +2775,79 @@ function renderBkFlag(type,area,floors,cat){
   el.textContent=lbl+' — '+bk.t;
   el.style.color=bk.f==='yes'?'#b91c1c':bk.f==='no'?'#15803d':'#b45309';
 }
+// ── AUTO-NOTEIKŠANA: ieceres dokuments (PR/BP) + pakalpojumi ar pamatojumu (Toms 2026-06-29) ──
+// Mērķis: izvēle nav atkarīga no manuāla minējuma — atvasina no platības / grupas / funkcijas.
+// Atsauces atkārtoti izmanto jau verificētās (docTypeFor, bkRequired); jaunus MK apakšpunktus NEIZDOMĀ.
+function pathReason(dt,g,cat,sub,area){
+  if(g==='III') return 'III grupas ēka → vienmēr būvprojekts + būvatļauja (MK Nr. 529 7.3.).';
+  if(g==='I') return 'I grupas ēka (vienstāva, apbūves laukums ≤60 m²) → vienkāršota kārtība, paskaidrojuma raksts.';
+  if(cat==='aux') return 'Palīgēka (saimniecības ēka, pirts, garāža) → paskaidrojuma raksts. Platība >60 m² ceļu NEMAINA — paliek paskaidrojuma raksts.';
+  if(cat==='dwelling'&&sub==='single') return area<=200
+    ? 'Viena dzīvokļa dzīvojamā māja ≤200 m² → paskaidrojuma raksts (MK Nr. 529 7.2.).'
+    : 'Viena dzīvokļa dzīvojamā māja >200 m² → būvprojekts + būvatļauja (MK Nr. 529 7.3.).';
+  return 'Daudzdzīvokļu / publiska / ražošanas ēka → būvprojekts + būvatļauja (MK Nr. 529 7.3.).';
+}
+function determineServices(type,g,cat,area){
+  const enc=id=>document.getElementById(id)?.checked;
+  const heated=(cat==='dwelling'||cat==='public');
+  const out=[];
+  // ESI — juridiskā izpēte (atkarīga no riska faktoriem, ne tikai platības)
+  if(enc('c1')||enc('c2')||enc('c3')||enc('c4')||type==='lc')
+    out.push({name:'ESI — Juridiskā esošās situācijas izpēte',status:'yes',why:'Atzīmēti riska faktori (NKMP / patvaļīga būvniecība / kopīpašums / robeža <4 m vai funkcijas maiņa) — pirms projekta jāpārbauda, vai iecere vispār iespējama. Bez ESI risks samaksāt par projektu, ko būvvalde noraida.'});
+  else
+    out.push({name:'ESI — Juridiskā esošās situācijas izpēte',status:'cond',why:'Nav atzīmētu riska faktoru — vienkāršā gadījumā pietiek ar TIAN pārbaudi. Ja zona vai aizsargjoslas neskaidras, ESI tomēr ieteicama.'});
+  // TAA — tehniskā apsekošana
+  if(type==='jaunbuve')
+    out.push({name:'TAA — Tehniskā apsekošana',status:'no',why:'Jaunbūvei nav esošu konstrukciju, ko apsekot — TAA nav nepieciešama.'});
+  else if(type==='vienk')
+    out.push({name:'TAA — Tehniskā apsekošana',status:'cond',why:'Vienkāršotā atjaunošanā nesošās konstrukcijas netiek skartas — TAA vajadzīga tikai, ja ir šaubas par ēkas tehnisko stāvokli.'});
+  else
+    out.push({name:'TAA — Tehniskā apsekošana',status:'yes',why:'Esošas ēkas pārbūvei/legalizācijai obligāta esošā stāvokļa tehniskā apsekošana (LBN 405-21, MK Nr. 384). Bez TAA būvvalde var pieprasīt nojaukšanu.'});
+  // BK — atkārtoti izmanto bkRequired (jau verificētā loģika)
+  const bk=bkRequired(type,g,cat,area);
+  out.push({name:'BK — Būvkonstrukciju daļa',status:bk.f,why:bk.t});
+  // EPS — energoefektivitāte
+  if(type==='nojaukšana')
+    out.push({name:'EPS — Energoefektivitāte',status:'no',why:'Nojaukšanai energoefektivitātes pārskats nav nepieciešams.'});
+  else if(!heated)
+    out.push({name:'EPS — Energoefektivitāte',status:'no',why:'Neapkurināmai ēkai (palīgēka, garāža, noliktava, inženierbūve) energoefektivitātes pārskats nav nepieciešams.'});
+  else if(type==='vienk')
+    out.push({name:'EPS — Energoefektivitāte',status:'cond',why:'Apkurināmai ēkai vajadzīgs tikai, ja darbi skar norobežojošās konstrukcijas (siltināšana, logu maiņa).'});
+  else
+    out.push({name:'EPS — Energoefektivitāte',status:'yes',why:'Apkurināmai ēkai — apliecina enerģijas patēriņu. Nepieciešams nodošanai ekspluatācijā; dažas pašvaldības pieprasa jau legalizācijai.'});
+  // TI — topogrāfija
+  if(type==='jaunbuve')
+    out.push({name:'TI — Topogrāfija',status:'yes',why:'Jaunbūvei vajadzīgs aktuāls topogrāfiskais plāns (pamati, situācijas plāns).'});
+  else if(type==='nojaukšana')
+    out.push({name:'TI — Topogrāfija',status:'cond',why:'Vajadzīga, ja jāatjauno situācijas plāns pēc nojaukšanas vai darbi skar ārtelpu.'});
+  else
+    out.push({name:'TI — Topogrāfija',status:'cond',why:'Esošai ēkai bez ārtelpas izmaiņām parasti nav vajadzīga; vajadzīga, ja topogrāfija vecāka par 3 gadiem vai projekts skar ārējo teritoriju.'});
+  return out;
+}
+function renderSvcAuto(type,area,floors,cat){
+  const card=document.getElementById('ar-svc-auto'); if(!card) return;
+  if(!type||!(area>0)){ card.style.display='none'; return; }
+  card.style.display='block';
+  const g=grp(area,floors,cat);
+  const sub=document.getElementById('ar-func')?.selectedOptions[0]?.dataset.sub||'';
+  const funcName=document.getElementById('ar-func')?.selectedOptions[0]?.text||'';
+  const dt=docTypeFor(area,g);
+  const pr=dt==='pr';
+  document.getElementById('ar-svc-path').innerHTML=`<div style="padding:11px 14px;border-radius:0 8px 8px 0;background:${pr?'#fffbeb':'#fef2f2'};border-left:3px solid ${pr?'var(--gold)':'#dc2626'}">
+    <div style="font-size:.68rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted)">Ieceres dokuments (auto)</div>
+    <div style="font-size:1.05rem;font-weight:800;color:var(--navy);margin:2px 0 4px">${pr?'📋 Paskaidrojuma raksts':'🏗 Būvprojekts + būvatļauja'}</div>
+    <div style="font-size:.77rem;color:var(--text);line-height:1.45">${pathReason(dt,g,cat,sub,area)}</div>
+    <div style="font-size:.68rem;color:var(--muted);margin-top:5px">Būves grupa: <strong>${g}</strong> · funkcija: ${funcName} · platība: ${area} m²</div>
+  </div>`;
+  const PILL={yes:['JĀ — vajadzīgs','#fee2e2','#b91c1c'],cond:['NOSACĪTI','#fef9c3','#b45309'],no:['NAV VAJADZĪGS','#dcfce7','#15803d']};
+  document.getElementById('ar-svc-list').innerHTML=determineServices(type,g,cat,area).map(s=>{
+    const p=PILL[s.status]||PILL.cond;
+    return `<div style="display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px dashed #e2e8f0">
+      <span style="flex:0 0 auto;font-size:.62rem;font-weight:800;padding:4px 8px;border-radius:20px;background:${p[1]};color:${p[2]};white-space:nowrap;min-width:104px;text-align:center">${p[0]}</span>
+      <div><div style="font-weight:700;color:var(--navy);font-size:.83rem">${s.name}</div><div style="font-size:.75rem;color:var(--text);line-height:1.45;margin-top:1px">${s.why}</div></div>
+    </div>`;
+  }).join('');
+}
 function bi(a){for(let i=0;i<AR_BRACKS.length;i++)if(a<=AR_BRACKS[i])return i;return AR_BRACKS.length-1;}
 function r50(n){return Math.round(n/50)*50;}
 function eur(n){return n.toLocaleString("lv-LV")+" EUR";}
@@ -2796,6 +2875,7 @@ function calcAR(){
     document.getElementById("ar-grp-desc").textContent=grpExplain(area,floors,cat,g);
   }else{document.getElementById("ar-grp-badge").textContent="—";document.getElementById("ar-grp-desc").textContent="Ievadi platību un stāvu skaitu";}
   renderBkFlag(type,area,floors,cat);
+  renderSvcAuto(type,area,floors,cat);
   const isLeg=isLegal(type);
   document.getElementById("legalizacija-steps").classList.toggle("visible",isLeg&&area>0);
   if(isLeg&&area>0)renderSteps(type,grp(area,floors,cat),muni.s);
