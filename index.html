@@ -2761,7 +2761,11 @@ function grpExplain(a,f,cat,g){
 // Palīgēkas/I grupa/vienkāršotā atjaunošana → PR → BK daļa nav obligāta.
 function bkRequired(type,g,cat,area){
   if(g==="III") return {f:'yes', t:'III grupai vajadzīgs būvprojekts → būvkonstrukciju (BK) daļa obligāta.'};
-  if(cat==="aux") return {f:'no', t:'Palīgēkai (pirts, saimniecības ēka, garāža) pietiek ar paskaidrojuma rakstu — atsevišķa BK daļa nav obligāta.'};
+  if(cat==="aux" && g!=="I"){
+    if(type==="rekonstrukcija"||type==="lbp"||type==="la")
+      return {f:'cond', t:'Palīgēkas pārbūvei/legalizācijai — ja darbi skar nesošās konstrukcijas, BK daļa vajadzīga (EBN P3 — nosacīti); ja ne, pietiek ar paskaidrojuma rakstu. ⚠ Liela apjoma saimniecības/lauksaimniecības ēka var būt III grupa → tad BK obligāts (precizē grupu Vladimiram).'};
+    return {f:'no', t:'Palīgēkas (pirts, saimniecības ēka, garāža) jaunbūvei/atjaunošanai pietiek ar paskaidrojuma rakstu — atsevišķa BK daļa nav obligāta (konstruktīvo risinājumu tomēr projektē). ⚠ Ļoti liela saimniecības ēka var būt III grupa → tad BK obligāts (precizē grupu Vladimiram).'};
+  }
   if(g==="I") return {f:'no', t:'I grupas ēkai pietiek ar paskaidrojuma rakstu — BK daļa nav obligāta.'};
   if(type==="vienk") return {f:'no', t:'Vienkāršotā atjaunošanā nesošās konstrukcijas netiek skartas → BK daļa nav nepieciešama.'};
   if(type==="jaunbuve" && area>200) return {f:'yes', t:'II grupas jaunbūvei >200 m² vajadzīgs būvprojekts (MK 529 7.3.) → BK daļa obligāta.'};
