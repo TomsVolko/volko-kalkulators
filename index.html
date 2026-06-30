@@ -1245,6 +1245,7 @@ body[data-artype="jaunbuve"] #ar-jaunbuve-note{display:block}
 <option value="1.00" data-cat="dwelling" data-sub="single">Individuālā dzīvojamā māja</option>
 <option value="1.05" data-cat="dwelling" data-sub="single">Dvīņu māja</option><option value="1.10" data-cat="dwelling" data-sub="multi">Rindu māja</option>
 <option value="1.30" data-cat="dwelling" data-sub="multi">Daudzdzīvokļu māja</option>
+<option value="1.00" data-cat="apartment" data-sub="apt">Dzīvoklis / telpu grupa (apvienošana, atjaunošana)</option>
 <option value="0.85" data-cat="dwelling" data-sub="single">Vasarnīca / dārza māja</option>
 <option value="0.70" data-cat="aux">Saimniecības ēka</option><option value="0.70" data-cat="aux" data-sub="pirts">Pirts (palīgēka)</option><option value="0.60" data-cat="aux">Garāža</option>
 <option value="0.65" data-cat="warehouse">Noliktava</option><option value="1.20" data-cat="public">Biroja ēka</option>
@@ -1252,6 +1253,14 @@ body[data-artype="jaunbuve"] #ar-jaunbuve-note{display:block}
 <option value="1.15" data-cat="public">Jaukta lietojuma ēka</option>
 <option value="0.50" data-cat="eng">Inženierbūve / žogs</option>
 </select></div>
+<div class="field" id="ap-context" style="display:none;background:#fffbf0;border:1px solid var(--gold);border-radius:10px;padding:11px 13px">
+<label class="lbl">Dzīvokļa / telpu grupas konteksts</label>
+<div class="checks">
+<label class="chk"><input type="checkbox" id="ap-load" onchange="calcAR()"> Tiek skartas nesošās konstrukcijas (nesošās sienas, pārsegumi)</label>
+<label class="chk"><input type="checkbox" id="ap-zg" onchange="calcAR()"> Mērķis: ierakstīt izmaiņas zemesgrāmatā (dzīvokļu apvienošana)</label>
+</div>
+<div style="font-size:.66rem;color:var(--muted);margin-top:5px;line-height:1.45">Telpu grupai būves grupu (I/II/III pēc MK 500) <strong>nenosaka</strong> — dokumenta veidu nosaka darbu raksturs: <strong>apvienošana / robežu maiņa = pārbūve</strong> (Būvniecības likums) → paskaidrojuma raksts; <strong>atjaunošana</strong> bez robežu maiņas un nesošo skaršanas → paziņojums par būvniecību. Projekta veidu izvēlies augšā: pārbūve/apvienošana → "Rekonstrukcija / pārbūve"; atjaunošana → "Vienkāršota atjaunošana".</div>
+</div>
 <div class="field"><label class="lbl">Pašvaldība</label>
 <div class="muni-ac">
   <input type="text" id="ar-muni-search" autocomplete="off" placeholder="Sāc rakstīt: Rīga, Mārupe, Kuldīga…" oninput="muniFilter(this.value)" onfocus="muniFilter(this.value)" onblur="muniBlur()">
@@ -2826,6 +2835,9 @@ const DOCS_DATA={la:["Zemesgrāmatas izraksts (zemesgramata.lv)","Kadastra izzi�
 // (uz šo iedalījumu atsaucas arī MK Nr. 529 "Ēku būvnoteikumi"). cat: dwelling|aux|public|warehouse|industrial|eng
 function grp(a,f,cat){
   cat=cat||'dwelling';
+  // Telpu grupa (dzīvoklis): būves grupu (I/II/III) NENosaka — tā ir ēkas, ne telpu grupas, raksturlielums.
+  // Dokumenta veidu telpu grupai nosaka darbu raksturs (pārbūve vs atjaunošana), ne MK 500 grupa.
+  if(cat==='apartment') return 'TG';
   // III grupa (MK 500 1.piel. 2.2.) — pārbauda pirmo, dominē
   if(f>6) return "III";                                          // 2.2.1. vairāk nekā 6 virszemes stāvi
   if(cat==="public" && a>1000) return "III";                     // 2.2.3. publiska ēka, kopējā platība >1000 m²
@@ -2838,6 +2850,7 @@ function grp(a,f,cat){
 // Cenu grupa = oriģinālā kalkulatora loģika (lai cenas paliek kā oriģinālā). Juridiskā grupa (grp) tikai displejam.
 function grpPrice(a,f){ if(a<=25&&f<=1) return "I"; if(a>1500||f>=4) return "III"; return "II"; }
 function grpExplain(a,f,cat,g){
+  if(cat==="apartment") return "Telpu grupa (dzīvoklis) — būves grupu (I/II/III) nenosaka. Ieceres dokumentu nosaka darbu raksturs: pārbūve / apvienošana / robežu maiņa → paskaidrojuma raksts; vienkāršota atjaunošana (bez robežu maiņas un nesošo skaršanas) → paziņojums par būvniecību.";
   if(g==="I") return "Vienstāva ēka, apbūves laukums ≤60 m² (MK 500 1.piel. 2.1.1.). Vienkāršota kārtība — parasti paskaidrojuma raksts vai paziņojums.";
   if(g==="III"){
     if(f>6) return "Vairāk nekā 6 virszemes stāvi (MK 500 1.piel. 2.2.1.). Sarežģīta kārtība — būvprojekts + būvatļauja.";
@@ -2852,6 +2865,12 @@ function grpExplain(a,f,cat,g){
 // nevis paskaidrojuma raksts. Slieksnis: II gr. ≤200 m² → PR (MK 529 7.2.), >200 m² → būvprojekts (7.3.).
 // Palīgēkas/I grupa/vienkāršotā atjaunošana → PR → BK daļa nav obligāta.
 function bkRequired(type,g,cat,area){
+  if(cat==="apartment"){
+    const load=document.getElementById('ap-load')?.checked;
+    return load
+      ? {f:'yes', t:'Darbi skar nesošās konstrukcijas (nesošās sienas, pārsegumi) → būvkonstrukciju (BK) daļa vajadzīga, papildus tehniskā apsekošana (TAA). BK = atsevišķa būvprojekta sastāvdaļa, ne pamatdokuments.'}
+      : {f:'no', t:'Telpu grupas pārbūve/atjaunošana, neskarot nesošās konstrukcijas → atsevišķa BK daļa nav vajadzīga. Ja izrādās, ka nesošās tomēr tiek skartas — atzīmē augšā.'};
+  }
   if(g==="III") return {f:'yes', t:'III grupai vajadzīgs būvprojekts → būvkonstrukciju (BK) daļa obligāta.'};
   if(cat==="aux" && g!=="I"){
     if(type==="rekonstrukcija"||type==="lbp"||type==="la")
@@ -2876,6 +2895,21 @@ function renderBkFlag(type,area,floors,cat){
 // Atsauces atkārtoti izmanto jau verificētās (docTypeFor, bkRequired); jaunus MK apakšpunktus NEIZDOMĀ.
 function pathReason(dt,g,cat,sub,area){
   const type=document.getElementById('ar-type')?.value||'jaunbuve';
+  // ── TELPU GRUPA (dzīvoklis) — dokuments pēc darbu rakstura, NE pēc MK 500 būves grupas ──
+  if(cat==='apartment'){
+    const load=document.getElementById('ap-load')?.checked;
+    const zg=document.getElementById('ap-zg')?.checked;
+    let base;
+    if(type==='lc')
+      base='Dzīvokļa / telpu grupas lietošanas veida maiņa BEZ pārbūves → paskaidrojuma raksts (MK Nr. 529 7.²7.), ja pašvaldības TIAN atļauj jauno lietošanas veidu.';
+    else if(type==='vienk' && !load)
+      base='Telpu grupas vienkāršota atjaunošana — NEMAINOT telpu grupas robežas un NESKAROT nesošās konstrukcijas → paziņojums par būvniecību (MK Nr. 529 7.¹). Tā nav pārbūve, pilns projekts nav vajadzīgs.';
+    else
+      base='Dzīvokļu apvienošana / telpu grupas robežu maiņa ir PĀRBŪVE (Būvniecības likums: pārbūve = būves vai tās daļas pārveidošana, mainot apjomu vai telpu izvietojumu) → paskaidrojuma raksts (MK Nr. 529 7.²). Telpu grupai būves grupu (I/II/III) nenosaka.';
+    if(load) base+=' ⚠ Tiek skartas nesošās konstrukcijas → papildus būvkonstrukciju (BK) daļa un tehniskā apsekošana (TAA).';
+    if(zg) base+=' 🎯 Lai izmaiņas ierakstītu zemesgrāmatā: pēc būvvaldes saskaņošanas vajadzīga kadastrālā uzmērīšana un telpu grupas datu aktualizācija kadastrā + ieraksts zemesgrāmatā (Dzīvokļa īpašuma likuma 6. pants — dzīvokļa īpašums nodibināts tikai ar ierakstu zemesgrāmatā). Daudzdzīvokļu mājā — kopīpašnieku saskaņojums.';
+    return base;
+  }
   // Esošas ēkas vienkāršie darbi
   if(type==='vienk') return 'Vienkāršotā atjaunošana / pārbūve, neskarot nesošās konstrukcijas un nemainot apjomu — paskaidrojuma raksts jebkurai grupai (MK Nr. 529 7.²6./7.²8.).';
   if(type==='izmaiņu') return 'Izmaiņas esošā ēkā (fasāde, ailas, plānojums) neskarot nesošās — paskaidrojuma raksts; ailām nesošajās konstrukcijās — paziņojums (7.¹2.). Apjoma vai funkcijas maiņa → būvprojekts.';
@@ -2902,6 +2936,30 @@ function pathReason(dt,g,cat,sub,area){
 }
 function determineServices(type,g,cat,area){
   const enc=id=>document.getElementById(id)?.checked;
+  // ── TELPU GRUPA (dzīvoklis) — savs pakalpojumu komplekts ──
+  if(cat==='apartment'){
+    const load=enc('ap-load'), zg=enc('ap-zg'), apt=[];
+    // ESI / TIAN — riska faktoriem vai lietošanas veida maiņai
+    if(enc('c1')||enc('c2')||enc('c3')||type==='lc')
+      apt.push({id:'esi',name:'ESI — Juridiskā esošās situācijas izpēte',status:'yes',why:'Atzīmēti riska faktori (NKMP / patvaļīga būvniecība / kopīpašums) vai lietošanas veida maiņa — pirms projekta jāpārbauda, vai iecere iespējama.'});
+    else
+      apt.push({id:'esi',name:'ESI — Juridiskā esošās situācijas izpēte',status:'cond',why:'Vienkāršai telpu grupas pārbūvei parasti nav vajadzīga; ieteicama, ja ir šaubas par dzīvokļa īpašuma robežām vai kopīpašuma daļām.'});
+    // TAA — tikai ja skar nesošās konstrukcijas
+    apt.push(load
+      ? {id:'taa',name:'TAA — Tehniskā apsekošana',status:'yes',why:'Tiek skartas nesošās konstrukcijas — obligāta esošā stāvokļa tehniskā apsekošana pirms pārbūves (LBN 405-21).'}
+      : {id:'taa',name:'TAA — Tehniskā apsekošana',status:'cond',why:'Vajadzīga tikai, ja darbi skar nesošās konstrukcijas vai ir šaubas par tehnisko stāvokli.'});
+    // BK — atkārtoti izmanto bkRequired (apartment-aware)
+    const bk=bkRequired(type,g,cat,area);
+    apt.push({id:'bk',name:'BK — Būvkonstrukciju daļa',status:bk.f,why:bk.t});
+    // Kopīpašnieku saskaņojums
+    apt.push({id:'koop',name:'Kopīpašnieku saskaņojums',status:(enc('c3')||zg)?'yes':'cond',why:'Daudzdzīvokļu mājā telpu grupas robežu maiņa / apvienošana skar kopīpašumu — vajadzīgs pārējo dzīvokļu īpašnieku saskaņojums (parasti dzīvokļu īpašnieku kopības lēmums).'});
+    // Kadastrālā uzmērīšana + ZG — mērķim ierakstīt zemesgrāmatā
+    if(zg){
+      apt.push({id:'kad',name:'Kadastrālā uzmērīšana + datu aktualizācija kadastrā',status:'yes',why:'Lai apvienoto/izmainīto telpu grupu ierakstītu zemesgrāmatā, pēc būvvaldes saskaņošanas vajadzīga kadastrālā uzmērīšana un telpu grupas datu aktualizācija VZD kadastrā.'});
+      apt.push({id:'zg',name:'Ieraksts zemesgrāmatā',status:'yes',why:'Dzīvokļa īpašuma izmaiņas (apvienošana) nostiprina zemesgrāmatā — dzīvokļa īpašums uzskatāms par nodibinātu tikai ar ierakstu zemesgrāmatā (Dzīvokļa īpašuma likuma 6. pants).'});
+    }
+    return apt;
+  }
   const heated=(cat==='dwelling'||cat==='public');
   const out=[];
   // ESI — juridiskā izpēte (atkarīga no riska faktoriem, ne tikai platības)
@@ -2945,12 +3003,14 @@ function renderSvcAuto(type,area,floors,cat){
   const sub=document.getElementById('ar-func')?.selectedOptions[0]?.dataset.sub||'';
   const funcName=document.getElementById('ar-func')?.selectedOptions[0]?.text||'';
   const dt=docTypeFor(area,g);
-  const pr=dt==='pr';
-  document.getElementById('ar-svc-path').innerHTML=`<div style="padding:11px 14px;border-radius:0 8px 8px 0;background:${pr?'#fffbeb':'#fef2f2'};border-left:3px solid ${pr?'var(--gold)':'#dc2626'}">
+  const DOC={pr:{lbl:'📋 Paskaidrojuma raksts',bg:'#fffbeb',br:'var(--gold)'},pz:{lbl:'📨 Paziņojums par būvniecību',bg:'#eff6ff',br:'#2563eb'},bp:{lbl:'🏗 Būvprojekts + būvatļauja',bg:'#fef2f2',br:'#dc2626'}};
+  const d=DOC[dt]||DOC.bp;
+  const grpLine=cat==='apartment'?'Telpu grupa (dzīvoklis) — būves grupu nenosaka':'Būves grupa: <strong>'+g+'</strong>';
+  document.getElementById('ar-svc-path').innerHTML=`<div style="padding:11px 14px;border-radius:0 8px 8px 0;background:${d.bg};border-left:3px solid ${d.br}">
     <div style="font-size:.68rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted)">Ieceres dokuments (auto)</div>
-    <div style="font-size:1.05rem;font-weight:800;color:var(--navy);margin:2px 0 4px">${pr?'📋 Paskaidrojuma raksts':'🏗 Būvprojekts + būvatļauja'}</div>
+    <div style="font-size:1.05rem;font-weight:800;color:var(--navy);margin:2px 0 4px">${d.lbl}</div>
     <div style="font-size:.77rem;color:var(--text);line-height:1.45">${pathReason(dt,g,cat,sub,area)}</div>
-    <div style="font-size:.68rem;color:var(--muted);margin-top:5px">Būves grupa: <strong>${g}</strong> · funkcija: ${funcName} · platība: ${area} m²</div>
+    <div style="font-size:.68rem;color:var(--muted);margin-top:5px">${grpLine} · funkcija: ${funcName} · platība: ${area} m²</div>
   </div>`;
   const PILL={yes:['JĀ — vajadzīgs','#fee2e2','#b91c1c'],cond:['NOSACĪTI','#fef9c3','#b45309'],no:['NAV VAJADZĪGS','#dcfce7','#15803d']};
   document.getElementById('ar-svc-list').innerHTML=determineServices(type,g,cat,area).map(s=>{
@@ -2973,6 +3033,7 @@ function calcAR(){
   const floors=parseInt(document.getElementById("ar-floors").value)||1;
   const fCoef=parseFloat(document.getElementById("ar-func").value)||1;
   const cat=document.getElementById("ar-func").selectedOptions[0]?.dataset.cat||"dwelling";window._arCat=cat;
+  const apCtx=document.getElementById("ap-context");if(apCtx)apCtx.style.display=(cat==='apartment')?'block':'none';
   let muni={p:1.00,s:1.10};
   try{muni=JSON.parse(document.getElementById("ar-muni").value);}catch(e){}
   const encs=["c1","c2","c3","c4","c5"].filter(id=>document.getElementById(id).checked).length;
@@ -2984,7 +3045,8 @@ function calcAR(){
     ic.innerHTML=`<div class="ic-title">${ti.icon} ${ti.title}</div><div>${ti.what}</div><span class="ic-permit">📋 ${ti.permit}</span><span style="display:inline-flex;align-items:center;gap:3px;font-size:.72rem;color:#2563eb;margin-left:6px">⏱ ${ti.time}</span>${ti.risks?`<div class="ic-risk">⚠ ${ti.risks}</div>`:""}${ti.tip?`<div style="margin-top:4px;font-size:.71rem;color:#2563eb">💡 ${ti.tip}</div>`:""}`;
   }else{ic.classList.remove("visible");}
   if(area>0){
-    const g=grp(area,floors,cat);document.getElementById("ar-grp-badge").textContent=g+" grupa";
+    const g=grp(area,floors,cat);
+    document.getElementById("ar-grp-badge").textContent=(cat==='apartment')?"Telpu grupa":g+" grupa";
     document.getElementById("ar-grp-desc").textContent=grpExplain(area,floors,cat,g);
   }else{document.getElementById("ar-grp-badge").textContent="—";document.getElementById("ar-grp-desc").textContent="Ievadi platību un stāvu skaitu";}
   renderBkFlag(type,area,floors,cat);
@@ -3994,6 +4056,13 @@ function docTypeFor(area, g){
   const cat = window._arCat || 'dwelling';
   const sub = document.getElementById('ar-func')?.selectedOptions[0]?.dataset.sub || '';
   const type = document.getElementById('ar-type')?.value || 'jaunbuve';
+  // Telpu grupa (dzīvoklis): pārbūve/apvienošana/lietošanas maiņa → paskaidrojuma raksts;
+  // vienkāršota atjaunošana bez robežu maiņas un nesošo skaršanas → paziņojums par būvniecību ('pz').
+  if (cat==='apartment'){
+    const load = document.getElementById('ap-load')?.checked;
+    if (type==='vienk' && !load) return 'pz';
+    return 'pr';
+  }
   // Esošas ēkas vienkāršie darbi → paskaidrojuma raksts jebkurai grupai (7.²6./7.²8./7.²7.)
   if (type==='vienk' || type==='izmaiņu' || type==='lbv' || type==='lc') return 'pr';
   if (type==='nojaukšana') return 'pr';                                      // 7.²5. (I gr. — paziņojums 7.¹3.)
@@ -4288,12 +4357,17 @@ const PASSPORT_DATA = {
 
   // ── VIENKĀRŠOTA ATJAUNOŠANA ──────────────────────────────────
   vienk: {
-    permit: (area, grp) => ({
+    permit: (area, grp) => docTypeFor(area, grp) === 'pz' ? {
+      name: 'Paziņojums par būvniecību',
+      law: 'MK Nr. 529 (EBN) 7.¹ — vienkāršota atjaunošana',
+      desc: 'Telpu grupas (dzīvokļa) vai ēkas daļas vienkāršota atjaunošana BEZ nesošo konstrukciju skaršanas un BEZ telpu grupas robežu maiņas — paziņojums par būvniecību.',
+      bisType: 'Paziņojums par būvniecību'
+    } : {
       name: 'Paskaidrojuma raksts',
       law: 'MK Nr. 529 (EBN) 7.2. punkts — atjaunošana',
       desc: 'Fasādes atjaunošana, siltināšana, iekšējo telpu pārplānošana BEZ nesošo skaršanas. Nevar mainīt apjomu!',
       bisType: 'Paskaidrojuma raksts'
-    }),
+    },
     clientDocs: [
       { icon:'📄', name:'Zemesgrāmatas apliecība', note:'', req:'must' },
       { icon:'📁', name:'Esošie projekti', note:'', req:'maybe' },
@@ -5717,8 +5791,10 @@ function renderARPanels(type, area, svcCoef) {
     h.textContent='Tavs ceļš';
     if(!(area>0)){ sub.textContent=''; res.innerHTML='<div style="color:var(--muted);padding:12px">Ievadi platību iepriekšējā solī.</div>'; return; }
     const g=grp(area,floors,cat), dt=docTypeFor(area,g), pr=dt==='pr', sub2=document.getElementById('ar-func').selectedOptions[0]?.dataset.sub||'';
+    const DOCW={pr:'📋 Paskaidrojuma raksts',pz:'📨 Paziņojums par būvniecību',bp:'🏗 Būvprojekts + būvatļauja'};
+    const grpW=cat==='apartment'?'Telpu grupa (dzīvoklis) — būves grupu nenosaka':'Būves grupa: <b>'+g+'</b>';
     sub.textContent=(cur?cur.t:'')+' · '+(document.getElementById('ar-func').selectedOptions[0]?.text||'')+' · '+area+' m²';
-    let html='<div class="wiz-path"><div class="pd">Ieceres dokuments</div><div class="pn">'+(pr?'📋 Paskaidrojuma raksts':'🏗 Būvprojekts + būvatļauja')+'</div><div class="pr">'+pathReason(dt,g,cat,sub2,area)+'</div><div style="font-size:.68rem;color:var(--muted);margin-top:5px">Būves grupa: <b>'+g+'</b></div></div>';
+    let html='<div class="wiz-path"><div class="pd">Ieceres dokuments</div><div class="pn">'+(DOCW[dt]||DOCW.bp)+'</div><div class="pr">'+pathReason(dt,g,cat,sub2,area)+'</div><div style="font-size:.68rem;color:var(--muted);margin-top:5px">'+grpW+'</div></div>';
     const PILL={yes:['JĀ — vajadzīgs','#fee2e2','#b91c1c'],cond:['NOSACĪTI','#fef9c3','#b45309'],no:['NAV VAJADZĪGS','#dcfce7','#15803d']};
     const svc=determineServices(type,g,cat,area);
     let muniS=1.10; try{ muniS=JSON.parse(document.getElementById('ar-muni').value).s||1.10; }catch(e){}
