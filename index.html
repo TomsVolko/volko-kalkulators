@@ -1071,6 +1071,85 @@ body { font-family:-apple-system,'Segoe UI',sans-serif; background:var(--bg); co
 <div id="tab-ar" class="tab-panel active">
 <div class="mw">
 
+<!-- ══ SOLI-PA-SOLIM VEDNIS (virsslānis pār verificēto dzinēju — vada grp/docTypeFor/pathReason/determineServices) ══ -->
+<style>
+body.wiz #ar-wizard ~ *{display:none!important}
+body:not(.wiz) #ar-wizard{display:none}
+.wiz-wrap{max-width:780px;margin:0 auto}
+.wiz-top{display:flex;gap:8px;align-items:center;font-size:.74rem;color:var(--muted);margin-bottom:16px}
+.wiz-dot{width:9px;height:9px;border-radius:50%;background:var(--border)}
+.wiz-dot.on{background:var(--gold)}
+.wiz-dot.done{background:var(--navy)}
+.wiz-step{display:none}
+.wiz-step.active{display:block}
+.wiz-h{font-size:1.3rem;font-weight:800;color:var(--navy);margin:0 0 4px}
+.wiz-sub{font-size:.84rem;color:var(--muted);margin-bottom:18px}
+.wiz-opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:620px){.wiz-opts{grid-template-columns:1fr}}
+.wiz-opt{display:flex;gap:12px;align-items:flex-start;text-align:left;border:2px solid var(--border);background:#fff;border-radius:12px;padding:15px;cursor:pointer;font-family:inherit;transition:all .12s}
+.wiz-opt:hover{border-color:var(--gold);background:#fffdf6}
+.wiz-opt .ic{font-size:1.4rem;line-height:1}
+.wiz-opt .t{font-size:.93rem;font-weight:800;color:var(--navy);margin-bottom:2px}
+.wiz-opt .d{font-size:.75rem;color:var(--muted);line-height:1.4}
+.wiz-nav{display:flex;justify-content:space-between;margin-top:22px;gap:10px}
+.wiz-btn{padding:11px 20px;border-radius:9px;font-size:.85rem;font-weight:700;font-family:inherit;cursor:pointer;border:1px solid var(--border);background:#fff;color:var(--navy)}
+.wiz-btn:hover{border-color:var(--gold)}
+.wiz-btn.primary{background:var(--navy);color:var(--gold);border-color:var(--navy)}
+.wiz-field{margin-bottom:15px}
+.wiz-field>label{display:block;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:6px}
+.wiz-field select,.wiz-field input{width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:9px;font-size:.9rem;font-family:inherit;background:#fff;color:var(--text)}
+.wiz-link{background:none;border:none;color:#2563eb;font-size:.78rem;cursor:pointer;font-family:inherit}
+.wiz-rchk{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.wiz-rchk label{display:flex;gap:6px;align-items:center;font-size:.8rem;border:1px solid var(--border);border-radius:8px;padding:7px 10px;cursor:pointer;background:#fff}
+.wiz-path{border:0.5px solid var(--border);border-left:4px solid var(--gold);border-radius:0 10px 10px 0;padding:14px 16px;background:#fffbef;margin-bottom:18px}
+.wiz-path .pd{font-size:.68rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--muted)}
+.wiz-path .pn{font-size:1.15rem;font-weight:800;color:var(--navy);margin:3px 0 5px}
+.wiz-path .pr{font-size:.8rem;color:var(--text);line-height:1.5}
+.wiz-sec-h{font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin:18px 0 6px}
+.wiz-srow{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px dashed #e2e8f0}
+.wiz-pill{flex:0 0 auto;font-size:.6rem;font-weight:800;padding:4px 8px;border-radius:20px;min-width:108px;text-align:center;white-space:nowrap}
+.wiz-seqitem{display:flex;gap:12px;padding:10px 0;border-bottom:1px dashed #e2e8f0}
+.wiz-seqnum{flex:0 0 26px;width:26px;height:26px;border-radius:50%;background:var(--navy);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:800}
+.wiz-co{display:flex;align-items:center;justify-content:space-between;border-top:2px solid var(--navy);margin-top:14px;padding-top:13px}
+.wiz-co .v{font-size:1.5rem;font-weight:800;color:var(--navy)}
+</style>
+<div id="ar-wizard" class="wiz-wrap">
+  <div class="wiz-top">
+    <span class="wiz-dot on" id="wd0"></span><span class="wiz-dot" id="wd1"></span><span class="wiz-dot" id="wd2"></span>
+    <span id="wiz-progtext" style="margin-left:4px">Solis 1 no 3</span>
+    <button class="wiz-link" style="margin-left:auto" onclick="wizExit()">Detalizētais skats →</button>
+  </div>
+
+  <div class="wiz-step active" id="wiz-s1">
+    <div class="wiz-h">Kāda ir situācija?</div>
+    <div class="wiz-sub">Izvēlies, kas jādara — projekta veidu un ceļu noteiksim paši.</div>
+    <div class="wiz-opts" id="wiz-sit"></div>
+  </div>
+
+  <div class="wiz-step" id="wiz-s2">
+    <div class="wiz-h">Par ēku</div>
+    <div class="wiz-sub" id="wiz-s2sub">Daži dati, lai noteiktu būves grupu un ceļu.</div>
+    <div class="wiz-field"><label>Ēkas funkcija</label><select id="wiz-func" onchange="wizSync()"></select></div>
+    <div class="wiz-field"><label>Kopējā platība (m²)</label><input type="number" id="wiz-area" min="1" placeholder="piem. 120" oninput="wizSync()"><div style="font-size:.7rem;color:var(--muted);margin-top:4px">Visu stāvu platība kopā (pēc tās 200 / 1000 / 2000 m² sliekšņi).</div></div>
+    <div class="wiz-field"><label>Stāvu skaits</label><select id="wiz-floors" onchange="wizSync()"><option value="1">1 stāvs</option><option value="2">2 stāvi</option><option value="3">3 stāvi</option><option value="4">4 stāvi</option><option value="5">5 stāvi</option><option value="6">6 stāvi</option><option value="7">7+ stāvi</option></select></div>
+    <div class="wiz-field" id="wiz-risk-wrap" style="display:none"><label>Riska faktori (legalizācijai)</label>
+      <div class="wiz-rchk">
+        <label><input type="checkbox" id="wiz-c1"> Kultūras piemineklis / NKMP</label>
+        <label><input type="checkbox" id="wiz-c3"> Kopīpašums</label>
+        <label><input type="checkbox" id="wiz-c4"> Robeža tuvāk par 4 m</label>
+      </div>
+    </div>
+    <div class="wiz-nav"><button class="wiz-btn" onclick="wizGo(1)">← Atpakaļ</button><button class="wiz-btn primary" onclick="wizGo(3)">Tālāk →</button></div>
+  </div>
+
+  <div class="wiz-step" id="wiz-s3">
+    <div class="wiz-h" id="wiz-s3h">Tavs ceļš</div>
+    <div class="wiz-sub" id="wiz-s3sub"></div>
+    <div id="wiz-result"></div>
+    <div class="wiz-nav"><button class="wiz-btn" onclick="wizGo(2)">← Atpakaļ</button><button class="wiz-btn" onclick="wizExit()">Pielāgot detalizēti →</button></div>
+  </div>
+</div>
+
 <!-- ══ AR APAKŠTABAS: Jaunbūve / Legalizācija ══ -->
 <style>
 .ar-subtabs{display:flex;gap:10px;margin-bottom:18px}
@@ -1095,7 +1174,10 @@ body[data-artype="jaunbuve"] #ar-jaunbuve-note{display:block}
 </div>
 <div style="display:flex;justify-content:space-between;align-items:center;margin:-6px 0 14px;gap:10px">
   <span style="font-size:.72rem;color:var(--muted)">🎯 Konsultācijas skats — ① cena (AR projekts) → ② papildpakalpojumi ar ķeksīšiem → ③ process soli pa solim + kāpēc</span>
-  <button id="view-toggle" class="view-toggle" onclick="toggleView()">📖 Rādīt visu detalizēti</button>
+  <span style="display:flex;gap:8px">
+    <button class="view-toggle" onclick="wizEnter()">🧭 Vednis (soli pa solim)</button>
+    <button id="view-toggle" class="view-toggle" onclick="toggleView()">📖 Rādīt visu detalizēti</button>
+  </span>
 </div>
 <script>document.body.classList.add('consult');</script>
 
@@ -2816,35 +2898,35 @@ function determineServices(type,g,cat,area){
   const out=[];
   // ESI — juridiskā izpēte (atkarīga no riska faktoriem, ne tikai platības)
   if(enc('c1')||enc('c2')||enc('c3')||enc('c4')||type==='lc')
-    out.push({name:'ESI — Juridiskā esošās situācijas izpēte',status:'yes',why:'Atzīmēti riska faktori (NKMP / patvaļīga būvniecība / kopīpašums / robeža <4 m vai funkcijas maiņa) — pirms projekta jāpārbauda, vai iecere vispār iespējama. Bez ESI risks samaksāt par projektu, ko būvvalde noraida.'});
+    out.push({id:'esi',name:'ESI — Juridiskā esošās situācijas izpēte',status:'yes',why:'Atzīmēti riska faktori (NKMP / patvaļīga būvniecība / kopīpašums / robeža <4 m vai funkcijas maiņa) — pirms projekta jāpārbauda, vai iecere vispār iespējama. Bez ESI risks samaksāt par projektu, ko būvvalde noraida.'});
   else
-    out.push({name:'ESI — Juridiskā esošās situācijas izpēte',status:'cond',why:'Nav atzīmētu riska faktoru — vienkāršā gadījumā pietiek ar TIAN pārbaudi. Ja zona vai aizsargjoslas neskaidras, ESI tomēr ieteicama.'});
+    out.push({id:'esi',name:'ESI — Juridiskā esošās situācijas izpēte',status:'cond',why:'Nav atzīmētu riska faktoru — vienkāršā gadījumā pietiek ar TIAN pārbaudi. Ja zona vai aizsargjoslas neskaidras, ESI tomēr ieteicama.'});
   // TAA — tehniskā apsekošana
   if(type==='jaunbuve')
-    out.push({name:'TAA — Tehniskā apsekošana',status:'no',why:'Jaunbūvei nav esošu konstrukciju, ko apsekot — TAA nav nepieciešama.'});
+    out.push({id:'taa',name:'TAA — Tehniskā apsekošana',status:'no',why:'Jaunbūvei nav esošu konstrukciju, ko apsekot — TAA nav nepieciešama.'});
   else if(type==='vienk')
-    out.push({name:'TAA — Tehniskā apsekošana',status:'cond',why:'Vienkāršotā atjaunošanā nesošās konstrukcijas netiek skartas — TAA vajadzīga tikai, ja ir šaubas par ēkas tehnisko stāvokli.'});
+    out.push({id:'taa',name:'TAA — Tehniskā apsekošana',status:'cond',why:'Vienkāršotā atjaunošanā nesošās konstrukcijas netiek skartas — TAA vajadzīga tikai, ja ir šaubas par ēkas tehnisko stāvokli.'});
   else
-    out.push({name:'TAA — Tehniskā apsekošana',status:'yes',why:'Esošas ēkas pārbūvei/legalizācijai obligāta esošā stāvokļa tehniskā apsekošana (LBN 405-21, MK Nr. 384). Bez TAA būvvalde var pieprasīt nojaukšanu.'});
+    out.push({id:'taa',name:'TAA — Tehniskā apsekošana',status:'yes',why:'Esošas ēkas pārbūvei/legalizācijai obligāta esošā stāvokļa tehniskā apsekošana (LBN 405-21, MK Nr. 384). Bez TAA būvvalde var pieprasīt nojaukšanu.'});
   // BK — atkārtoti izmanto bkRequired (jau verificētā loģika)
   const bk=bkRequired(type,g,cat,area);
-  out.push({name:'BK — Būvkonstrukciju daļa',status:bk.f,why:bk.t});
+  out.push({id:'bk',name:'BK — Būvkonstrukciju daļa',status:bk.f,why:bk.t});
   // EPS — energoefektivitāte
   if(type==='nojaukšana')
-    out.push({name:'EPS — Energoefektivitāte',status:'no',why:'Nojaukšanai energoefektivitātes pārskats nav nepieciešams.'});
+    out.push({id:'eps',name:'EPS — Energoefektivitāte',status:'no',why:'Nojaukšanai energoefektivitātes pārskats nav nepieciešams.'});
   else if(!heated)
-    out.push({name:'EPS — Energoefektivitāte',status:'no',why:'Neapkurināmai ēkai (palīgēka, garāža, noliktava, inženierbūve) energoefektivitātes pārskats nav nepieciešams.'});
+    out.push({id:'eps',name:'EPS — Energoefektivitāte',status:'no',why:'Neapkurināmai ēkai (palīgēka, garāža, noliktava, inženierbūve) energoefektivitātes pārskats nav nepieciešams.'});
   else if(type==='vienk')
-    out.push({name:'EPS — Energoefektivitāte',status:'cond',why:'Apkurināmai ēkai vajadzīgs tikai, ja darbi skar norobežojošās konstrukcijas (siltināšana, logu maiņa).'});
+    out.push({id:'eps',name:'EPS — Energoefektivitāte',status:'cond',why:'Apkurināmai ēkai vajadzīgs tikai, ja darbi skar norobežojošās konstrukcijas (siltināšana, logu maiņa).'});
   else
-    out.push({name:'EPS — Energoefektivitāte',status:'yes',why:'Apkurināmai ēkai — apliecina enerģijas patēriņu. Nepieciešams nodošanai ekspluatācijā; dažas pašvaldības pieprasa jau legalizācijai.'});
+    out.push({id:'eps',name:'EPS — Energoefektivitāte',status:'yes',why:'Apkurināmai ēkai — apliecina enerģijas patēriņu. Nepieciešams nodošanai ekspluatācijā; dažas pašvaldības pieprasa jau legalizācijai.'});
   // TI — topogrāfija
   if(type==='jaunbuve')
-    out.push({name:'TI — Topogrāfija',status:'yes',why:'Jaunbūvei vajadzīgs aktuāls topogrāfiskais plāns (pamati, situācijas plāns).'});
+    out.push({id:'ti',name:'TI — Topogrāfija',status:'yes',why:'Jaunbūvei vajadzīgs aktuāls topogrāfiskais plāns (pamati, situācijas plāns).'});
   else if(type==='nojaukšana')
-    out.push({name:'TI — Topogrāfija',status:'cond',why:'Vajadzīga, ja jāatjauno situācijas plāns pēc nojaukšanas vai darbi skar ārtelpu.'});
+    out.push({id:'ti',name:'TI — Topogrāfija',status:'cond',why:'Vajadzīga, ja jāatjauno situācijas plāns pēc nojaukšanas vai darbi skar ārtelpu.'});
   else
-    out.push({name:'TI — Topogrāfija',status:'cond',why:'Esošai ēkai bez ārtelpas izmaiņām parasti nav vajadzīga; vajadzīga, ja topogrāfija vecāka par 3 gadiem vai projekts skar ārējo teritoriju.'});
+    out.push({id:'ti',name:'TI — Topogrāfija',status:'cond',why:'Esošai ēkai bez ārtelpas izmaiņām parasti nav vajadzīga; vajadzīga, ja topogrāfija vecāka par 3 gadiem vai projekts skar ārējo teritoriju.'});
   return out;
 }
 function renderSvcAuto(type,area,floors,cat){
@@ -5524,6 +5606,100 @@ function renderARPanels(type, area, svcCoef) {
     animate();
 })();
 
+</script>
+<script>
+// ══ SOLI-PA-SOLIM VEDNIS — virsslānis pār verificēto dzinēju (grp/docTypeFor/pathReason/determineServices) ══
+(function(){
+  const SIT=[
+    {k:'jaunbuve', ic:'🏗', t:'Būvēšu jaunu ēku', d:'Jauna būve uz zemes gabala.', mode:'jaunbuve', type:'jaunbuve'},
+    {k:'parbuve', ic:'🔨', t:'Pārbūvēšu / paplašināšu', d:'Mainu esošu ēku — apjomu, plānojumu, nesošās.', mode:'legalizacija', type:'rekonstrukcija'},
+    {k:'atjauno', ic:'🎨', t:'Atjaunošu (remonts, fasāde)', d:'Neskaru nesošās, nemainu apjomu.', mode:'legalizacija', type:'vienk'},
+    {k:'legaliz', ic:'⚖️', t:'Uzbūvēts BEZ atļaujas', d:'Jālegalizē patvaļīga būvniecība.', mode:'legalizacija', type:'rekonstrukcija', c2:true},
+    {k:'funkcija', ic:'🔄', t:'Mainīšu lietošanas veidu', d:'Piem. saimniecības → dzīvojamā, bez pārbūves.', mode:'legalizacija', type:'lc'},
+    {k:'nojauk', ic:'🏚', t:'Nojaukšu ēku', d:'Reģistrētas ēkas nojaukšana.', mode:'legalizacija', type:'nojaukšana'},
+    {k:'pagarin', ic:'📋', t:'Pagarināšu būvatļauju', d:'Ir veca būvatļauja, gribu turpināt.', special:'pagarin'}
+  ];
+  let cur=null;
+  window.wizEnter=function(){ document.body.classList.add('wiz'); wizGo(1); };
+  window.wizExit=function(){ document.body.classList.remove('wiz'); };
+  function setDots(n){ [0,1,2].forEach(i=>{ const d=document.getElementById('wd'+i); if(d) d.className='wiz-dot'+(i<n-1?' done':(i===n-1?' on':'')); }); const pt=document.getElementById('wiz-progtext'); if(pt) pt.textContent='Solis '+n+' no 3'; }
+  window.wizGo=function(n){ if(n===3) wizRender3(); ['1','2','3'].forEach(s=>{ const e=document.getElementById('wiz-s'+s); if(e) e.classList.toggle('active', s===String(n)); }); setDots(n); try{window.scrollTo({top:0,behavior:'smooth'});}catch(e){} };
+  function ensureType(t){ const s=document.getElementById('ar-type'); if(!s) return; if(![...s.options].some(o=>o.value===t)){ const o=document.createElement('option'); o.value=t; o.textContent=t; s.appendChild(o);} s.value=t; }
+  function wizPick(sit){
+    cur=sit;
+    document.getElementById('wiz-risk-wrap').style.display=(sit.k==='legaliz')?'block':'none';
+    document.getElementById('wiz-s2sub').textContent=sit.special==='pagarin'?'Pamatdati (pagarināšanai galvenais ir esošā būvatļauja).':'Daži dati, lai noteiktu būves grupu un ceļu.';
+    if(!sit.special){
+      if(typeof arMode==='function') arMode(sit.mode);
+      ensureType(sit.type);
+      ['c1','c3','c4','c5'].forEach(id=>{ const c=document.getElementById(id); if(c) c.checked=false; });
+      const c2=document.getElementById('c2'); if(c2) c2.checked=!!sit.c2;
+    }
+    wizGo(2);
+  }
+  window.wizSync=function(){
+    const wf=document.getElementById('wiz-func'), af=document.getElementById('ar-func'); if(wf&&af) af.selectedIndex=wf.selectedIndex;
+    const wa=document.getElementById('wiz-area'), aa=document.getElementById('ar-area'); if(wa&&aa) aa.value=wa.value;
+    const wfl=document.getElementById('wiz-floors'), afl=document.getElementById('ar-floors'); if(wfl&&afl) afl.value=wfl.value;
+    if(cur&&cur.k==='legaliz'){ ['c1','c3','c4'].forEach(id=>{ const w=document.getElementById('wiz-'+id), a=document.getElementById(id); if(w&&a) a.checked=w.checked; }); }
+    if(typeof calcAR==='function') calcAR();
+  };
+  function basePrice(area,floors,type){
+    if(typeof grpPrice==='function' && typeof isLegal==='function' && grpPrice(area,floors)==='I' && !isLegal(type)){
+      return parseInt((document.getElementById('ar-fp-val').textContent||'').replace(/[^\d]/g,''))||0;
+    }
+    return parseInt(window._lastArInt)||0;
+  }
+  function svcRowStatic(txt,bg,fg,name,why){ return '<div class="wiz-srow"><span class="wiz-pill" style="background:'+bg+';color:'+fg+'">'+txt+'</span><div style="flex:1"><div style="font-weight:700;color:var(--navy);font-size:.82rem">'+name+'</div><div style="font-size:.74rem;color:var(--text);line-height:1.45;margin-top:1px">'+why+'</div></div></div>'; }
+  function wizRender3(){
+    wizSync();
+    const res=document.getElementById('wiz-result'), h=document.getElementById('wiz-s3h'), sub=document.getElementById('wiz-s3sub');
+    if(cur&&cur.special==='pagarin'){
+      h.textContent='Būvatļaujas pagarināšana';
+      sub.textContent='Kad ir spēkā esoša būvatļauja un būvdarbi jāturpina.';
+      res.innerHTML='<div class="wiz-path"><div class="pd">Ceļš</div><div class="pn">Pagarināšana (bez jauna projekta)</div><div class="pr">Pagarina uz pieprasīto laiku, ja iesniegts (MK 529 97. p.): ① ēkas datu reģistrācija Kadastrā; ② izpildmērījuma plāns (novietne + inženiertīkli, ja attiecas); ③ būvdarbu veicēja apdrošināšanas polise. <b>Būvprojektu un BK no jauna netaisa</b> — tie jau ir.</div></div>'+
+        '<div class="wiz-sec-h">Pakalpojumi</div>'+
+        svcRowStatic('✅ NAV VAJADZĪGS','#dcfce7','#15803d','BK — Būvkonstrukciju daļa','Jau bija būvprojektā, ko iesniedza sākotnējai būvatļaujai. No jauna netaisa.')+
+        svcRowStatic('⚠️ NOSACĪTI','#fef9c3','#b45309','TAA — Tehniskā apsekošana','Formāli 97. punktā nav prasīta. Bet ja ēka stāv daļēji uzbūvēta gadiem — esošo konstrukciju apsekošana ir saprātīga; jaunais būvdarbu vadītājs to var pieprasīt.')+
+        '<div style="font-size:.72rem;color:var(--muted);margin-top:12px;border-top:1px dashed var(--border);padding-top:8px">⚠ Pirmais solis: pārbaudi būvatļaujā BIS — vai vēl iekšā <b>maksimālajā termiņā</b>. Ja pagājis → pagarināt nevar, vajag jaunu ierosinājumu.</div>';
+      return;
+    }
+    const type=document.getElementById('ar-type').value, area=parseFloat(document.getElementById('ar-area').value)||0, floors=parseInt(document.getElementById('ar-floors').value)||1, cat=window._arCat||'dwelling';
+    h.textContent='Tavs ceļš';
+    if(!(area>0)){ sub.textContent=''; res.innerHTML='<div style="color:var(--muted);padding:12px">Ievadi platību iepriekšējā solī.</div>'; return; }
+    const g=grp(area,floors,cat), dt=docTypeFor(area,g), pr=dt==='pr', sub2=document.getElementById('ar-func').selectedOptions[0]?.dataset.sub||'';
+    sub.textContent=(cur?cur.t:'')+' · '+(document.getElementById('ar-func').selectedOptions[0]?.text||'')+' · '+area+' m²';
+    let html='<div class="wiz-path"><div class="pd">Ieceres dokuments</div><div class="pn">'+(pr?'📋 Paskaidrojuma raksts':'🏗 Būvprojekts + būvatļauja')+'</div><div class="pr">'+pathReason(dt,g,cat,sub2,area)+'</div><div style="font-size:.68rem;color:var(--muted);margin-top:5px">Būves grupa: <b>'+g+'</b></div></div>';
+    const PILL={yes:['JĀ — vajadzīgs','#fee2e2','#b91c1c'],cond:['NOSACĪTI','#fef9c3','#b45309'],no:['NAV VAJADZĪGS','#dcfce7','#15803d']};
+    const svc=determineServices(type,g,cat,area);
+    let muniS=1.10; try{ muniS=JSON.parse(document.getElementById('ar-muni').value).s||1.10; }catch(e){}
+    const recs=(typeof getRecs==='function')?getRecs(type):[];
+    const priceOf=id=>{ const r=recs.find(x=>x.id===id); return (r&&r.priceFn)?r.priceFn(area,muniS):0; };
+    const base=basePrice(area,floors,type);
+    html+='<div class="wiz-sec-h">Pakalpojumi — atzīmē, ko iekļaut</div>';
+    svc.forEach(s=>{
+      const p=PILL[s.status]||PILL.cond, price=(s.status!=='no')?priceOf(s.id):0, checkable=(s.status!=='no'&&price>0), checked=(s.status==='yes');
+      html+='<div class="wiz-srow"><span class="wiz-pill" style="background:'+p[1]+';color:'+p[2]+'">'+p[0]+'</span><div style="flex:1;min-width:0"><div style="font-weight:700;color:var(--navy);font-size:.82rem">'+s.name+(price>0?' <span style="color:var(--muted);font-weight:600">· ~'+price.toLocaleString('lv-LV')+' €</span>':'')+'</div><div style="font-size:.74rem;color:var(--text);line-height:1.45;margin-top:1px">'+s.why+'</div></div>'+(checkable?'<input type="checkbox" class="wiz-svc" data-price="'+price+'" '+(checked?'checked':'')+' style="margin-top:3px">':'')+'</div>';
+    });
+    const pdata=(typeof getPassportData==='function')?getPassportData(type):null;
+    if(pdata&&pdata.steps){
+      html+='<div class="wiz-sec-h">Process soli pa solim</div>';
+      pdata.steps.forEach((st,i)=>{ html+='<div class="wiz-seqitem"><span class="wiz-seqnum">'+(i+1)+'</span><div style="flex:1"><div style="font-weight:700;color:var(--navy);font-size:.83rem">'+st.t+'</div><div style="font-size:.7rem;color:var(--muted)">'+(st.who?'Veic: '+st.who:'')+(st.dur?' · '+st.dur:'')+'</div>'+(st.why?'<div style="font-size:.73rem;color:var(--text);line-height:1.4;margin-top:2px">'+st.why+'</div>':'')+'</div></div>'; });
+    }
+    html+='<div class="wiz-co"><span style="font-size:.8rem;color:var(--muted)">Kopā klientam (orientējoši, bez PVN)</span><span class="v" id="wiz-total">—</span></div><div style="font-size:.68rem;color:var(--muted);margin-top:6px">Precīzu cenu un piedāvājumu būvē detalizētajā skatā (poga zemāk).</div>';
+    res.innerHTML=html;
+    function recalc(){ let t=base; res.querySelectorAll('.wiz-svc:checked').forEach(c=>{ t+=parseInt(c.dataset.price)||0; }); const el=document.getElementById('wiz-total'); if(el) el.textContent=(base>0?t.toLocaleString('lv-LV')+' €':'pēc paketes'); }
+    res.querySelectorAll('.wiz-svc').forEach(c=>c.addEventListener('change',recalc)); recalc();
+  }
+  function wizInit(){
+    const sc=document.getElementById('wiz-sit'); if(!sc) return;
+    sc.innerHTML=SIT.map((s,i)=>'<button class="wiz-opt" data-i="'+i+'"><span class="ic">'+s.ic+'</span><span><span class="t">'+s.t+'</span><span class="d">'+s.d+'</span></span></button>').join('');
+    sc.querySelectorAll('.wiz-opt').forEach(b=>b.addEventListener('click',()=>wizPick(SIT[+b.dataset.i])));
+    const wf=document.getElementById('wiz-func'), af=document.getElementById('ar-func'); if(wf&&af) wf.innerHTML=[...af.options].map(o=>'<option>'+o.text+'</option>').join('');
+    document.body.classList.add('wiz');
+  }
+  if(document.readyState!=='loading') wizInit(); else document.addEventListener('DOMContentLoaded',wizInit);
+})();
 </script>
 </body>
 </html>
