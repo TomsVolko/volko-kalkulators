@@ -1089,8 +1089,9 @@ body:not(.wiz) #ar-wizard{display:none}
 .wiz-opt{display:flex;gap:12px;align-items:flex-start;text-align:left;border:2px solid var(--border);background:#fff;border-radius:12px;padding:15px;cursor:pointer;font-family:inherit;transition:all .12s}
 .wiz-opt:hover{border-color:var(--gold);background:#fffdf6}
 .wiz-opt .ic{font-size:1.4rem;line-height:1}
-.wiz-opt .t{font-size:.93rem;font-weight:800;color:var(--navy);margin-bottom:2px}
-.wiz-opt .d{font-size:.75rem;color:var(--muted);line-height:1.4}
+.wiz-opt>span:last-child{display:block;flex:1}
+.wiz-opt .t{display:block;font-size:.93rem;font-weight:800;color:var(--navy);margin-bottom:3px}
+.wiz-opt .d{display:block;font-size:.75rem;color:var(--muted);line-height:1.4;font-weight:400}
 .wiz-nav{display:flex;justify-content:space-between;margin-top:22px;gap:10px}
 .wiz-btn{padding:11px 20px;border-radius:9px;font-size:.85rem;font-weight:700;font-family:inherit;cursor:pointer;border:1px solid var(--border);background:#fff;color:var(--navy)}
 .wiz-btn:hover{border-color:var(--gold)}
