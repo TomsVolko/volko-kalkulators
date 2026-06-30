@@ -5676,11 +5676,25 @@ function renderARPanels(type, area, svcCoef) {
     const recs=(typeof getRecs==='function')?getRecs(type):[];
     const priceOf=id=>{ const r=recs.find(x=>x.id===id); return (r&&r.priceFn)?r.priceFn(area,muniS):0; };
     const base=basePrice(area,floors,type);
-    html+='<div class="wiz-sec-h">Pakalpojumi — atzīmē, ko iekļaut</div>';
+    // IEKĻAUTS AR cenā
+    const incl=['Arhitektūras (AR) projekts — plāni, fasādes, griezumi, '+(pr?'paskaidrojuma raksts':'projekta tekstuālā daļa')];
+    if(type!=='jaunbuve'&&type!=='tipveida') incl.push('Esošā stāvokļa uzmērīšana');
+    incl.push('BIS iesniegums un saskaņošana ar pašvaldību');
+    html+='<div class="wiz-sec-h">Iekļauts cenā (AR projekts)</div>';
+    incl.forEach(x=>{ html+='<div class="wiz-srow"><span class="wiz-pill" style="background:#dcfce7;color:#15803d">IEKĻAUTS</span><div style="flex:1"><div style="font-weight:700;color:var(--navy);font-size:.82rem">'+x+'</div></div></div>'; });
+    html+='<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0 2px"><span style="font-size:.8rem;color:var(--muted)">AR projekts — pamatcena</span><span style="font-weight:800;color:var(--navy);font-size:1.02rem">'+(base>0?base.toLocaleString('lv-LV')+' €':'pēc paketes')+'</span></div>';
+    // PAPILDUS — atsevišķi, nav iekļauts
+    html+='<div class="wiz-sec-h">Papildus — pēc vajadzības (atsevišķi, nav iekļauts cenā)</div>';
     svc.forEach(s=>{
-      const p=PILL[s.status]||PILL.cond, price=(s.status!=='no')?priceOf(s.id):0, checkable=(s.status!=='no'&&price>0), checked=(s.status==='yes');
+      const p=PILL[s.status]||PILL.cond;
+      if(s.id==='esi'){
+        html+='<div class="wiz-srow"><span class="wiz-pill" style="background:'+p[1]+';color:'+p[2]+'">'+p[0]+'</span><div style="flex:1;min-width:0"><div style="font-weight:700;color:var(--navy);font-size:.82rem">'+s.name+' <span style="color:var(--muted);font-weight:600">· atsevišķs piedāvājums</span></div><div style="font-size:.74rem;color:var(--text);line-height:1.45;margin-top:1px">'+s.why+' Tā ir palīgopcija sarežģītiem uzdevumiem pirms projekta — cenu nosaka atsevišķi, neietilpst projekta cenā.</div></div></div>';
+        return;
+      }
+      const price=(s.status!=='no')?priceOf(s.id):0, checkable=(s.status!=='no'&&price>0), checked=(s.status==='yes');
       html+='<div class="wiz-srow"><span class="wiz-pill" style="background:'+p[1]+';color:'+p[2]+'">'+p[0]+'</span><div style="flex:1;min-width:0"><div style="font-weight:700;color:var(--navy);font-size:.82rem">'+s.name+(price>0?' <span style="color:var(--muted);font-weight:600">· ~'+price.toLocaleString('lv-LV')+' €</span>':'')+'</div><div style="font-size:.74rem;color:var(--text);line-height:1.45;margin-top:1px">'+s.why+'</div></div>'+(checkable?'<input type="checkbox" class="wiz-svc" data-price="'+price+'" '+(checked?'checked':'')+' style="margin-top:3px">':'')+'</div>';
     });
+    html+='<div class="wiz-srow"><span class="wiz-pill" style="background:#f1f5f9;color:#64748b">VĒLĀK</span><div style="flex:1"><div style="font-weight:700;color:var(--navy);font-size:.82rem">NOD — nodošana ekspluatācijā</div><div style="font-size:.74rem;color:var(--text);line-height:1.45;margin-top:1px">Atsevišķs līgums pēc būvdarbu pabeigšanas — nav iekļauts šajā cenā.</div></div></div>';
     const pdata=(typeof getPassportData==='function')?getPassportData(type):null;
     if(pdata&&pdata.steps){
       html+='<div class="wiz-sec-h">Process soli pa solim</div>';
