@@ -5442,11 +5442,22 @@ function renderARPanels(type, area, svcCoef) {
   ];
   window.wizToggleGloss=function(){ var e=document.getElementById('wiz-gloss'); if(e) e.style.display=(e.style.display==='none'?'block':'none'); };
   // ── KADASTRA TERITORIJU KODI (pirmie 4 cipari) → pašvaldība ──
-  // Stratēģija: AUG PĒC KATRA KLIENTA — katru reālo kadastru verificē (kadastrs.lv/geolatvija) un pievieno šeit.
+  // Stratēģija: AUG PĒC KATRA KLIENTA. Sākotnēji sēts no REĀLIEM Volko klientu kadastriem (kopsavilkumi, 2026-07) — nekas izgudrots.
   // Pilns 591 saraksts VZD atvērtajos datos nav tīri pieejams (tikai gigabaitu dumpi, kodi = pirms-2021 pagasti) → NEIZGUDRO kodus.
-  // Verificēts: Rīga (0100). Nezināms kods → "izpēte precizē", pēc rezultāta pievieno šeit.
+  // Nezināms kods → "izpēte precizē", pēc rezultāta pievieno šeit. tp/bv precīzo TP numuru/kontaktu papildini, kad verificēts.
   const KAD_TERIT={
-    '0100':{n:'Rīga', tp:'Rīgas teritorijas plānojums — saistošie noteikumi Nr. 103 (spēkā no 16.02.2023)', tian:'https://geolatvija.lv/geo/tapis', bv:'Rīgas pilsētas būvvalde · pad@riga.lv · 67105800'}
+    '0100':{n:'Rīga', tp:'Rīgas teritorijas plānojums — saistošie noteikumi Nr. 103 (spēkā no 16.02.2023)', tian:'https://geolatvija.lv/geo/tapis', bv:'Rīgas pilsētas būvvalde · pad@riga.lv · 67105800'},
+    '7480':{n:'Ogres novads (Ogre)', tp:'Ogres novada teritorijas plānojums — pārbaudi geolatvija', tian:'https://geolatvija.lv/geo/tapis', bv:'Ogres novada būvvalde · ogredome@ogresnovads.lv · 65071160'},
+    '7494':{n:'Ogres novads (Tīnūžu pag., bij. Ikšķile)', tp:'Ogres novada teritorijas plānojums — pārbaudi geolatvija', tian:'https://geolatvija.lv/geo/tapis', bv:'Ogres novada būvvalde · ogredome@ogresnovads.lv · 65071160'},
+    '8025':{n:'Ķekavas novads (Baldones pag.)', tp:'Ķekavas novada teritorijas plānojums — pārbaudi geolatvija', tian:'https://geolatvija.lv/geo/tapis'},
+    '8048':{n:'Mārupes novads (Babītes pag.)', tp:'Mārupes novada teritorijas plānojums — pārbaudi geolatvija', tian:'https://geolatvija.lv/geo/tapis'},
+    '8052':{n:'Ādažu novads (Carnikava / Garupe)', tp:'Carnikavas teritorijas plānojums joprojām spēkā šai teritorijai — pārbaudi geolatvija', tian:'https://geolatvija.lv/geo/tapis'},
+    '8070':{n:'Ķekavas novads (Ķekavas pag.)', tp:'Ķekavas novada teritorijas plānojums — pārbaudi geolatvija', tian:'https://geolatvija.lv/geo/tapis'},
+    '8076':{n:'Mārupes novads (Mārupe)', tp:'Mārupes novada teritorijas plānojums — pārbaudi geolatvija', tian:'https://geolatvija.lv/geo/tapis'},
+    '8080':{n:'Olaines novads (Olaines pag.)', tp:'Olaines novada teritorijas plānojums — pārbaudi geolatvija', tian:'https://geolatvija.lv/geo/tapis'},
+    '8084':{n:'Ropažu novads (Ropažu pag.)', tp:'Ropažu novada teritorijas plānojums — pārbaudi geolatvija', tian:'https://geolatvija.lv/geo/tapis'},
+    '6676':{n:'Jēkabpils novads (Jēkabpils)', tp:'Jēkabpils novada teritorijas plānojums — pārbaudi geolatvija', tian:'https://geolatvija.lv/geo/tapis'},
+    '8854':{n:'Talsu novads (Spāre)', tp:'Talsu novada teritorijas plānojums — pārbaudi geolatvija', tian:'https://geolatvija.lv/geo/tapis'}
   };
   window.wizVerifyKadastrs=function(){
     const el=document.getElementById('wiz-kadastrs'), box=document.getElementById('wiz-kad-result');
@@ -5462,7 +5473,7 @@ function renderARPanels(type, area, svcCoef) {
     const kods=raw.slice(0,4), pretty=raw.slice(0,4)+' '+raw.slice(4,7)+' '+raw.slice(7,11);
     const m=KAD_TERIT[kods];
     if(m){
-      box.innerHTML='<b style="color:#166534">✓ Derīgs kadastra numurs</b> · '+pretty+'<br>Teritorijas kods <b>'+kods+'</b> → <b>'+m.n+'</b><br><span style="color:var(--muted)">'+m.tp+'</span><br>🏛 '+m.bv+'<br>🔗 <a href="'+m.tian+'" target="_blank" style="color:#2563eb">Pārbaudi zonu un TIAN kartē (geolatvija)</a><br><span style="font-size:.68rem;color:var(--muted)">⚠ Orientējoši. Konkrēto funkcionālo zonu un noteikumus nosaka atrašanās vieta kartē — verificē izpētē.</span>';
+      box.innerHTML='<b style="color:#166534">✓ Derīgs kadastra numurs</b> · '+pretty+'<br>Teritorijas kods <b>'+kods+'</b> → <b>'+m.n+'</b><br><span style="color:var(--muted)">'+m.tp+'</span><br>'+(m.bv?'🏛 '+m.bv+'<br>':'')+'🔗 <a href="'+m.tian+'" target="_blank" style="color:#2563eb">Pārbaudi zonu un TIAN kartē (geolatvija)</a><br><span style="font-size:.68rem;color:var(--muted)">⚠ Orientējoši. Konkrēto funkcionālo zonu un noteikumus nosaka atrašanās vieta kartē — verificē izpētē.</span>';
     } else {
       box.innerHTML='<b style="color:#166534">✓ Derīgs formāts</b> · '+pretty+'<br>Teritorijas kods <b>'+kods+'</b> vēl nav tabulā. <span style="color:var(--muted)">Pašvaldību un TIAN nosaka izpēte</span> — pēc rezultāta pievienojam kodu tabulai.<br><button type="button" onclick="var k=document.getElementById(\'ar-kadastrs\'); if(k) k.value=\''+raw+'\'; if(typeof copyKadastrsPrompt===\'function\') copyKadastrsPrompt();" style="margin-top:8px;padding:7px 12px;border:1px solid var(--gold);border-radius:7px;background:#fffbf0;font-size:.74rem;font-weight:700;color:var(--navy);cursor:pointer;font-family:inherit">📋 Kopēt izpētes uzdevumu</button>';
     }
