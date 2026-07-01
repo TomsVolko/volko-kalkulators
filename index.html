@@ -5441,6 +5441,13 @@ function renderARPanels(type, area, svcCoef) {
     ['Izmaksu prognoze','Aptuvens novērtējums, cik māju uzbūvēt izmaksās.']
   ];
   window.wizToggleGloss=function(){ var e=document.getElementById('wiz-gloss'); if(e) e.style.display=(e.style.display==='none'?'block':'none'); };
+  // Vednī izvēlas līmeni → atver detalizēto konfiguratoru tajā līmenī (dzīvā cena + ķeksīši)
+  window.wizPickPkg=function(level){
+    if(typeof selectPkg==='function') selectPkg(level);
+    wizExit();
+    var el=document.getElementById('jaunbuve-paketes');
+    if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+  };
   // ── KADASTRA TERITORIJU KODI (pirmie 4 cipari) → pašvaldība ──
   // Stratēģija: AUG PĒC KATRA KLIENTA. Sākotnēji sēts no REĀLIEM Volko klientu kadastriem (kopsavilkumi, 2026-07) — nekas izgudrots.
   // Pilns 591 saraksts VZD atvērtajos datos nav tīri pieejams (tikai gigabaitu dumpi, kodi = pirms-2021 pagasti) → NEIZGUDRO kodus.
@@ -5583,10 +5590,12 @@ function renderARPanels(type, area, svcCoef) {
         html+='<div style="font-size:.62rem;font-weight:700;color:var(--muted);margin-top:9px;margin-bottom:3px">Nav šajā līmenī:</div>';
         html+=inf.nav.map(function(x){return '<div style="font-size:.68rem;color:var(--muted);line-height:1.35;padding:1px 0;display:flex;gap:6px"><span>○</span><span>'+x+'</span></div>';}).join('');
       }
+      html+='<div style="flex:1;min-height:14px"></div>';
+      html+='<button onclick="wizPickPkg(\''+lv+'\')" style="width:100%;padding:11px;border:none;border-radius:9px;background:'+(isRec?'var(--gold)':'var(--navy)')+';color:'+(isRec?'var(--navy)':'var(--gold)')+';font-size:.85rem;font-weight:800;cursor:pointer;font-family:inherit">Izvēlos šo →</button>';
       html+='</div>';
     });
     html+='</div>';
-    html+='<div style="font-size:.72rem;color:var(--muted);margin-top:14px;line-height:1.5">Cenas orientējošas, bez PVN. Visos līmeņos iekļauts arhitektūras (AR) projekts, BIS iesniegums un saskaņošana ar pašvaldību. Precīzu piedāvājumu būvē detalizētajā skatā.</div>';
+    html+='<div style="font-size:.72rem;color:var(--muted);margin-top:14px;line-height:1.5">Cenas orientējošas, bez PVN. Visos līmeņos iekļauts arhitektūras (AR) projekts, BIS iesniegums un saskaņošana ar pašvaldību. <b>Nospied "Izvēlos šo"</b> — atvērsies konfigurators, kur ar ķeksīšiem vari pielāgot saturu un cenu.</div>';
     html+='<button onclick="wizToggleGloss()" style="margin-top:12px;padding:9px 14px;border:1px solid var(--border);border-radius:8px;background:#fff;font-size:.8rem;font-weight:700;color:var(--navy);cursor:pointer;font-family:inherit">❓ Ko nozīmē apzīmējumi? — paskaidrojumi</button>';
     html+='<div id="wiz-gloss" style="display:none;margin-top:10px;border:1px solid var(--border);border-radius:10px;background:#faf9f5;padding:14px 16px">';
     html+='<div style="font-size:.7rem;color:var(--muted);margin-bottom:8px">Īss skaidrojums katram terminam — noder, ja klients jautā, kas tas ir.</div>';
