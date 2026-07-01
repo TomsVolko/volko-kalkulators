@@ -5209,6 +5209,22 @@ const PKG_GLOSS=[
   [/^Papildu sadaļa/i,'Brīva pozīcija jebkuram papildu darbam — ievadi cenu.'],
 ];
 function pkgDesc(n){ for(const g of PKG_GLOSS) if(g[0].test(n)) return g[1]; return ''; }
+// Seku loģika — kas notiek, ja pozīciju izņem vai pieliek (sarunas valodā, omītes tests)
+const PKG_CONS=[
+  [/^MBP rasējumi/i,{crit:true,why:'AR ir projekta pamats, ko iesniedz būvvaldē. Bez tā neapstiprinās un būvēt nedrīkstēs.'}],
+  [/^BK \(/i,{crit:true,why:'Konstrukciju daļa pierāda, ka māja stāvēs droši — būvvalde to prasa būvprojektam.'}],
+  [/^GP$/i,{crit:true,why:'Ģenerālplāns rāda, kur uz gabala māja stāv. Būvvalde to prasa.'}],
+  [/^ES-P|^EP-S/i,{crit:true,why:'Apkurināmai mājai obligāts — bez tā ēku nevarēs nodot ekspluatācijā (bankai nederēs).'}],
+  [/mezgl/i,{add:'Būvnieks precīzi zina, kā savieno konstrukcijas — mazāk kļūdu būvlaukumā.',rm:'Būvnieks improvizē mezglus — iespējami sadārdzinājumi un aizkavējumi.'}],
+  [/kāpn/i,{add:'Detalizētas kāpnes — uztaisa precīzi, ne pēc acumēra.',rm:'Kāpņu detaļas jārisina būvlaukumā.'}],
+  [/konstrukciju sastāv/i,{add:'Skaidrs, no kādām kārtām sastāv sienas/jumts — pareizs siltinājums un apdare.',rm:'Sastāvi jārisina būvlaukumā.'}],
+  [/^BA\b|būvniecības apjom/i,{add:'Precīza materiālu tāme — vari salīdzināt būvnieku cenas un nepārmaksāt.',rm:'Tāme paliek aptuvena.'}],
+  [/izmaksu salidz/i,{add:'Uzzini aptuveno būvniecības budžetu jau projektēšanas laikā.',rm:'Nezini būvniecības budžetu iepriekš.'}],
+  [/^(3D skice|SKICE 3D)/i,{add:'Redzēsi māju 3D pirms būvniecības — vari mainīt, kamēr viegli un lēti.',rm:'Grūtāk iztēloties gala rezultātu pirms būvniecības.'}],
+  [/^VR /i,{add:'Vari "izstaigāt" māju 360°/VR pirms būvē.',rm:'Nav VR pastaigas — tikai attēli.'}],
+  [/papildu griezum/i,{add:'Vairāk griezumu — būvniekam skaidrāki sarežģītie mezgli.',rm:'Mazāk griezumu — sarežģītās vietas mazāk detalizētas.'}]
+];
+function pkgCons(n){ for(const c of PKG_CONS) if(c[0].test(n)) return c[1]; return null; }
 // Līmeņu kopsavilkumi — kas iekļauts, kā nav, kam piemērots (no Excel bloku satura)
 const PKG_LEVEL_INFO={
   L1:{kam:'Vienkāršai mājai ar standarta risinājumiem un ierobežotu budžetu.',
@@ -5281,9 +5297,16 @@ function pkgSimpleRow(name, price, obligats, checked, key){
   const cb = obligats ? '<input type="checkbox" checked disabled>' : '<input type="checkbox" '+(checked?'checked':'')+' onchange="togglePkgItem(\''+key+'\')">';
   const cls = obligats ? 'pkg-item obligats' : 'pkg-item '+(checked?'':'unchecked');
   const d = pkgDesc(name);
+  const cons=(typeof pkgCons==='function')?pkgCons(name):null;
+  let consHtml='';
+  if(cons){
+    if(cons.crit) consHtml=(!checked&&!obligats)?'<div style="font-size:.64rem;color:#b91c1c;font-weight:700;margin-top:2px;line-height:1.35">⛔ Bez tā nevar turpināt! '+cons.why+'</div>':'<div style="font-size:.6rem;color:var(--muted);margin-top:1px">· obligāta daļa</div>';
+    else if(checked) consHtml='<div style="font-size:.63rem;color:#15803d;margin-top:2px;line-height:1.3">✅ '+cons.add+'</div>';
+    else consHtml='<div style="font-size:.63rem;color:#b45309;margin-top:2px;line-height:1.3">⚠️ Bez tā: '+cons.rm+'</div>';
+  }
   return '<label class="'+cls+'" style="cursor:'+(obligats?'default':'pointer')+'">'+cb
     +'<div style="flex:1;display:flex;justify-content:space-between;gap:8px;align-items:baseline">'
-    +'<span><span class="pi-name">'+name+'</span>'+(d?'<div style="font-size:.65rem;color:var(--muted);margin-top:1px;line-height:1.3">'+d+'</div>':'')+'</span>'
+    +'<span><span class="pi-name">'+name+'</span>'+(d?'<div style="font-size:.65rem;color:var(--muted);margin-top:1px;line-height:1.3">'+d+'</div>':'')+consHtml+'</span>'
     +'<span style="white-space:nowrap;font-size:.74rem;color:var(--navy);font-weight:600">'+price+' €</span>'
     +'</div></label>';
 }
