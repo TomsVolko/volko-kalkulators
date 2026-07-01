@@ -1185,10 +1185,14 @@ body[data-artype="jaunbuve"] #ar-jaunbuve-note{display:block}
   <button class="ar-subtab active" onclick="arMode('jaunbuve',this)">🏗 Jaunbūve</button>
   <button class="ar-subtab" onclick="arMode('legalizacija',this)">⚖️ Legalizācija / esoša ēka</button>
 </div>
-<div style="display:flex;gap:8px;align-items:center;margin:-8px 0 16px;flex-wrap:wrap">
+<div style="display:flex;gap:8px;align-items:center;margin:-8px 0 8px;flex-wrap:wrap">
   <span style="font-size:.7rem;color:var(--muted);font-weight:700">Atsevišķi pārdodami moduļi:</span>
+  <button onclick="var e=document.getElementById('esi-info');e.style.display=e.style.display==='none'?'block':'none';" style="padding:8px 13px;border:1px solid var(--border);border-radius:8px;background:#fff;font-size:.8rem;font-weight:700;color:var(--navy);cursor:pointer;font-family:inherit">⚖️ ESI — Juridiskā izpēte</button>
   <button onclick="switchTab('bk')" style="padding:8px 13px;border:1px solid var(--border);border-radius:8px;background:#fff;font-size:.8rem;font-weight:700;color:var(--navy);cursor:pointer;font-family:inherit">⚙️ BK — Būvkonstrukcijas</button>
   <button onclick="switchTab('nod')" style="padding:8px 13px;border:1px solid var(--border);border-radius:8px;background:#fff;font-size:.8rem;font-weight:700;color:var(--navy);cursor:pointer;font-family:inherit">🏁 NOD — Nodošana</button>
+</div>
+<div id="esi-info" style="display:none;margin:0 0 16px;border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;background:#fffbef;padding:11px 14px;font-size:.76rem;color:var(--text);line-height:1.5">
+  <strong>ESI — Juridiskā esošās situācijas izpēte · ~950 €.</strong> Pārbauda, vai iecere vispār iespējama (zona / TIAN, aizsargjoslas, servitūti, kopīpašums, funkcijas maiņa) <strong>pirms</strong> naudas ieguldīšanas projektā. Ieteicama sarežģītiem gadījumiem un legalizācijai — bez tās risks samaksāt par projektu, ko būvvalde noraida. Vienkāršos gadījumos pietiek ar TIAN pārbaudi.
 </div>
 <div style="display:flex;justify-content:space-between;align-items:center;margin:-6px 0 14px;gap:10px">
   <span style="font-size:.72rem;color:var(--muted)">🎯 Konsultācijas skats — ① cena (AR projekts) → ② papildpakalpojumi ar ķeksīšiem → ③ process soli pa solim + kāpēc</span>
