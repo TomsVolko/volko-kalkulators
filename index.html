@@ -1113,7 +1113,10 @@ body:not(.wiz) #ar-wizard{display:none}
   <div class="wiz-top">
     <span class="wiz-dot on" id="wd0"></span><span class="wiz-dot" id="wd1"></span><span class="wiz-dot" id="wd2"></span>
     <span id="wiz-progtext" style="margin-left:4px">Solis 1 no 3</span>
-    <button class="wiz-link" style="margin-left:auto" onclick="wizExit()">Detalizētais skats →</button>
+    <span style="margin-left:auto;display:flex;gap:14px;align-items:center">
+      <button class="wiz-link" onclick="wizEnter()">🏠 Sākums</button>
+      <button class="wiz-link" onclick="wizExit()">Detalizētais skats →</button>
+    </span>
   </div>
 
   <div class="wiz-step active" id="wiz-s1">
@@ -5415,6 +5418,22 @@ function renderARPanels(type, area, svcCoef) {
     {g:'esosa', ic:'🏠', t:'Esoša ēka', d:'Darbs ar jau esošu ēku — pārbūve/paplašināšana, atjaunošana, lietošanas maiņa, legalizācija, nojaukšana vai aktīva būvatļauja.'}
   ];
   const GRPSUB={jauna:'Kas tieši būvējams (ēkas datus precizēsim nākamajā solī).', esosa:'Kas jādara ar esošo ēku.'};
+  const GLOSS=[
+    ['AR — Arhitektūras daļa','Mājas izskats un plānojums: stāvu plāni, fasādes (skats no ārpuses), telpu izvietojums.'],
+    ['BK — Būvkonstrukciju daļa','Mājas "skelets": pamati, nesošās sienas, pārsegumi, jumta konstrukcija — aprēķina, lai māja stāv droši.'],
+    ['ĢP — Ģenerālplāns','Zemesgabala plāns: kur uz gabala stāv māja, piebraucamais ceļš, žogs, labiekārtojums.'],
+    ['Skice','Sākotnējais mājas priekšlikums (2D zīmējums + 3D attēls) — lai redz, kā māja izskatīsies, pirms taisa pilnu projektu.'],
+    ['VR tūre','Virtuāla pastaiga pa māju 3D vidē / brillēs vēl pirms būvniecības.'],
+    ['Griezums','Zīmējums, kas māju "pārgriež" — redz augstumus, stāvus, jumta slīpumu.'],
+    ['Mezgls','Detalizēts zīmējums, kā divas konstrukcijas savienojas (piem. jumts + siena). Kore, dzega, cokols = konkrētas jumta/sienas vietas.'],
+    ['Energoaprēķins (ES-P)','Aprēķins, cik enerģijas māja patērē apkurei. "Gandrīz nulles" = augstākā energoefektivitātes prasība jaunbūvēm.'],
+    ['BK LOD200 / LOD300','Cik detalizēts ir konstrukciju 3D modelis. LOD200 = vispārīgs; LOD300 = ražošanas precizitāte (var dot tieši rūpnīcai/būvniekam).'],
+    ['Konstrukciju sastāvi','No kādām kārtām sastāv siena / jumts / grīda (apdare, siltinājums, nesošā daļa).'],
+    ['Būvapjomi (BA)','Precīzi izmērīti materiālu daudzumi — pēc tiem būvnieks uztaisa precīzu tāmi (cenu).'],
+    ['Korekciju kārtas','Cik reizes vari palūgt izmaiņas projektā (piem. mainīt plānojumu).'],
+    ['Izmaksu prognoze','Aptuvens novērtējums, cik māju uzbūvēt izmaksās.']
+  ];
+  window.wizToggleGloss=function(){ var e=document.getElementById('wiz-gloss'); if(e) e.style.display=(e.style.display==='none'?'block':'none'); };
   let cur=null, curGroup=null;
   window.wizEnter=function(){ document.body.classList.add('wiz'); wizShowGroups(); wizGo(1); };
   window.wizExit=function(){ document.body.classList.remove('wiz'); };
@@ -5518,6 +5537,11 @@ function renderARPanels(type, area, svcCoef) {
     });
     html+='</div>';
     html+='<div style="font-size:.72rem;color:var(--muted);margin-top:14px;line-height:1.5">Cenas orientējošas, bez PVN. Visos līmeņos iekļauts arhitektūras (AR) projekts, BIS iesniegums un saskaņošana ar pašvaldību. Precīzu piedāvājumu būvē detalizētajā skatā.</div>';
+    html+='<button onclick="wizToggleGloss()" style="margin-top:12px;padding:9px 14px;border:1px solid var(--border);border-radius:8px;background:#fff;font-size:.8rem;font-weight:700;color:var(--navy);cursor:pointer;font-family:inherit">❓ Ko nozīmē apzīmējumi? — paskaidrojumi</button>';
+    html+='<div id="wiz-gloss" style="display:none;margin-top:10px;border:1px solid var(--border);border-radius:10px;background:#faf9f5;padding:14px 16px">';
+    html+='<div style="font-size:.7rem;color:var(--muted);margin-bottom:8px">Īss skaidrojums katram terminam — noder, ja klients jautā, kas tas ir.</div>';
+    html+=GLOSS.map(function(g){return '<div style="font-size:.75rem;color:var(--text);line-height:1.5;padding:5px 0;border-bottom:1px dashed #e8e5dc"><b style="color:var(--navy)">'+g[0]+'</b> — '+g[1]+'</div>';}).join('');
+    html+='</div>';
     res.innerHTML=html;
   }
   function wizRender3(){
