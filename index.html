@@ -5488,6 +5488,34 @@ function renderARPanels(type, area, svcCoef) {
     ['Izpilddokumentācijas sakārtošana','Atzinumi (inženiertīkli, VUGD u.c. — ja attiecas)','BIS — pieprasījums pieņemšanai ekspluatācijā','Pašvaldības/komisijas apsekošana','Akts par pieņemšanu ekspluatācijā'].forEach((s,i)=>{ html+=seqRow(i+1,s); });
     res.innerHTML=html;
   }
+  function wizRenderJaunbuve(h,sub,res,area){
+    h.textContent='Cena — izvēlies līmeni';
+    sub.textContent=(cur?cur.t:'')+' · '+(document.getElementById('ar-func').selectedOptions[0]?.text||'')+' · '+area+' m²';
+    if(typeof pkgFullPrice!=='function'||typeof PKG_NAMES==='undefined'||typeof PKG_LEVEL_INFO==='undefined'){
+      res.innerHTML='<div style="color:var(--muted);padding:12px">Pakešu dati nav pieejami — atver detalizēto skatu.</div>'; return;
+    }
+    const levels=['L1','L2','L3'], rec='L2';
+    let html='<div class="paketes-full-grid">';
+    levels.forEach(function(lv){
+      var price=pkgFullPrice(lv,area), inf=PKG_LEVEL_INFO[lv]||{kam:'',inc:[],nav:[]}, isRec=(lv===rec);
+      html+='<div style="border:2px solid '+(isRec?'var(--gold)':'var(--border)')+';border-radius:12px;padding:16px 15px;background:'+(isRec?'#fffdf5':'#fff')+';display:flex;flex-direction:column">';
+      if(isRec) html+='<div style="align-self:flex-start;font-size:.58rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:#8b6200;background:#fdf0c8;padding:3px 9px;border-radius:20px;margin-bottom:8px">⭐ Populārākais</div>';
+      html+='<div style="font-size:.92rem;font-weight:800;color:var(--navy)">'+PKG_NAMES[lv]+'</div>';
+      html+='<div style="font-size:1.7rem;font-weight:800;color:var(--navy);margin:6px 0 0">'+price.toLocaleString('lv-LV')+' €</div>';
+      html+='<div style="font-size:.6rem;color:var(--muted);margin-bottom:9px">bez PVN</div>';
+      html+='<div style="font-size:.75rem;color:var(--text);line-height:1.45;margin-bottom:9px;min-height:56px">'+inf.kam+'</div>';
+      html+='<div style="font-size:.63rem;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);border-top:1px dashed var(--border);padding-top:9px;margin-bottom:5px">Kas iekšā</div>';
+      html+=inf.inc.map(function(x){return '<div style="font-size:.72rem;color:var(--text);line-height:1.4;padding:2px 0;display:flex;gap:6px"><span style="color:#15803d;font-weight:800">✓</span><span>'+x+'</span></div>';}).join('');
+      if(inf.nav&&inf.nav.length){
+        html+='<div style="font-size:.62rem;font-weight:700;color:var(--muted);margin-top:9px;margin-bottom:3px">Nav šajā līmenī:</div>';
+        html+=inf.nav.map(function(x){return '<div style="font-size:.68rem;color:var(--muted);line-height:1.35;padding:1px 0;display:flex;gap:6px"><span>○</span><span>'+x+'</span></div>';}).join('');
+      }
+      html+='</div>';
+    });
+    html+='</div>';
+    html+='<div style="font-size:.72rem;color:var(--muted);margin-top:14px;line-height:1.5">Cenas orientējošas, bez PVN. Visos līmeņos iekļauts arhitektūras (AR) projekts, BIS iesniegums un saskaņošana ar pašvaldību. Precīzu piedāvājumu būvē detalizētajā skatā.</div>';
+    res.innerHTML=html;
+  }
   function wizRender3(){
     wizSync();
     const res=document.getElementById('wiz-result'), h=document.getElementById('wiz-s3h'), sub=document.getElementById('wiz-s3sub');
@@ -5500,6 +5528,7 @@ function renderARPanels(type, area, svcCoef) {
     const type=document.getElementById('ar-type').value, area=parseFloat(document.getElementById('ar-area').value)||0, floors=parseInt(document.getElementById('ar-floors').value)||1, cat=window._arCat||'dwelling';
     h.textContent='Tavs ceļš';
     if(!(area>0)){ sub.textContent=''; res.innerHTML='<div style="color:var(--muted);padding:12px">Ievadi platību iepriekšējā solī.</div>'; return; }
+    if(type==='jaunbuve'){ wizRenderJaunbuve(h,sub,res,area); return; }
     const g=grp(area,floors,cat), dt=docTypeFor(area,g), pr=dt==='pr', sub2=document.getElementById('ar-func').selectedOptions[0]?.dataset.sub||'';
     const DOCW={pr:'📋 Paskaidrojuma raksts',pz:'📨 Paziņojums par būvniecību',bp:'🏗 Būvprojekts + būvatļauja'};
     const grpW=cat==='apartment'?'Telpu grupa (dzīvoklis) — būves grupu nenosaka':'Būves grupa: <b>'+g+'</b>';
