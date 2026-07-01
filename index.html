@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Volko Engineering — Projektu kalkulators</title>
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<!-- three.js noņemts — 3D mājas modelis vairs netiek izmantots -->
+
 <style>
 :root{--navy:#1a2b3c;--gold:#c8a84b;--bg:#f4f5f0;--card:#fff;--text:#1a2b3c;--muted:#6b7280;--border:#e2e8f0;--radius:10px;--red:#dc2626;--green:#059669}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -1024,7 +1025,6 @@ body { font-family:-apple-system,'Segoe UI',sans-serif; background:var(--bg); co
 <body>
 
 <div id="lock">
-<canvas id="bg-canvas" style="position:absolute;inset:0;width:100%;height:100%;z-index:0;"></canvas>
 <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;">
   <div style="background:rgba(15,25,38,0.75);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(200,168,75,0.25);border-radius:18px;padding:40px 44px;box-shadow:0 24px 80px rgba(0,0,0,0.6);text-align:center;max-width:340px;width:100%;">
     <div class="lk-logo" style="justify-content:center">
@@ -1042,7 +1042,6 @@ body { font-family:-apple-system,'Segoe UI',sans-serif; background:var(--bg); co
     <input type="password" id="pi" placeholder="Parole" autocomplete="off">
     <button onclick="auth()" style="margin-top:4px">Ienākt</button>
     <div class="lerr" id="pe"></div>
-    <div style="margin-top:16px;font-size:.65rem;color:rgba(255,255,255,.2);letter-spacing:1px;">Velc 3D modeli ar peli · Zoom ar ritenīti</div>
   </div>
 </div>
 </div>
@@ -1062,11 +1061,7 @@ body { font-family:-apple-system,'Segoe UI',sans-serif; background:var(--bg); co
 <div class="h-sub">Projektu kalkulators</div>
 </header>
 
-<div class="tabs">
-<button class="tab-btn active" onclick="switchTab('ar',this)">🏗 AR — Arhitektūra</button>
-<button class="tab-btn" onclick="switchTab('bk',this)">⚙️ BK — Būvkonstrukcijas</button>
-<button class="tab-btn" onclick="switchTab('nod',this)">🏁 NOD — Nodošana</button>
-</div>
+<!-- Augšējā AR/BK/NOD josla noņemta — AR (vednis) ir galvenā ieeja; BK un NOD ir atsevišķi pārdodami moduļi, pieejami no AR skata (skat. "Atsevišķi pārdodami moduļi") -->
 
 <div id="tab-ar" class="tab-panel active">
 <div class="mw">
@@ -1122,9 +1117,19 @@ body:not(.wiz) #ar-wizard{display:none}
   </div>
 
   <div class="wiz-step active" id="wiz-s1">
-    <div class="wiz-h">Kāda ir situācija?</div>
-    <div class="wiz-sub">Izvēlies, kas jādara — projekta veidu un ceļu noteiksim paši.</div>
-    <div class="wiz-opts" id="wiz-sit"></div>
+    <!-- Fāze A: Jauna būve / Esoša ēka -->
+    <div id="wiz-grp-phase">
+      <div class="wiz-h">Ar ko sākam?</div>
+      <div class="wiz-sub">Jauna būve uz tukšas zemes — vai darbs ar jau esošu ēku.</div>
+      <div class="wiz-opts" id="wiz-grp"></div>
+    </div>
+    <!-- Fāze B: konkrētā situācija izvēlētajā grupā -->
+    <div id="wiz-sit-phase" style="display:none">
+      <div class="wiz-h">Kas tieši jādara?</div>
+      <div class="wiz-sub" id="wiz-sit-sub"></div>
+      <div class="wiz-opts" id="wiz-sit"></div>
+      <div class="wiz-nav"><button class="wiz-btn" onclick="wizGrpBack()">← Atpakaļ</button><span></span></div>
+    </div>
   </div>
 
   <div class="wiz-step" id="wiz-s2">
@@ -1179,6 +1184,11 @@ body[data-artype="jaunbuve"] #ar-jaunbuve-note{display:block}
 <div class="ar-subtabs">
   <button class="ar-subtab active" onclick="arMode('jaunbuve',this)">🏗 Jaunbūve</button>
   <button class="ar-subtab" onclick="arMode('legalizacija',this)">⚖️ Legalizācija / esoša ēka</button>
+</div>
+<div style="display:flex;gap:8px;align-items:center;margin:-8px 0 16px;flex-wrap:wrap">
+  <span style="font-size:.7rem;color:var(--muted);font-weight:700">Atsevišķi pārdodami moduļi:</span>
+  <button onclick="switchTab('bk')" style="padding:8px 13px;border:1px solid var(--border);border-radius:8px;background:#fff;font-size:.8rem;font-weight:700;color:var(--navy);cursor:pointer;font-family:inherit">⚙️ BK — Būvkonstrukcijas</button>
+  <button onclick="switchTab('nod')" style="padding:8px 13px;border:1px solid var(--border);border-radius:8px;background:#fff;font-size:.8rem;font-weight:700;color:var(--navy);cursor:pointer;font-family:inherit">🏁 NOD — Nodošana</button>
 </div>
 <div style="display:flex;justify-content:space-between;align-items:center;margin:-6px 0 14px;gap:10px">
   <span style="font-size:.72rem;color:var(--muted)">🎯 Konsultācijas skats — ① cena (AR projekts) → ② papildpakalpojumi ar ķeksīšiem → ③ process soli pa solim + kāpēc</span>
@@ -1701,6 +1711,7 @@ body[data-artype="jaunbuve"] #ar-jaunbuve-note{display:block}
 
 <div id="tab-bk" class="tab-panel">
 <div class="mw">
+<button onclick="switchTab('ar')" style="margin:2px 0 16px;padding:8px 14px;border:1px solid var(--border);border-radius:8px;background:#fff;font-size:.82rem;font-weight:700;color:var(--navy);cursor:pointer;font-family:inherit">← Atpakaļ uz AR</button>
 
 
   <style>
@@ -1992,6 +2003,7 @@ body[data-artype="jaunbuve"] #ar-jaunbuve-note{display:block}
 
 <div id="tab-nod" class="tab-panel">
 <div class="mw">
+<button onclick="switchTab('ar')" style="margin:2px 0 16px;padding:8px 14px;border:1px solid var(--border);border-radius:8px;background:#fff;font-size:.82rem;font-weight:700;color:var(--navy);cursor:pointer;font-family:inherit">← Atpakaļ uz AR</button>
 
   <!-- TOP INFO BANNER -->
   <div class="nod-banner">
@@ -2783,14 +2795,15 @@ function auth(){
 }
 document.getElementById("pi").addEventListener("keydown",e=>{if(e.key==="Enter")auth();document.getElementById("pe").textContent="";});
 if(sessionStorage.getItem("va")){document.getElementById("lock").style.display="none";document.getElementById("app").style.display="block";}
-function switchTab(id,btn){document.querySelectorAll(".tab-panel").forEach(t=>t.classList.remove("active"));document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));document.getElementById("tab-"+id).classList.add("active");btn.classList.add("active");
+function switchTab(id,btn){document.querySelectorAll(".tab-panel").forEach(t=>t.classList.remove("active"));document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));document.getElementById("tab-"+id).classList.add("active");if(btn)btn.classList.add("active");try{window.scrollTo({top:0,behavior:'smooth'});}catch(e){}
   // Atgriežoties uz AR — ja BK kalkulatorā mainījusies pozīciju summa, pārrēķina (BK cena atjauninas)
   if(id==='ar' && document.getElementById('ar-type') && document.getElementById('ar-type').value){
     const bkT=(typeof bkItems!=='undefined')?bkItems.reduce((s,it)=>s+(it.cena||0),0):0;
     if(bkT!==window._lastBkTotalSeen && typeof calcAR==='function') calcAR();
   }
 }
-function gotoBkTab(){ const b=[...document.querySelectorAll('.tab-btn')].find(x=>/BK/.test(x.textContent)); if(b) b.click(); }
+function gotoBkTab(){ switchTab('bk'); }
+function gotoNodTab(){ switchTab('nod'); }
 
 // AR apakštaba (Toms 2026-06-10): Jaunbūve = TIKAI jaunbūve (+tipveida). Esoša ēka/legalizācija = konkrētie projektu veidi,
 // ar kuriem legalizē (izmaiņu/pārbūve/atjaunošana/nojaukšana). Teorētiskie la/lbv/lbp/lc tipi izņemti no izvēlnes
@@ -5377,332 +5390,29 @@ function renderARPanels(type, area, svcCoef) {
     }
 }
 
-// ══════════════════════════════════════════════════════════════
-// THREE.JS — 3D MĀJAS MODELIS (LOGIN EKRĀNS)
-// ══════════════════════════════════════════════════════════════
-(function init3D() {
-    if (typeof THREE === 'undefined') return;
-    const canvas = document.getElementById('bg-canvas');
-    if (!canvas) return;
-
-    // Renderer
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
-
-    // Scene
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0d1a27);
-    scene.fog = new THREE.FogExp2(0x0d1a27, 0.018);
-
-    // Camera
-    const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 200);
-    camera.position.set(10, 6, 14);
-    camera.lookAt(0, 2, 0);
-
-    // ── LIGHTS ─────────────────────────────────────────────────
-    const ambient = new THREE.AmbientLight(0x334466, 0.8);
-    scene.add(ambient);
-
-    const sunLight = new THREE.DirectionalLight(0xfff4e0, 2.5);
-    sunLight.position.set(15, 25, 10);
-    sunLight.castShadow = true;
-    sunLight.shadow.mapSize.width = 2048;
-    sunLight.shadow.mapSize.height = 2048;
-    sunLight.shadow.camera.near = 0.5;
-    sunLight.shadow.camera.far = 80;
-    sunLight.shadow.camera.left = -20;
-    sunLight.shadow.camera.right = 20;
-    sunLight.shadow.camera.top = 20;
-    sunLight.shadow.camera.bottom = -20;
-    scene.add(sunLight);
-
-    // Warm window glow
-    const winLight = new THREE.PointLight(0xffd060, 3, 12);
-    winLight.position.set(0, 3, 3.5);
-    scene.add(winLight);
-
-    // Blue fill light from behind
-    const fillLight = new THREE.DirectionalLight(0x4466aa, 0.6);
-    fillLight.position.set(-10, 5, -10);
-    scene.add(fillLight);
-
-    // ── MATERIALS ──────────────────────────────────────────────
-    const wallMat = new THREE.MeshStandardMaterial({ color: 0x1e3250, roughness: 0.85, metalness: 0.05 });
-    const wall2Mat = new THREE.MeshStandardMaterial({ color: 0x243d62, roughness: 0.9, metalness: 0.0 });
-    const roofMat = new THREE.MeshStandardMaterial({ color: 0xb89430, roughness: 0.5, metalness: 0.4 });
-    const roofDarkMat = new THREE.MeshStandardMaterial({ color: 0x8b6200, roughness: 0.7, metalness: 0.2 });
-    const winMat = new THREE.MeshStandardMaterial({ color: 0xffd060, emissive: 0xffb020, emissiveIntensity: 1.2, roughness: 0.0, metalness: 0.8 });
-    const doorMat = new THREE.MeshStandardMaterial({ color: 0xc8a84b, roughness: 0.4, metalness: 0.6 });
-    const groundMat = new THREE.MeshStandardMaterial({ color: 0x0d1e30, roughness: 1.0, metalness: 0.0 });
-    const pathMat = new THREE.MeshStandardMaterial({ color: 0x1a2d45, roughness: 0.9 });
-    const chimMat = new THREE.MeshStandardMaterial({ color: 0x1a2540, roughness: 0.9 });
-    const treeTrunkMat = new THREE.MeshStandardMaterial({ color: 0x3d2b1a, roughness: 1.0 });
-    const treeLeaveMat = new THREE.MeshStandardMaterial({ color: 0x0d3320, roughness: 0.9, transparent: true, opacity: 0.9 });
-
-    // ── HOUSE GROUP ────────────────────────────────────────────
-    const house = new THREE.Group();
-
-    // Main body
-    const bodyGeo = new THREE.BoxGeometry(7, 3.5, 5);
-    const body = new THREE.Mesh(bodyGeo, wallMat);
-    body.position.y = 1.75;
-    body.castShadow = true;
-    body.receiveShadow = true;
-    house.add(body);
-
-    // Side extension (garage/wing)
-    const wingGeo = new THREE.BoxGeometry(3, 2.5, 3.5);
-    const wing = new THREE.Mesh(wingGeo, wall2Mat);
-    wing.position.set(-4.5, 1.25, 0);
-    wing.castShadow = true;
-    wing.receiveShadow = true;
-    house.add(wing);
-
-    // Main roof (pyramid)
-    const roofGeo = new THREE.ConeGeometry(5.2, 2.8, 4);
-    const roofMesh = new THREE.Mesh(roofGeo, roofMat);
-    roofMesh.position.y = 4.9;
-    roofMesh.rotation.y = Math.PI / 4;
-    roofMesh.castShadow = true;
-    house.add(roofMesh);
-
-    // Wing roof
-    const wingRoofGeo = new THREE.ConeGeometry(2.8, 2.0, 4);
-    const wingRoof = new THREE.Mesh(wingRoofGeo, roofDarkMat);
-    wingRoof.position.set(-4.5, 3.5, 0);
-    wingRoof.rotation.y = Math.PI / 4;
-    wingRoof.castShadow = true;
-    house.add(wingRoof);
-
-    // Chimney
-    const chimGeo = new THREE.BoxGeometry(0.6, 2.5, 0.6);
-    const chim = new THREE.Mesh(chimGeo, chimMat);
-    chim.position.set(2, 5.5, 0.5);
-    chim.castShadow = true;
-    house.add(chim);
-
-    // Chimney cap
-    const chimCapGeo = new THREE.BoxGeometry(0.9, 0.15, 0.9);
-    const chimCap = new THREE.Mesh(chimCapGeo, roofDarkMat);
-    chimCap.position.set(2, 6.8, 0.5);
-    house.add(chimCap);
-
-    // Front windows (2 on ground floor)
-    [-2, 2].forEach(x => {
-        // Window frame
-        const frameGeo = new THREE.BoxGeometry(1.5, 1.5, 0.15);
-        const frameMat = new THREE.MeshStandardMaterial({ color: 0x2a4060, roughness: 0.5 });
-        const frame = new THREE.Mesh(frameGeo, frameMat);
-        frame.position.set(x, 1.8, 2.58);
-        frame.castShadow = true;
-        house.add(frame);
-        // Window glass
-        const wGeo = new THREE.BoxGeometry(1.2, 1.2, 0.1);
-        const win = new THREE.Mesh(wGeo, winMat);
-        win.position.set(x, 1.8, 2.62);
-        house.add(win);
-    });
-
-    // Upper window (gable)
-    const upWinGeo = new THREE.BoxGeometry(1.0, 0.8, 0.1);
-    const upWin = new THREE.Mesh(upWinGeo, winMat);
-    upWin.position.set(0, 4.0, 2.58);
-    house.add(upWin);
-
-    // Door
-    const doorFrameGeo = new THREE.BoxGeometry(1.3, 2.3, 0.15);
-    const doorFrameMesh = new THREE.Mesh(doorFrameGeo, roofMat);
-    doorFrameMesh.position.set(0, 1.15, 2.57);
-    house.add(doorFrameMesh);
-    const doorGeoInner = new THREE.BoxGeometry(1.0, 2.0, 0.1);
-    const doorMesh = new THREE.Mesh(doorGeoInner, doorMat);
-    doorMesh.position.set(0, 1.0, 2.62);
-    house.add(doorMesh);
-    // Door handle
-    const handleGeo = new THREE.SphereGeometry(0.08, 8, 8);
-    const handleMat = new THREE.MeshStandardMaterial({ color: 0xffd060, metalness: 0.9, roughness: 0.1 });
-    const handle = new THREE.Mesh(handleGeo, handleMat);
-    handle.position.set(0.35, 0.95, 2.68);
-    house.add(handle);
-
-    // Steps
-    [0, 0.15, 0.3].forEach((y, i) => {
-        const stepGeo = new THREE.BoxGeometry(1.6 - i * 0.1, 0.15, 0.35 + i * 0.1);
-        const step = new THREE.Mesh(stepGeo, new THREE.MeshStandardMaterial({ color: 0x2a4060, roughness: 0.8 }));
-        step.position.set(0, y, 2.8 + i * 0.15);
-        step.receiveShadow = true;
-        house.add(step);
-    });
-
-    // Wing windows
-    const wwGeo = new THREE.BoxGeometry(1.2, 1.0, 0.1);
-    const ww = new THREE.Mesh(wwGeo, winMat);
-    ww.position.set(-4.5, 1.5, 1.76);
-    house.add(ww);
-
-    scene.add(house);
-
-    // ── GROUND & PATH ──────────────────────────────────────────
-    const groundGeo = new THREE.PlaneGeometry(80, 80);
-    const ground = new THREE.Mesh(groundGeo, groundMat);
-    ground.rotation.x = -Math.PI / 2;
-    ground.receiveShadow = true;
-    scene.add(ground);
-
-    // Path to door
-    const pathGeo = new THREE.BoxGeometry(1.4, 0.02, 6);
-    const path = new THREE.Mesh(pathGeo, pathMat);
-    path.position.set(0, 0.01, 5.8);
-    path.receiveShadow = true;
-    scene.add(path);
-
-    // Grid
-    const grid = new THREE.GridHelper(60, 40, 0x1a2d45, 0x0f1e2d);
-    grid.position.y = 0.01;
-    scene.add(grid);
-
-    // ── TREES ──────────────────────────────────────────────────
-    function addTree(x, z, h) {
-        const g = new THREE.Group();
-        const trunkGeo = new THREE.CylinderGeometry(0.15, 0.2, h * 0.4, 8);
-        const trunk = new THREE.Mesh(trunkGeo, treeTrunkMat);
-        trunk.position.y = h * 0.2;
-        trunk.castShadow = true;
-        g.add(trunk);
-        [0, h * 0.25, h * 0.45].forEach((ty, i) => {
-            const r = (0.9 - i * 0.2) * h * 0.35;
-            const cGeo = new THREE.ConeGeometry(r, h * 0.45, 7);
-            const c = new THREE.Mesh(cGeo, treeLeaveMat);
-            c.position.y = h * 0.4 + ty;
-            c.castShadow = true;
-            g.add(c);
-        });
-        g.position.set(x, 0, z);
-        scene.add(g);
-    }
-    addTree(7, 5, 4.5);
-    addTree(8, 2, 3.5);
-    addTree(-8, 4, 5);
-    addTree(-9, 1, 3.8);
-    addTree(-7, -3, 4.2);
-    addTree(9, -2, 3.2);
-
-    // ── STARS ──────────────────────────────────────────────────
-    const starsPositions = [];
-    for (let i = 0; i < 2000; i++) {
-        starsPositions.push(
-            (Math.random() - 0.5) * 300,
-            Math.random() * 120 + 8,
-            (Math.random() - 0.5) * 300
-        );
-    }
-    const starsGeo = new THREE.BufferGeometry();
-    starsGeo.setAttribute('position', new THREE.Float32BufferAttribute(starsPositions, 3));
-    const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.25, transparent: true, opacity: 0.9, sizeAttenuation: true });
-    const stars = new THREE.Points(starsGeo, starsMat);
-    scene.add(stars);
-
-    // ── MOON ───────────────────────────────────────────────────
-    const moonGeo = new THREE.SphereGeometry(2, 16, 16);
-    const moonMat = new THREE.MeshStandardMaterial({ color: 0xfff4d0, emissive: 0xffd060, emissiveIntensity: 0.3, roughness: 0.8 });
-    const moon = new THREE.Mesh(moonGeo, moonMat);
-    moon.position.set(25, 35, -40);
-    scene.add(moon);
-
-    // ── MOUSE/TOUCH INTERACTION ────────────────────────────────
-    let isDragging = false;
-    let prevX = 0, prevY = 0;
-    let rotY = 0.3, rotX = 0.1;
-    let targetRotY = 0.3, targetRotX = 0.1;
-    let zoom = 14, targetZoom = 14;
-
-    canvas.addEventListener('mousedown', e => { isDragging = true; prevX = e.clientX; prevY = e.clientY; });
-    window.addEventListener('mousemove', e => {
-        if (!isDragging) return;
-        targetRotY += (e.clientX - prevX) * 0.008;
-        targetRotX += (e.clientY - prevY) * 0.004;
-        targetRotX = Math.max(-0.3, Math.min(0.5, targetRotX));
-        prevX = e.clientX; prevY = e.clientY;
-    });
-    window.addEventListener('mouseup', () => { isDragging = false; });
-
-    canvas.addEventListener('wheel', e => {
-        targetZoom += e.deltaY * 0.02;
-        targetZoom = Math.max(6, Math.min(25, targetZoom));
-    }, { passive: true });
-
-    canvas.addEventListener('touchstart', e => { isDragging = true; prevX = e.touches[0].clientX; prevY = e.touches[0].clientY; });
-    canvas.addEventListener('touchmove', e => {
-        if (!isDragging) return;
-        targetRotY += (e.touches[0].clientX - prevX) * 0.01;
-        prevX = e.touches[0].clientX; prevY = e.touches[0].clientY;
-        e.preventDefault();
-    }, { passive: false });
-    canvas.addEventListener('touchend', () => { isDragging = false; });
-
-    window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-
-    // ── ANIMATION LOOP ─────────────────────────────────────────
-    const clock = new THREE.Clock();
-    function animate() {
-        // Aptur 3D fona renderēšanu, kad lietotājs ielogojies (lock paslēpts) — taupa GPU, novērš melnā ekrāna mirgoni
-        const lock = document.getElementById('lock');
-        if (!lock || lock.style.display === 'none') { return; }
-        requestAnimationFrame(animate);
-        const t = clock.getElapsedTime();
-
-        // Auto-rotate when not dragging
-        if (!isDragging) targetRotY += 0.002;
-
-        // Smooth lerp
-        rotY += (targetRotY - rotY) * 0.06;
-        rotX += (targetRotX - rotX) * 0.06;
-        zoom += (targetZoom - zoom) * 0.06;
-
-        // Orbit camera
-        camera.position.x = Math.sin(rotY) * zoom * Math.cos(rotX);
-        camera.position.z = Math.cos(rotY) * zoom * Math.cos(rotX);
-        camera.position.y = zoom * Math.sin(rotX) + 3;
-        camera.lookAt(0, 2.5, 0);
-
-        // Window flicker
-        winLight.intensity = 2.8 + Math.sin(t * 1.7) * 0.2 + Math.sin(t * 3.1) * 0.1;
-
-        // Stars slow drift
-        stars.rotation.y = t * 0.00015;
-
-        // Gentle house bob
-        house.position.y = Math.sin(t * 0.4) * 0.04;
-
-        renderer.render(scene, camera);
-    }
-    animate();
-})();
+// (3D majas modelis nonemts no login ekrana)
 
 </script>
 <script>
 // ══ SOLI-PA-SOLIM VEDNIS — virsslānis pār verificēto dzinēju (grp/docTypeFor/pathReason/determineServices) ══
 (function(){
   const SIT=[
-    {k:'jaunbuve', ic:'🏗', t:'Būvēšu jaunu ēku', d:'Jauna būve uz zemes gabala.', mode:'jaunbuve', type:'jaunbuve'},
-    {k:'parbuve', ic:'🔨', t:'Pārbūvēšu / paplašināšu', d:'Mainu esošu ēku — apjomu, plānojumu, nesošās.', mode:'legalizacija', type:'rekonstrukcija'},
-    {k:'atjauno', ic:'🎨', t:'Atjaunošu (remonts, fasāde)', d:'Neskaru nesošās, nemainu apjomu.', mode:'legalizacija', type:'vienk'},
-    {k:'legaliz', ic:'⚖️', t:'Uzbūvēts BEZ atļaujas', d:'Jālegalizē patvaļīga būvniecība.', mode:'legalizacija', type:'rekonstrukcija', c2:true},
-    {k:'funkcija', ic:'🔄', t:'Mainīšu lietošanas veidu', d:'Piem. saimniecības → dzīvojamā, bez pārbūves.', mode:'legalizacija', type:'lc'},
-    {k:'nojauk', ic:'🏚', t:'Nojaukšu ēku', d:'Reģistrētas ēkas nojaukšana.', mode:'legalizacija', type:'nojaukšana'},
-    {k:'aktiva', ic:'📋', t:'Man ir aktīva būvatļauja', d:'Izmaiņas projektā, termiņa pagarināšana vai pabeigšana.', special:'aktiva'}
+    {k:'jaunbuve', ic:'🏗', t:'Būvēšu jaunu ēku', d:'Jauna būve uz zemes gabala.', mode:'jaunbuve', type:'jaunbuve', groups:['jauna']},
+    {k:'tipveida', ic:'📐', t:'Tipveida projekts', d:'Atkārtoti izmantojams jaunas ēkas projekts.', mode:'jaunbuve', type:'tipveida', groups:['jauna']},
+    {k:'parbuve', ic:'🔨', t:'Pārbūvēšu / paplašināšu', d:'Mainu esošu ēku — apjomu, plānojumu, nesošās.', mode:'legalizacija', type:'rekonstrukcija', groups:['esosa']},
+    {k:'atjauno', ic:'🎨', t:'Atjaunošu (remonts, fasāde)', d:'Neskaru nesošās, nemainu apjomu.', mode:'legalizacija', type:'vienk', groups:['esosa']},
+    {k:'legaliz', ic:'⚖️', t:'Uzbūvēts BEZ atļaujas', d:'Jālegalizē patvaļīga būvniecība.', mode:'legalizacija', type:'rekonstrukcija', c2:true, groups:['esosa']},
+    {k:'funkcija', ic:'🔄', t:'Mainīšu lietošanas veidu', d:'Piem. saimniecības → dzīvojamā, bez pārbūves.', mode:'legalizacija', type:'lc', groups:['esosa']},
+    {k:'nojauk', ic:'🏚', t:'Nojaukšu ēku', d:'Reģistrētas ēkas nojaukšana.', mode:'legalizacija', type:'nojaukšana', groups:['jauna','esosa']},
+    {k:'aktiva', ic:'📋', t:'Man ir aktīva būvatļauja', d:'Izmaiņas projektā, termiņa pagarināšana vai pabeigšana.', special:'aktiva', groups:['esosa']}
   ];
-  let cur=null;
-  window.wizEnter=function(){ document.body.classList.add('wiz'); wizGo(1); };
+  const GRP=[
+    {g:'jauna', ic:'🏗', t:'Jauna būve', d:'Jauna ēka uz zemes gabala — no nulles. Ietver arī tipveida projektu un vecās būves nojaukšanu pirms jaunbūves.'},
+    {g:'esosa', ic:'🏠', t:'Esoša ēka', d:'Darbs ar jau esošu ēku — pārbūve/paplašināšana, atjaunošana, lietošanas maiņa, legalizācija, nojaukšana vai aktīva būvatļauja.'}
+  ];
+  const GRPSUB={jauna:'Kas tieši būvējams (ēkas datus precizēsim nākamajā solī).', esosa:'Kas jādara ar esošo ēku.'};
+  let cur=null, curGroup=null;
+  window.wizEnter=function(){ document.body.classList.add('wiz'); wizShowGroups(); wizGo(1); };
   window.wizExit=function(){ document.body.classList.remove('wiz'); };
   function setDots(n){ [0,1,2].forEach(i=>{ const d=document.getElementById('wd'+i); if(d) d.className='wiz-dot'+(i<n-1?' done':(i===n-1?' on':'')); }); const pt=document.getElementById('wiz-progtext'); if(pt) pt.textContent='Solis '+n+' no 3'; }
   window.wizGo=function(n){ if(n===3) wizRender3(); ['1','2','3'].forEach(s=>{ const e=document.getElementById('wiz-s'+s); if(e) e.classList.toggle('active', s===String(n)); }); setDots(n); try{window.scrollTo({top:0,behavior:'smooth'});}catch(e){} };
@@ -5830,10 +5540,23 @@ function renderARPanels(type, area, svcCoef) {
     function recalc(){ let t=base; res.querySelectorAll('.wiz-svc:checked').forEach(c=>{ t+=parseInt(c.dataset.price)||0; }); const el=document.getElementById('wiz-total'); if(el) el.textContent=(base>0?t.toLocaleString('lv-LV')+' €':'pēc paketes'); }
     res.querySelectorAll('.wiz-svc').forEach(c=>c.addEventListener('change',recalc)); recalc();
   }
-  function wizInit(){
+  function wizOptHtml(x,attr){ return '<button class="wiz-opt" '+attr+'><span class="ic">'+x.ic+'</span><span><span class="t">'+x.t+'</span><span class="d">'+x.d+'</span></span></button>'; }
+  function wizShowGroups(){ const gp=document.getElementById('wiz-grp-phase'), sp=document.getElementById('wiz-sit-phase'); if(gp) gp.style.display=''; if(sp) sp.style.display='none'; curGroup=null; }
+  function wizShowSits(group){
+    curGroup=group;
+    const sub=document.getElementById('wiz-sit-sub'); if(sub) sub.textContent=GRPSUB[group]||'';
     const sc=document.getElementById('wiz-sit'); if(!sc) return;
-    sc.innerHTML=SIT.map((s,i)=>'<button class="wiz-opt" data-i="'+i+'"><span class="ic">'+s.ic+'</span><span><span class="t">'+s.t+'</span><span class="d">'+s.d+'</span></span></button>').join('');
-    sc.querySelectorAll('.wiz-opt').forEach(b=>b.addEventListener('click',()=>wizPick(SIT[+b.dataset.i])));
+    const items=SIT.filter(s=>s.groups&&s.groups.indexOf(group)>=0);
+    sc.innerHTML=items.map(s=>wizOptHtml(s,'data-k="'+s.k+'"')).join('');
+    sc.querySelectorAll('.wiz-opt').forEach(b=>b.addEventListener('click',()=>{ const s=SIT.find(x=>x.k===b.dataset.k); if(s) wizPick(s); }));
+    const gp=document.getElementById('wiz-grp-phase'), sp=document.getElementById('wiz-sit-phase'); if(gp) gp.style.display='none'; if(sp) sp.style.display='';
+  }
+  window.wizGrpBack=function(){ wizShowGroups(); };
+  function wizInit(){
+    const gc=document.getElementById('wiz-grp'); if(!gc) return;
+    gc.innerHTML=GRP.map(x=>wizOptHtml(x,'data-g="'+x.g+'"')).join('');
+    gc.querySelectorAll('.wiz-opt').forEach(b=>b.addEventListener('click',()=>wizShowSits(b.dataset.g)));
+    wizShowGroups();
     const wf=document.getElementById('wiz-func'), af=document.getElementById('ar-func'); if(wf&&af) wf.innerHTML=[...af.options].map(o=>'<option>'+o.text+'</option>').join('');
     document.body.classList.add('wiz');
   }
