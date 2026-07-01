@@ -1155,6 +1155,13 @@ body:not(.wiz) #ar-wizard{display:none}
         <label><input type="checkbox" id="wiz-c4"> Robeža tuvāk par 4 m</label>
       </div>
     </div>
+    <div class="wiz-field"><label>Kadastra numurs (neobligāts — pārbaudei)</label>
+      <div style="display:flex;gap:8px">
+        <input type="text" id="wiz-kadastrs" autocomplete="off" placeholder="piem. 0100 905 0235" style="flex:1;padding:11px 12px;border:1px solid var(--border);border-radius:9px;font-size:.9rem;font-family:inherit;background:#fff;color:var(--text)">
+        <button type="button" class="wiz-btn primary" style="white-space:nowrap" onclick="wizVerifyKadastrs()">✓ Pārbaudīt</button>
+      </div>
+      <div id="wiz-kad-result" style="display:none;margin-top:8px;border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;background:#fffbef;padding:10px 13px;font-size:.78rem;line-height:1.55"></div>
+    </div>
     <div class="wiz-nav"><button class="wiz-btn" onclick="wizGo(1)">← Atpakaļ</button><button class="wiz-btn primary" onclick="wizGo(3)">Tālāk →</button></div>
   </div>
 
@@ -5434,6 +5441,31 @@ function renderARPanels(type, area, svcCoef) {
     ['Izmaksu prognoze','Aptuvens novērtējums, cik māju uzbūvēt izmaksās.']
   ];
   window.wizToggleGloss=function(){ var e=document.getElementById('wiz-gloss'); if(e) e.style.display=(e.style.display==='none'?'block':'none'); };
+  // ── KADASTRA TERITORIJU KODI (pirmie 4 cipari) → pašvaldība ──
+  // GLOBĀLAIS DATU BLOKS — reizi mēnesī jāpārbauda/jāpapildina ar pilno VZD 591 teritoriju klasifikatoru
+  // (jauni/atceltie TP, izmaiņas TIAN). Pašlaik VERIFICĒTS tikai Rīga (0100); pārējie → "precizē izpēte".
+  const KAD_TERIT={
+    '0100':{n:'Rīga', tp:'Rīgas teritorijas plānojums — saistošie noteikumi Nr. 103 (spēkā no 16.02.2023)', tian:'https://geolatvija.lv/geo/tapis', bv:'Rīgas pilsētas būvvalde · pad@riga.lv · 67105800'}
+  };
+  window.wizVerifyKadastrs=function(){
+    const el=document.getElementById('wiz-kadastrs'), box=document.getElementById('wiz-kad-result');
+    if(!el||!box) return;
+    const raw=(el.value||'').replace(/\s+/g,'');
+    box.style.display='block';
+    if(!/^\d{11}$/.test(raw)){
+      box.style.borderLeftColor='#dc2626'; box.style.background='#fef2f2';
+      box.innerHTML='<b style="color:#b91c1c">✗ Nederīgs formāts.</b> Kadastra numurs = 11 cipari (piem. 0100 905 0235). Ievadīti '+raw.replace(/\D/g,'').length+' cipari.';
+      return;
+    }
+    box.style.borderLeftColor='var(--gold)'; box.style.background='#fffbef';
+    const kods=raw.slice(0,4), pretty=raw.slice(0,4)+' '+raw.slice(4,7)+' '+raw.slice(7,11);
+    const m=KAD_TERIT[kods];
+    if(m){
+      box.innerHTML='<b style="color:#166534">✓ Derīgs kadastra numurs</b> · '+pretty+'<br>Teritorijas kods <b>'+kods+'</b> → <b>'+m.n+'</b><br><span style="color:var(--muted)">'+m.tp+'</span><br>🏛 '+m.bv+'<br>🔗 <a href="'+m.tian+'" target="_blank" style="color:#2563eb">Pārbaudi zonu un TIAN kartē (geolatvija)</a><br><span style="font-size:.68rem;color:var(--muted)">⚠ Orientējoši. Konkrēto funkcionālo zonu un noteikumus nosaka atrašanās vieta kartē — verificē izpētē.</span>';
+    } else {
+      box.innerHTML='<b style="color:#166534">✓ Derīgs formāts</b> · '+pretty+'<br>Teritorijas kods <b>'+kods+'</b>. <span style="color:var(--muted)">Pašvaldību un TIAN precizē izpēte</span> — kods vēl nav kodu tabulā (tā aug ik mēnesi ar pilno VZD klasifikatoru).<br><span style="font-size:.68rem;color:var(--muted)">Pilnu adresi / zonu / TIAN dos Fāze 3 vai izpēte pēc kadastra numura.</span>';
+    }
+  };
   let cur=null, curGroup=null;
   window.wizEnter=function(){ document.body.classList.add('wiz'); wizShowGroups(); wizGo(1); };
   window.wizExit=function(){ document.body.classList.remove('wiz'); };
