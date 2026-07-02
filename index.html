@@ -1108,6 +1108,11 @@ body:not(.wiz) #ar-wizard{display:none}
 .wiz-seqnum{flex:0 0 26px;width:26px;height:26px;border-radius:50%;background:var(--navy);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:800}
 .wiz-co{display:flex;align-items:center;justify-content:space-between;border-top:2px solid var(--navy);margin-top:14px;padding-top:13px}
 .wiz-co .v{font-size:1.5rem;font-weight:800;color:var(--navy)}
+#print-summary{display:none}
+@media print{
+  body.printing>*:not(#print-summary){display:none!important}
+  body.printing #print-summary{display:block!important}
+}
 </style>
 <div id="ar-wizard" class="wiz-wrap">
   <div class="wiz-top">
@@ -1150,9 +1155,15 @@ body:not(.wiz) #ar-wizard{display:none}
     <div class="wiz-field"><label>Stāvu skaits</label><select id="wiz-floors" onchange="wizSync()"><option value="1">1 stāvs</option><option value="2">2 stāvi</option><option value="3">3 stāvi</option><option value="4">4 stāvi</option><option value="5">5 stāvi</option><option value="6">6 stāvi</option><option value="7">7+ stāvi</option></select></div>
     <div class="wiz-field" id="wiz-risk-wrap" style="display:none"><label>Riska faktori (legalizācijai)</label>
       <div class="wiz-rchk">
-        <label><input type="checkbox" id="wiz-c1"> Kultūras piemineklis / NKMP</label>
-        <label><input type="checkbox" id="wiz-c3"> Kopīpašums</label>
-        <label><input type="checkbox" id="wiz-c4"> Robeža tuvāk par 4 m</label>
+        <label><input type="checkbox" id="wiz-c1" onchange="wizSync()"> Kultūras piemineklis / NKMP</label>
+        <label><input type="checkbox" id="wiz-c3" onchange="wizSync()"> Kopīpašums</label>
+        <label><input type="checkbox" id="wiz-c4" onchange="wizSync()"> Robeža tuvāk par 4 m</label>
+      </div>
+    </div>
+    <div class="wiz-field" id="wiz-ap-wrap" style="display:none"><label>Dzīvoklis / telpu grupa</label>
+      <div class="wiz-rchk">
+        <label><input type="checkbox" id="wiz-ap-load" onchange="wizSync()"> Darbi skar nesošās konstrukcijas</label>
+        <label><input type="checkbox" id="wiz-ap-zg" onchange="wizSync()"> Mērķis — ieraksts zemesgrāmatā</label>
       </div>
     </div>
     <div class="wiz-field"><label>Kadastra numurs (neobligāts — pārbaudei)</label>
@@ -1162,7 +1173,19 @@ body:not(.wiz) #ar-wizard{display:none}
       </div>
       <div id="wiz-kad-result" style="display:none;margin-top:8px;border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;background:#fffbef;padding:10px 13px;font-size:.78rem;line-height:1.55"></div>
     </div>
-    <div class="wiz-nav"><button class="wiz-btn" onclick="wizGo(1)">← Atpakaļ</button><button class="wiz-btn primary" onclick="wizGo(3)">Tālāk →</button></div>
+    <!-- ── KONSULTĀCIJAS KOKPITS — dzīvie rezultāti, atjaunojas ar katru ievadi ── -->
+    <div id="wiz-live" style="display:none;border-top:2px solid var(--navy);margin-top:20px;padding-top:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:2px">
+        <div class="wiz-h" id="wiz-live-h" style="font-size:1.05rem;margin:0">Cena un ceļš</div>
+        <span style="display:flex;gap:8px">
+          <button type="button" class="wiz-btn" style="padding:7px 12px;font-size:.74rem" onclick="volkoPrintSummary()">🖨 Kopsavilkums klientam</button>
+          <button type="button" class="wiz-btn" style="padding:7px 12px;font-size:.74rem" onclick="volkoCopySummary(this)">📋 Kopēt Claude</button>
+        </span>
+      </div>
+      <div class="wiz-sub" id="wiz-live-sub" style="margin-bottom:10px"></div>
+      <div id="wiz-live-result"></div>
+    </div>
+    <div class="wiz-nav"><button class="wiz-btn" onclick="wizGo(1)">← Atpakaļ</button><span style="display:flex;gap:10px"><button class="wiz-btn" onclick="wizExit()">Pielāgot detalizēti</button><button class="wiz-btn primary" onclick="wizGo(3)">Pilnekrāna rezultāts →</button></span></div>
   </div>
 
   <div class="wiz-step" id="wiz-s3">
@@ -5540,15 +5563,39 @@ function renderARPanels(type, area, svcCoef) {
       ['c1','c3','c4','c5'].forEach(id=>{ const c=document.getElementById(id); if(c) c.checked=false; });
       const c2=document.getElementById('c2'); if(c2) c2.checked=!!sit.c2;
     }
+    wizPrefill();
     wizGo(2);
+    wizSync();
   }
-  window.wizSync=function(){
+  // Divvirzienu sinhronizācija: ienākot vednī, pārņem detalizētajā skatā jau ievadīto (novērš "Ievadi platību iepriekšējā solī")
+  function wizPrefill(){
+    const af=document.getElementById('ar-func'), wf=document.getElementById('wiz-func'); if(af&&wf&&af.selectedIndex>=0) wf.selectedIndex=af.selectedIndex;
+    const aa=document.getElementById('ar-area'), wa=document.getElementById('wiz-area'); if(aa&&wa&&aa.value&&!wa.value) wa.value=aa.value;
+    const afl=document.getElementById('ar-floors'), wfl=document.getElementById('wiz-floors'); if(afl&&wfl) wfl.value=afl.value;
+    const al=document.getElementById('ap-load'), wl=document.getElementById('wiz-ap-load'); if(al&&wl) wl.checked=al.checked;
+    const az=document.getElementById('ap-zg'), wz=document.getElementById('wiz-ap-zg'); if(az&&wz) wz.checked=az.checked;
+  }
+  window.wizSync=function(skipLive){
     const wf=document.getElementById('wiz-func'), af=document.getElementById('ar-func'); if(wf&&af) af.selectedIndex=wf.selectedIndex;
     const wa=document.getElementById('wiz-area'), aa=document.getElementById('ar-area'); if(wa&&aa) aa.value=wa.value;
     const wfl=document.getElementById('wiz-floors'), afl=document.getElementById('ar-floors'); if(wfl&&afl) afl.value=wfl.value;
     if(cur&&cur.k==='legaliz'){ ['c1','c3','c4'].forEach(id=>{ const w=document.getElementById('wiz-'+id), a=document.getElementById(id); if(w&&a) a.checked=w.checked; }); }
+    // Dzīvokļa (telpu grupas) jautājumi — rāda tikai, ja izvēlēta dzīvokļa funkcija; sinhronizē uz galveno formu
+    const cat=af&&af.selectedOptions[0]?af.selectedOptions[0].dataset.cat:'';
+    const apw=document.getElementById('wiz-ap-wrap'); if(apw) apw.style.display=(cat==='apartment')?'block':'none';
+    const wl2=document.getElementById('wiz-ap-load'), al2=document.getElementById('ap-load'); if(wl2&&al2) al2.checked=wl2.checked;
+    const wz2=document.getElementById('wiz-ap-zg'), az2=document.getElementById('ap-zg'); if(wz2&&az2) az2.checked=wz2.checked;
     if(typeof calcAR==='function') calcAR();
+    if(!skipLive) wizRenderLive();
   };
+  // Dzīvais kokpits 2. solī — tas pats renderis, kas 3. solim
+  function wizRenderLive(){
+    const live=document.getElementById('wiz-live'); if(!live) return;
+    const area=parseFloat(document.getElementById('wiz-area').value)||0;
+    if(!(area>0)){ live.style.display='none'; return; }
+    live.style.display='block';
+    wizRenderPath(document.getElementById('wiz-live-h'), document.getElementById('wiz-live-sub'), document.getElementById('wiz-live-result'));
+  }
   function basePrice(area,floors,type){
     if(typeof grpPrice==='function' && typeof isLegal==='function' && grpPrice(area,floors)==='I' && !isLegal(type)){
       return parseInt((document.getElementById('ar-fp-val').textContent||'').replace(/[^\d]/g,''))||0;
@@ -5636,8 +5683,11 @@ function renderARPanels(type, area, svcCoef) {
     res.innerHTML=html;
   }
   function wizRender3(){
-    wizSync();
-    const res=document.getElementById('wiz-result'), h=document.getElementById('wiz-s3h'), sub=document.getElementById('wiz-s3sub');
+    wizSync(true);
+    wizRenderPath(document.getElementById('wiz-s3h'), document.getElementById('wiz-s3sub'), document.getElementById('wiz-result'));
+  }
+  function wizRenderPath(h,sub,res){
+    if(!h||!sub||!res) return;
     if(cur&&cur.special==='aktiva'){
       const subv=(document.querySelector('input[name=wizsub]:checked')||{}).value||'izmaiņas';
       if(subv==='pagarināt'){ wizRenderPagarinat(h,sub,res); return; }
@@ -5676,11 +5726,11 @@ function renderARPanels(type, area, svcCoef) {
         return;
       }
       const price=(s.status!=='no')?priceOf(s.id):0, checkable=(s.status!=='no'&&price>0), checked=(s.status==='yes');
-      html+='<div class="wiz-srow"><span class="wiz-pill" style="background:'+p[1]+';color:'+p[2]+'">'+p[0]+'</span><div style="flex:1;min-width:0"><div style="font-weight:700;color:var(--navy);font-size:.82rem">'+s.name+(price>0?' <span style="color:var(--muted);font-weight:600">· ~'+price.toLocaleString('lv-LV')+' €</span>':'')+'</div><div style="font-size:.74rem;color:var(--text);line-height:1.45;margin-top:1px">'+s.why+'</div></div>'+(checkable?'<input type="checkbox" class="wiz-svc" data-price="'+price+'" '+(checked?'checked':'')+' style="margin-top:3px">':'')+'</div>';
+      html+='<div class="wiz-srow"><span class="wiz-pill" style="background:'+p[1]+';color:'+p[2]+'">'+p[0]+'</span><div style="flex:1;min-width:0"><div style="font-weight:700;color:var(--navy);font-size:.82rem">'+s.name+(price>0?' <span style="color:var(--muted);font-weight:600">· ~'+price.toLocaleString('lv-LV')+' €</span>':'')+'</div><div style="font-size:.74rem;color:var(--text);line-height:1.45;margin-top:1px">'+s.why+'</div></div>'+(checkable?'<input type="checkbox" class="wiz-svc" data-price="'+price+'" data-name="'+s.name.replace(/"/g,'&quot;')+'" '+(checked?'checked':'')+' style="margin-top:3px">':'')+'</div>';
     });
     html+='<div class="wiz-srow"><span class="wiz-pill" style="background:#f1f5f9;color:#64748b">VĒLĀK</span><div style="flex:1"><div style="font-weight:700;color:var(--navy);font-size:.82rem">NOD — nodošana ekspluatācijā</div><div style="font-size:.74rem;color:var(--text);line-height:1.45;margin-top:1px">Atsevišķs līgums pēc būvdarbu pabeigšanas — nav iekļauts šajā cenā.</div></div></div>';
     // Kopā — cena + izvēlētie papildu pakalpojumi
-    html+='<div class="wiz-co"><span style="font-size:.8rem;color:var(--muted)">Kopā klientam (orientējoši, bez PVN)</span><span class="v" id="wiz-total">—</span></div><div style="font-size:.68rem;color:var(--muted);margin-top:6px">Precīzu cenu un piedāvājumu būvē detalizētajā skatā (poga zemāk).</div>';
+    html+='<div class="wiz-co"><span style="font-size:.8rem;color:var(--muted)">Kopā klientam (orientējoši, bez PVN)</span><span class="v wiz-total">—</span></div><div style="font-size:.68rem;color:var(--muted);margin-top:6px">Precīzu cenu un piedāvājumu būvē detalizētajā skatā (poga zemāk).</div>';
     // ③ CEĻŠ — ieceres dokuments un process (beigās)
     html+='<div class="wiz-sec-h">Ceļš — ieceres dokuments un process</div>'+pathHtml;
     const pdata=(typeof getPassportData==='function')?getPassportData(type):null;
@@ -5689,9 +5739,86 @@ function renderARPanels(type, area, svcCoef) {
       pdata.steps.forEach((st,i)=>{ html+='<div class="wiz-seqitem"><span class="wiz-seqnum">'+(i+1)+'</span><div style="flex:1"><div style="font-weight:700;color:var(--navy);font-size:.83rem">'+st.t+'</div><div style="font-size:.7rem;color:var(--muted)">'+(st.who?'Veic: '+st.who:'')+(st.dur?' · '+st.dur:'')+'</div>'+(st.why?'<div style="font-size:.73rem;color:var(--text);line-height:1.4;margin-top:2px">'+st.why+'</div>':'')+'</div></div>'; });
     }
     res.innerHTML=html;
-    function recalc(){ let t=base; res.querySelectorAll('.wiz-svc:checked').forEach(c=>{ t+=parseInt(c.dataset.price)||0; }); const el=document.getElementById('wiz-total'); if(el) el.textContent=(base>0?t.toLocaleString('lv-LV')+' €':'pēc paketes'); }
+    function recalc(){ let t=base; res.querySelectorAll('.wiz-svc:checked').forEach(c=>{ t+=parseInt(c.dataset.price)||0; }); const el=res.querySelector('.wiz-total'); if(el) el.textContent=(base>0?t.toLocaleString('lv-LV')+' €':'pēc paketes'); }
     res.querySelectorAll('.wiz-svc').forEach(c=>c.addEventListener('change',recalc)); recalc();
   }
+  // ── KONSULTĀCIJAS IZEJA: izdruka klientam + kopēšana Claude ──
+  function wizState(){
+    const type=document.getElementById('ar-type')?.value||'';
+    const area=parseFloat(document.getElementById('ar-area')?.value)||0;
+    const floors=parseInt(document.getElementById('ar-floors')?.value)||1;
+    const cat=window._arCat||'dwelling';
+    const fOpt=document.getElementById('ar-func')?.selectedOptions[0];
+    const funkcija=fOpt?fOpt.text:'', sub2=fOpt?(fOpt.dataset.sub||''):'';
+    const g=grp(area,floors,cat), dt=docTypeFor(area,g);
+    const DOCW={pr:'Paskaidrojuma raksts',pz:'Paziņojums par būvniecību',bp:'Būvprojekts + būvatļauja'};
+    const muni=document.getElementById('ar-muni-search')?.value||'';
+    const kad=(document.getElementById('wiz-kadastrs')?.value||document.getElementById('ar-kadastrs')?.value||'').trim();
+    let muniS=1.10; try{ muniS=JSON.parse(document.getElementById('ar-muni').value).s||1.10; }catch(e){}
+    const recs=(typeof getRecs==='function')?getRecs(type):[];
+    const priceOf=id=>{ const r=recs.find(x=>x.id===id); return (r&&r.priceFn)?r.priceFn(area,muniS):0; };
+    const svc=determineServices(type,g,cat,area).map(s=>({name:s.name,status:s.status,why:s.why,price:(s.status!=='no')?priceOf(s.id):0}));
+    const base=basePrice(area,floors,type);
+    const box=document.getElementById('wiz-live-result')||document.getElementById('wiz-result');
+    const extras=box?[...box.querySelectorAll('.wiz-svc:checked')].map(c=>({name:c.dataset.name||'Pakalpojums',price:parseInt(c.dataset.price)||0})):[];
+    const total=base+extras.reduce((s,x)=>s+x.price,0);
+    const steps=(typeof getPassportData==='function'&&getPassportData(type)&&getPassportData(type).steps)?getPassportData(type).steps:[];
+    const riski=['c1','c2','c3','c4'].filter(id=>document.getElementById(id)?.checked)
+      .map(id=>({c1:'Kultūras piemineklis / NKMP',c2:'Patvaļīga būvniecība / legalizācija',c3:'Kopīpašums',c4:'Robeža tuvāk par 4 m'}[id]));
+    return {sit:(cur?cur.t:''),type,area,floors,funkcija,g,cat,dok:DOCW[dt]||DOCW.bp,dt,reason:pathReason(dt,g,cat,sub2,area),muni,kad,svc,base,extras,total,steps,riski};
+  }
+  window.volkoPrintSummary=function(){
+    const s=wizState();
+    if(!(s.area>0)){ alert('Ievadi platību.'); return; }
+    let ps=document.getElementById('print-summary');
+    if(!ps){ ps=document.createElement('div'); ps.id='print-summary'; document.body.appendChild(ps); }
+    const d=new Date(), dat=('0'+d.getDate()).slice(-2)+'.'+('0'+(d.getMonth()+1)).slice(-2)+'.'+d.getFullYear();
+    let h='<div style="font-family:Segoe UI,Arial,sans-serif;color:#1a2b3c;max-width:720px;margin:0 auto;font-size:13px;line-height:1.5">';
+    h+='<div style="display:flex;justify-content:space-between;border-bottom:3px solid #c8a84b;padding-bottom:8px;margin-bottom:14px"><div style="font-size:20px;font-weight:800">VOLKO <span style="color:#c8a84b">Engineering</span></div><div style="text-align:right;font-size:11px;color:#666">Konsultācijas kopsavilkums<br>'+dat+'</div></div>';
+    h+='<div style="font-weight:800;font-size:15px;margin-bottom:2px">'+(s.sit||'Projekts')+'</div>';
+    h+='<div style="color:#555;margin-bottom:12px">'+s.funkcija+' · '+s.area+' m² · '+s.floors+' st.'+(s.muni?' · '+s.muni:'')+(s.kad?' · kadastrs '+s.kad:'')+(s.cat==='apartment'?'':' · būves grupa '+s.g)+'</div>';
+    h+='<div style="border:1px solid #ddd;border-left:4px solid #c8a84b;border-radius:0 8px 8px 0;background:#fffbef;padding:10px 14px;margin-bottom:14px"><div style="font-size:10px;font-weight:800;text-transform:uppercase;color:#888">Nepieciešamais dokuments</div><div style="font-size:16px;font-weight:800">'+s.dok+'</div><div style="font-size:12px;margin-top:3px">'+s.reason+'</div></div>';
+    h+='<table style="width:100%;border-collapse:collapse;margin-bottom:14px"><tr style="border-bottom:2px solid #1a2b3c"><th style="text-align:left;padding:5px 0;font-size:11px;text-transform:uppercase;color:#888">Pozīcija</th><th style="text-align:right;padding:5px 0;font-size:11px;text-transform:uppercase;color:#888">Cena</th></tr>';
+    h+='<tr style="border-bottom:1px dashed #ddd"><td style="padding:6px 0">Arhitektūras (AR) projekts — ieskaitot BIS iesniegšanu un saskaņošanu</td><td style="text-align:right;font-weight:700">'+(s.base>0?s.base.toLocaleString('lv-LV')+' €':'pēc paketes')+'</td></tr>';
+    s.extras.forEach(x=>{ h+='<tr style="border-bottom:1px dashed #ddd"><td style="padding:6px 0">'+x.name+'</td><td style="text-align:right;font-weight:700">'+x.price.toLocaleString('lv-LV')+' €</td></tr>'; });
+    h+='<tr><td style="padding:8px 0;font-weight:800">KOPĀ (orientējoši, bez PVN)</td><td style="text-align:right;font-weight:800;font-size:16px">'+(s.base>0?s.total.toLocaleString('lv-LV')+' €':'pēc paketes')+'</td></tr></table>';
+    const need=s.svc.filter(x=>x.status!=='no');
+    if(need.length){ h+='<div style="font-size:11px;font-weight:800;text-transform:uppercase;color:#888;margin-bottom:4px">Papildu pakalpojumi un kāpēc</div>';
+      need.forEach(x=>{ h+='<div style="padding:4px 0;border-bottom:1px dashed #eee"><b>'+x.name+'</b> <span style="font-size:10px;color:'+(x.status==='yes'?'#b91c1c':'#b45309')+';font-weight:800">'+(x.status==='yes'?'VAJADZĪGS':'NOSACĪTI')+'</span><br><span style="font-size:11.5px;color:#444">'+x.why+'</span></div>'; }); }
+    if(s.steps.length){ h+='<div style="font-size:11px;font-weight:800;text-transform:uppercase;color:#888;margin:12px 0 4px">Process soli pa solim</div>';
+      s.steps.forEach((st,i)=>{ h+='<div style="padding:3px 0;font-size:12px"><b>'+(i+1)+'.</b> '+st.t+(st.who?' <span style="color:#888">('+st.who+(st.dur?', '+st.dur:'')+')</span>':'')+'</div>'; }); }
+    if(s.riski.length) h+='<div style="margin-top:10px;font-size:12px"><b>Riska faktori:</b> '+s.riski.join(' · ')+'</div>';
+    h+='<div style="margin-top:16px;padding-top:8px;border-top:1px solid #ddd;font-size:10.5px;color:#777">Šis ir orientējošs konsultācijas kopsavilkums — nav piedāvājums. Precīza cena un apjoms tiek noteikti piedāvājumā pēc dokumentu izskatīšanas. Cenas bez PVN. VOLKO Engineering SIA · Vienības gatve 109, Rīga · www.volkoengineering.com</div></div>';
+    ps.innerHTML=h;
+    document.body.classList.add('printing');
+    window.print();
+    setTimeout(()=>document.body.classList.remove('printing'),2000); // rezerve, ja afterprint nenostrādā
+  };
+  window.addEventListener('afterprint',()=>document.body.classList.remove('printing'));
+  window.volkoCopySummary=function(btn){
+    const s=wizState();
+    if(!(s.area>0)){ alert('Ievadi platību.'); return; }
+    const L=[];
+    L.push('KALKULATORA KONSULTĀCIJAS KOPSAVILKUMS ('+new Date().toISOString().slice(0,10)+')');
+    L.push('Situācija: '+(s.sit||s.type));
+    L.push('Objekts: '+s.funkcija+' · '+s.area+' m² · '+s.floors+' st.'+(s.muni?' · '+s.muni:'')+(s.kad?' · kadastrs '+s.kad:''));
+    L.push('Būves grupa: '+(s.cat==='apartment'?'telpu grupa (nenosaka)':s.g));
+    L.push('Ieceres dokuments: '+s.dok);
+    L.push('Pamatojums: '+s.reason);
+    if(s.riski.length) L.push('Riska faktori: '+s.riski.join('; '));
+    L.push('');
+    L.push('CENA: AR pamatcena '+(s.base>0?s.base+' EUR':'pēc paketes'));
+    s.extras.forEach(x=>L.push('  + '+x.name+' '+x.price+' EUR'));
+    L.push('KOPĀ (orientējoši, bez PVN): '+(s.base>0?s.total+' EUR':'pēc paketes'));
+    L.push('');
+    L.push('PAKALPOJUMI:');
+    s.svc.forEach(x=>L.push('  ['+(x.status==='yes'?'JĀ':x.status==='cond'?'NOSACĪTI':'NĒ')+'] '+x.name+(x.price>0?' ~'+x.price+' EUR':'')+' — '+x.why));
+    if(s.steps.length){ L.push(''); L.push('SOĻI: '+s.steps.map((st,i)=>(i+1)+') '+st.t).join(' · ')); }
+    const txt=L.join('\n');
+    (navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>{
+      if(btn){ const o=btn.textContent; btn.textContent='✓ Nokopēts'; setTimeout(()=>{btn.textContent=o;},2500); }
+    }).catch(()=>{ window.prompt('Nokopē manuāli:',txt); });
+  };
   function wizOptHtml(x,attr){ return '<button class="wiz-opt" '+attr+'><span class="ic">'+x.ic+'</span><span><span class="t">'+x.t+'</span><span class="d">'+x.d+'</span></span></button>'; }
   function wizShowGroups(){ const gp=document.getElementById('wiz-grp-phase'), sp=document.getElementById('wiz-sit-phase'); if(gp) gp.style.display=''; if(sp) sp.style.display='none'; curGroup=null; }
   function wizShowSits(group){
