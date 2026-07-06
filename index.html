@@ -5597,6 +5597,9 @@ function renderARPanels(type, area, svcCoef) {
     wizRenderPath(document.getElementById('wiz-live-h'), document.getElementById('wiz-live-sub'), document.getElementById('wiz-live-result'));
   }
   function basePrice(area,floors,type){
+    // Toma manuālā korekcija tikšanās laikā (sesijas ietvaros; apzināti BEZ localStorage,
+    // lai viena klienta atlaide neaiziet nākamajam) — to lasa arī izdruka un "Kopēt Claude"
+    if(window._wizPrice && window._wizPrice._base!=null) return window._wizPrice._base;
     if(typeof grpPrice==='function' && typeof isLegal==='function' && grpPrice(area,floors)==='I' && !isLegal(type)){
       return parseInt((document.getElementById('ar-fp-val').textContent||'').replace(/[^\d]/g,''))||0;
     }
@@ -5708,7 +5711,7 @@ function renderARPanels(type, area, svcCoef) {
     const svc=determineServices(type,g,cat,area);
     let muniS=1.10; try{ muniS=JSON.parse(document.getElementById('ar-muni').value).s||1.10; }catch(e){}
     const recs=(typeof getRecs==='function')?getRecs(type):[];
-    const priceOf=id=>{ const r=recs.find(x=>x.id===id); return (r&&r.priceFn)?r.priceFn(area,muniS):0; };
+    const priceOf=id=>{ if(window._wizPrice&&window._wizPrice[id]!=null) return window._wizPrice[id]; const r=recs.find(x=>x.id===id); return (r&&r.priceFn)?r.priceFn(area,muniS):0; };
     const base=basePrice(area,floors,type);
     // IEKĻAUTS AR cenā
     const incl=['Arhitektūras (AR) projekts — plāni, fasādes, griezumi, '+(dt==='pz'?'paziņojuma sagatavošana BIS':pr?'paskaidrojuma raksts':'projekta tekstuālā daļa')];
@@ -5716,7 +5719,7 @@ function renderARPanels(type, area, svcCoef) {
     incl.push('BIS iesniegums un saskaņošana ar pašvaldību');
     html+='<div class="wiz-sec-h">Iekļauts cenā (AR projekts)</div>';
     incl.forEach(x=>{ html+='<div class="wiz-srow"><span class="wiz-pill" style="background:#dcfce7;color:#15803d">IEKĻAUTS</span><div style="flex:1"><div style="font-weight:700;color:var(--navy);font-size:.82rem">'+x+'</div></div></div>'; });
-    html+='<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0 2px"><span style="font-size:.8rem;color:var(--muted)">AR projekts — pamatcena</span><span style="font-weight:800;color:var(--navy);font-size:1.02rem">'+(base>0?base.toLocaleString('lv-LV')+' €':'pēc paketes')+'</span></div>';
+    html+='<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0 2px"><span style="font-size:.8rem;color:var(--muted)">AR projekts — pamatcena <span style="font-size:.64rem;color:var(--gold)">✎ labojama</span></span>'+(base>0?'<span style="font-weight:800;color:var(--navy);font-size:1.02rem;white-space:nowrap"><input type="number" class="wiz-price-base" value="'+base+'" min="0" step="50" style="width:92px;text-align:right;font-weight:800;color:var(--navy);font-size:1rem;border:1px dashed var(--gold);border-radius:6px;padding:2px 5px;background:transparent"> €</span>':'<span style="font-weight:800;color:var(--navy);font-size:1.02rem">pēc paketes</span>')+'</div>';
     // PAPILDUS — atsevišķi, nav iekļauts
     html+='<div class="wiz-sec-h">Papildus — pēc vajadzības (atsevišķi, nav iekļauts cenā)</div>';
     svc.forEach(s=>{
@@ -5726,11 +5729,11 @@ function renderARPanels(type, area, svcCoef) {
         return;
       }
       const price=(s.status!=='no')?priceOf(s.id):0, checkable=(s.status!=='no'&&price>0), checked=(s.status==='yes');
-      html+='<div class="wiz-srow"><span class="wiz-pill" style="background:'+p[1]+';color:'+p[2]+'">'+p[0]+'</span><div style="flex:1;min-width:0"><div style="font-weight:700;color:var(--navy);font-size:.82rem">'+s.name+(price>0?' <span style="color:var(--muted);font-weight:600">· ~'+price.toLocaleString('lv-LV')+' €</span>':'')+'</div><div style="font-size:.74rem;color:var(--text);line-height:1.45;margin-top:1px">'+s.why+'</div></div>'+(checkable?'<input type="checkbox" class="wiz-svc" data-price="'+price+'" data-name="'+s.name.replace(/"/g,'&quot;')+'" '+(checked?'checked':'')+' style="margin-top:3px">':'')+'</div>';
+      html+='<div class="wiz-srow"><span class="wiz-pill" style="background:'+p[1]+';color:'+p[2]+'">'+p[0]+'</span><div style="flex:1;min-width:0"><div style="font-weight:700;color:var(--navy);font-size:.82rem">'+s.name+'</div><div style="font-size:.74rem;color:var(--text);line-height:1.45;margin-top:1px">'+s.why+'</div></div>'+(checkable?'<span style="display:flex;align-items:center;gap:6px;margin-top:3px;white-space:nowrap"><input type="number" class="wiz-svc-price" data-svc="'+s.id+'" value="'+price+'" min="0" step="50" style="width:74px;text-align:right;border:1px dashed var(--gold);border-radius:6px;padding:2px 4px;font-weight:700;color:var(--navy);font-size:.85rem;background:transparent"><span style="font-size:.8rem;color:var(--muted)">€</span><input type="checkbox" class="wiz-svc" data-svc="'+s.id+'" data-price="'+price+'" data-name="'+s.name.replace(/"/g,'&quot;')+'" '+(checked?'checked':'')+'></span>':'')+'</div>';
     });
     html+='<div class="wiz-srow"><span class="wiz-pill" style="background:#f1f5f9;color:#64748b">VĒLĀK</span><div style="flex:1"><div style="font-weight:700;color:var(--navy);font-size:.82rem">NOD — nodošana ekspluatācijā</div><div style="font-size:.74rem;color:var(--text);line-height:1.45;margin-top:1px">Atsevišķs līgums pēc būvdarbu pabeigšanas — nav iekļauts šajā cenā.</div></div></div>';
     // Kopā — cena + izvēlētie papildu pakalpojumi
-    html+='<div class="wiz-co"><span style="font-size:.8rem;color:var(--muted)">Kopā klientam (orientējoši, bez PVN)</span><span class="v wiz-total">—</span></div><div style="font-size:.68rem;color:var(--muted);margin-top:6px">Precīzu cenu un piedāvājumu būvē detalizētajā skatā (poga zemāk).</div>';
+    html+='<div class="wiz-co"><span style="font-size:.8rem;color:var(--muted)">Kopā klientam (orientējoši, bez PVN)</span><span class="v wiz-total">—</span></div><div style="font-size:.68rem;color:var(--muted);margin-top:6px;display:flex;justify-content:space-between;gap:8px"><span>Cenas ✎ vari labot tieši šeit — kopsumma un izdruka pārrēķinās.</span><a href="#" onclick="wizResetPrices();return false" style="color:var(--gold);font-weight:700;white-space:nowrap">↺ Atjaunot aprēķinātās</a></div>';
     // ③ CEĻŠ — ieceres dokuments un process (beigās)
     html+='<div class="wiz-sec-h">Ceļš — ieceres dokuments un process</div>'+pathHtml;
     const pdata=(typeof getPassportData==='function')?getPassportData(type):null;
@@ -5739,9 +5742,23 @@ function renderARPanels(type, area, svcCoef) {
       pdata.steps.forEach((st,i)=>{ html+='<div class="wiz-seqitem"><span class="wiz-seqnum">'+(i+1)+'</span><div style="flex:1"><div style="font-weight:700;color:var(--navy);font-size:.83rem">'+st.t+'</div><div style="font-size:.7rem;color:var(--muted)">'+(st.who?'Veic: '+st.who:'')+(st.dur?' · '+st.dur:'')+'</div>'+(st.why?'<div style="font-size:.73rem;color:var(--text);line-height:1.4;margin-top:2px">'+st.why+'</div>':'')+'</div></div>'; });
     }
     res.innerHTML=html;
-    function recalc(){ let t=base; res.querySelectorAll('.wiz-svc:checked').forEach(c=>{ t+=parseInt(c.dataset.price)||0; }); const el=res.querySelector('.wiz-total'); if(el) el.textContent=(base>0?t.toLocaleString('lv-LV')+' €':'pēc paketes'); }
-    res.querySelectorAll('.wiz-svc').forEach(c=>c.addEventListener('change',recalc)); recalc();
+    function recalc(){ const bEl=res.querySelector('.wiz-price-base'); const b=bEl?(Math.max(0,parseInt(bEl.value)||0)):base; let t=b; res.querySelectorAll('.wiz-svc:checked').forEach(c=>{ t+=parseInt(c.dataset.price)||0; }); const el=res.querySelector('.wiz-total'); if(el) el.textContent=(b>0?t.toLocaleString('lv-LV')+' €':'pēc paketes'); }
+    res.querySelectorAll('.wiz-svc').forEach(c=>c.addEventListener('change',recalc));
+    // Manuālās cenu korekcijas (sesijas ietvaros; ietekmē arī izdruku un Kopēt Claude caur _wizPrice)
+    res.querySelectorAll('.wiz-svc-price').forEach(inp=>inp.addEventListener('input',()=>{
+      const v=Math.max(0,parseInt(inp.value)||0); window._wizPrice=window._wizPrice||{}; window._wizPrice[inp.dataset.svc]=v;
+      const cb=res.querySelector('.wiz-svc[data-svc="'+inp.dataset.svc+'"]'); if(cb) cb.dataset.price=v; recalc();
+    }));
+    const bIn=res.querySelector('.wiz-price-base');
+    if(bIn) bIn.addEventListener('input',()=>{ window._wizPrice=window._wizPrice||{}; window._wizPrice._base=Math.max(0,parseInt(bIn.value)||0); recalc(); });
+    recalc();
   }
+  // Atiestata Toma manuālās cenas un pārzīmē ABUS rezultātu konteinerus (live + pilnekrāns)
+  window.wizResetPrices=function(){
+    window._wizPrice={};
+    try{ const r=document.getElementById('wiz-result'); if(r&&r.innerHTML) wizRenderPath(document.getElementById('wiz-s3h'),document.getElementById('wiz-s3sub'),r); }catch(e){}
+    try{ const l=document.getElementById('wiz-live-result'); if(l&&l.innerHTML&&typeof wizRenderLive==='function') wizRenderLive(); }catch(e){}
+  };
   // ── KONSULTĀCIJAS IZEJA: izdruka klientam + kopēšana Claude ──
   function wizState(){
     const type=document.getElementById('ar-type')?.value||'';
