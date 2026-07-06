@@ -2721,7 +2721,7 @@ function switchTab(id,btn){document.querySelectorAll(".tab-panel").forEach(t=>t.
   }
 }
 function gotoBkTab(){ switchTab('bk'); }
-function gotoNodTab(){ switchTab('nod'); }
+// (izņemta neizmantota funkcija gotoNodTab — tīrīšana 06.07.2026)
 
 // AR apakštaba (Toms 2026-06-10): Jaunbūve = TIKAI jaunbūve (+tipveida). Esoša ēka/legalizācija = konkrētie projektu veidi,
 // ar kuriem legalizē (izmaiņu/pārbūve/atjaunošana/nojaukšana). Teorētiskie la/lbv/lbp/lc tipi izņemti no izvēlnes
@@ -3153,12 +3153,7 @@ function getRecs(type){
 
 const R_REKON = [30,28,26,24,22,20,19,18,17,16,14];
 const BRACKS  = [30,60,90,120,150,180,210,240,270,300,Infinity];
-function calcLegAR(area, svc){
-    const g=grpPrice(area,1), gC=GC[g], rate=R_REKON[bi(area)];
-    const base=area*rate*gC;
-    const minV=area<=60?2500:2900;
-    return r50(Math.max(base,minV));
-}
+// (izņemta neizmantota funkcija calcLegAR — tīrīšana 06.07.2026)
 
 // ─── MAIN RENDER ─────────────────────────────────────────────
 // Eksportēts uz index.html kā renderARSection(type, area, svcCoef)
@@ -5150,17 +5145,7 @@ const PKG_LEVEL_INFO={
     inc:['3 skiču varianti, 3 korekciju kārtas','2 VR tūres (arī pēc labojumiem)','+7 griezumi, 8 mezgli, kāpņu detalizācija, konstrukciju sastāvi','BK 3D LOD300 (ražošanas precizitāte)','Gandrīz nulles enerģijas aprēķins','Būvapjomi (BA) — precīzai tāmei'],
     nav:[]}
 };
-function pkgLevelSummaryHtml(level){
-  const inf=PKG_LEVEL_INFO[level]; if(!inf) return '';
-  let h='<div style="border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;background:#fffdf5;padding:10px 13px;margin-bottom:12px">';
-  h+='<div style="font-size:.78rem;font-weight:800;color:var(--navy);margin-bottom:5px">'+PKG_NAMES[level]+' — kam piemērots</div>';
-  h+='<div style="font-size:.74rem;color:var(--text);margin-bottom:7px">'+inf.kam+'</div>';
-  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">';
-  h+='<div><div style="font-size:.68rem;font-weight:700;color:#166534;margin-bottom:3px">✓ IEKĻAUTS</div>'+inf.inc.map(x=>'<div style="font-size:.7rem;color:var(--text);padding:1px 0">✓ '+x+'</div>').join('')+'</div>';
-  h+='<div><div style="font-size:.68rem;font-weight:700;color:#b91c1c;margin-bottom:3px">✗ NAV (augstākos līmeņos)</div>'+(inf.nav.length?inf.nav.map(x=>'<div style="font-size:.7rem;color:var(--muted);padding:1px 0">○ '+x+'</div>').join(''):'<div style="font-size:.7rem;color:var(--muted)">— viss iekļauts</div>')+'</div>';
-  h+='</div></div>';
-  return h;
-}
+// (izņemta neizmantota funkcija pkgLevelSummaryHtml — tīrīšana 06.07.2026)
 const PKG_PHASES = [['SKICE','📝 Skices fāze'],['VR','🥽 VR tūres'],['MBP','📐 Min. būvprojekts (MBP)'],['BP','🏗 Būvprojekts (BP)'],['MBP/BP','📐 MBP/BP korekcijas']];
 
 let currentPkg = 'L2';
