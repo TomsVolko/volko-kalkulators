@@ -1069,6 +1069,9 @@ body { font-family:-apple-system,'Segoe UI',sans-serif; background:var(--bg); co
 <!-- ══ SOLI-PA-SOLIM VEDNIS (virsslānis pār verificēto dzinēju — vada grp/docTypeFor/pathReason/determineServices) ══ -->
 <style>
 body.wiz #ar-wizard ~ *{display:none!important}
+/* AI konsultants pieejams ARĪ tikšanās (vizarda) režīmā — Toms 06.07.2026 */
+body.wiz #ai-float-btn{display:flex!important}
+body.wiz #ai-panel.open{display:flex!important}
 body:not(.wiz) #ar-wizard{display:none}
 .wiz-wrap{max-width:780px;margin:0 auto}
 .wiz-top{display:flex;gap:8px;align-items:center;font-size:.74rem;color:var(--muted);margin-bottom:16px}
@@ -2682,136 +2685,6 @@ body[data-artype="jaunbuve"] #ar-jaunbuve-note{display:block}
      FLOATING AI CHAT — pieejams no visām tabām
      ══════════════════════════════════════════════════════════ -->
 
-<!-- Floating button -->
-<button id="ai-float-btn" onclick="toggleAIPanel()" title="AI Konsultants" style="
-  position:fixed;bottom:24px;right:24px;z-index:500;
-  width:58px;height:58px;border-radius:50%;
-  background:linear-gradient(135deg,var(--navy),#2d4a6b);
-  border:2px solid var(--gold);
-  box-shadow:0 4px 20px rgba(0,0,0,.4),0 0 0 0 rgba(200,168,75,.4);
-  cursor:pointer;display:flex;align-items:center;justify-content:center;
-  font-size:1.4rem;transition:all .2s;
-  animation:pulse-ring 2.5s ease-out infinite;
-" id="ai-fab">🤖</button>
-
-<!-- Floating panel -->
-<div id="ai-panel" style="
-  position:fixed;bottom:90px;right:24px;z-index:499;
-  width:400px;max-width:calc(100vw - 32px);
-  height:580px;max-height:calc(100vh - 110px);
-  background:white;border-radius:16px;
-  box-shadow:0 20px 60px rgba(0,0,0,.35),0 0 0 1px rgba(200,168,75,.2);
-  display:none;flex-direction:column;overflow:hidden;
-  transform:translateY(20px) scale(0.96);opacity:0;
-  transition:all .25s cubic-bezier(.34,1.56,.64,1);
-">
-  <!-- Panel header -->
-  <div style="
-    background:var(--navy);padding:14px 16px;
-    display:flex;align-items:center;justify-content:space-between;
-    border-radius:16px 16px 0 0;flex-shrink:0;
-  ">
-    <div style="display:flex;align-items:center;gap:10px">
-      <div style="width:36px;height:36px;border-radius:50%;background:rgba(200,168,75,.15);border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:.95rem">🤖</div>
-      <div>
-        <div style="color:var(--gold);font-size:.9rem;font-weight:700">AI Konsultants</div>
-        <div style="color:rgba(255,255,255,.4);font-size:.65rem;letter-spacing:1px">Powered by Abacus AI</div>
-      </div>
-    </div>
-    <div style="display:flex;gap:8px;align-items:center">
-      <div id="ai-ctx-badge" style="display:none;background:rgba(200,168,75,.15);border:1px solid rgba(200,168,75,.3);border-radius:12px;padding:2px 8px;font-size:.6rem;color:var(--gold);font-weight:700;letter-spacing:.5px">📊 KONTEKSTS</div>
-      <button onclick="aiClearChat()" style="background:rgba(255,255,255,.08);border:none;border-radius:8px;padding:5px 10px;color:rgba(255,255,255,.5);font-size:.7rem;cursor:pointer;">Notīrīt</button>
-      <button onclick="toggleAIPanel()" style="background:rgba(255,255,255,.08);border:none;border-radius:8px;padding:5px 9px;color:rgba(255,255,255,.6);font-size:1rem;cursor:pointer;line-height:1">✕</button>
-    </div>
-  </div>
-
-  <!-- Context strip (shown when calculator has data) -->
-  <div id="ai-ctx-strip" style="display:none;background:#fffbf0;border-bottom:1px solid #fde68a;padding:7px 14px;font-size:.72rem;color:#78350f;flex-shrink:0">
-    <span id="ai-ctx-text"></span>
-    <button onclick="aiSendContext()" style="margin-left:8px;background:var(--gold);color:var(--navy);border:none;border-radius:8px;padding:2px 9px;font-size:.68rem;font-weight:700;cursor:pointer">Analizē ▶</button>
-  </div>
-
-  <!-- Quick buttons -->
-  <div style="padding:10px 12px 0;flex-shrink:0;background:#fafaf8;border-bottom:1px solid #f0ede6">
-    <div style="display:flex;flex-wrap:wrap;gap:5px;padding-bottom:8px">
-      <button class="ai-qbtn" onclick="aiQuick('Kur sākt ja gribu celt māju? Izskaidro soli pa solim.')">🏗 Kā sākt?</button>
-      <button class="ai-qbtn" onclick="aiQuick('Man ir patvaļīgi celta ēka. Ko darīt — pilns process?')">⚠️ Patvaļīga ēka</button>
-      <button class="ai-qbtn" onclick="aiQuick('Kas ir NOD un kāpēc tas vajadzīgs?')">📋 Kas ir NOD?</button>
-      <button class="ai-qbtn" onclick="aiQuick('Kāda atļauja vajadzīga manai situācijai?')">📑 Kāda atļauja?</button>
-      <button class="ai-qbtn" onclick="aiQuick('Kas ir BIS sistēma un kā tā darbojas?')">💻 Kas ir BIS?</button>
-      <button class="ai-qbtn" onclick="aiQuick('Cik maksā legalizācija? Dod orientējošu aprēķinu.')">💰 Cenas?</button>
-      <button class="ai-qbtn" onclick="aiQuick('Cik ilgi aizņem büvniecības process?')">⏱️ Termiņi?</button>
-      <button class="ai-qbtn" onclick="aiQuick('Kādi dokumenti vajadzīgi no klienta?')">📁 Dokumenti</button>
-    </div>
-  </div>
-
-  <!-- Chat messages -->
-  <div id="ai-chat-window" style="
-    flex:1;overflow-y:auto;padding:14px;
-    background:#fafaf8;
-    scroll-behavior:smooth;
-  "></div>
-
-  <!-- Input -->
-  <div style="padding:10px 12px;background:white;border-top:1px solid #e8e4da;flex-shrink:0">
-    <div style="display:flex;gap:8px;align-items:flex-end">
-      <textarea id="ai-input" rows="1" placeholder="Uzdod jautājumu latviski..." onkeydown="aiKeydown(event)" style="
-        flex:1;padding:9px 12px;border:1px solid #e2e8f0;border-radius:10px;
-        font-size:.88rem;outline:none;resize:none;height:40px;max-height:100px;
-        font-family:inherit;background:#fafaf8;transition:border-color .2s;
-      "></textarea>
-      <button id="ai-send-btn" onclick="aiSend()" style="
-        width:40px;height:40px;flex-shrink:0;
-        background:var(--navy);color:var(--gold);
-        border:none;border-radius:10px;font-size:1rem;
-        cursor:pointer;display:flex;align-items:center;justify-content:center;
-        transition:opacity .2s;
-      ">▶</button>
-    </div>
-    <div style="text-align:center;margin-top:5px;font-size:.6rem;color:#bbb">
-      Abacus AI · Volko Engineering zināšanu bāze
-    </div>
-  </div>
-</div>
-
-<style>
-.ai-qbtn {
-  font-size:.68rem;padding:4px 9px;
-  background:white;border:1px solid #e2e8f0;
-  border-radius:14px;cursor:pointer;color:#374151;
-  transition:all .15s;white-space:nowrap;
-}
-.ai-qbtn:hover { border-color:var(--gold);background:#fffbf0;color:var(--navy); }
-.msg { max-width:88%;margin-bottom:10px;line-height:1.55; }
-.msg.user {
-  margin-left:auto;background:var(--navy);color:white;
-  padding:9px 13px;border-radius:14px 14px 3px 14px;font-size:.86rem;
-}
-.msg.ai {
-  background:white;border:1px solid #e8e4da;
-  padding:10px 13px;border-radius:14px 14px 14px 3px;
-  font-size:.84rem;color:#1a2b3c;
-  box-shadow:0 1px 3px rgba(0,0,0,.06);
-}
-.msg.ai strong { color:var(--navy); }
-.msg.error { background:#fff5f5;border:1px solid #fca5a5;padding:9px 12px;border-radius:8px;font-size:.82rem;color:#c00; }
-.loading-dots { display:inline-flex;gap:4px;align-items:center;padding:4px 0; }
-.loading-dots span { width:6px;height:6px;background:var(--gold);border-radius:50%;animation:bounce 1.1s infinite; }
-.loading-dots span:nth-child(2){animation-delay:.18s}
-.loading-dots span:nth-child(3){animation-delay:.36s}
-@keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
-@keyframes pulse-ring {
-  0% { box-shadow:0 4px 20px rgba(0,0,0,.4),0 0 0 0 rgba(200,168,75,.5); }
-  70% { box-shadow:0 4px 20px rgba(0,0,0,.4),0 0 0 12px rgba(200,168,75,0); }
-  100% { box-shadow:0 4px 20px rgba(0,0,0,.4),0 0 0 0 rgba(200,168,75,0); }
-}
-#ai-fab:hover { transform:scale(1.1);box-shadow:0 6px 28px rgba(0,0,0,.5); }
-#ai-panel.open {
-  display:flex !important;
-  transform:translateY(0) scale(1);
-  opacity:1;
-}
-</style>
 
 </div>
 
@@ -5859,5 +5732,138 @@ function renderARPanels(type, area, svcCoef) {
   if(document.readyState!=='loading') wizInit(); else document.addEventListener('DOMContentLoaded',wizInit);
 })();
 </script>
+
+<!-- ── AI KONSULTANTS (pārcelts no #tab-nod uz body līmeni 06.07.2026 — redzams visos skatos) ── -->
+<!-- Floating button -->
+<button id="ai-float-btn" onclick="toggleAIPanel()" title="AI Konsultants" style="
+  position:fixed;bottom:24px;right:24px;z-index:500;
+  width:58px;height:58px;border-radius:50%;
+  background:linear-gradient(135deg,var(--navy),#2d4a6b);
+  border:2px solid var(--gold);
+  box-shadow:0 4px 20px rgba(0,0,0,.4),0 0 0 0 rgba(200,168,75,.4);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;transition:all .2s;
+  animation:pulse-ring 2.5s ease-out infinite;
+" id="ai-fab">🤖</button>
+
+<!-- Floating panel -->
+<div id="ai-panel" style="
+  position:fixed;bottom:90px;right:24px;z-index:499;
+  width:400px;max-width:calc(100vw - 32px);
+  height:580px;max-height:calc(100vh - 110px);
+  background:white;border-radius:16px;
+  box-shadow:0 20px 60px rgba(0,0,0,.35),0 0 0 1px rgba(200,168,75,.2);
+  display:none;flex-direction:column;overflow:hidden;
+  transform:translateY(20px) scale(0.96);opacity:0;
+  transition:all .25s cubic-bezier(.34,1.56,.64,1);
+">
+  <!-- Panel header -->
+  <div style="
+    background:var(--navy);padding:14px 16px;
+    display:flex;align-items:center;justify-content:space-between;
+    border-radius:16px 16px 0 0;flex-shrink:0;
+  ">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="width:36px;height:36px;border-radius:50%;background:rgba(200,168,75,.15);border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:.95rem">🤖</div>
+      <div>
+        <div style="color:var(--gold);font-size:.9rem;font-weight:700">AI Konsultants</div>
+        <div style="color:rgba(255,255,255,.4);font-size:.65rem;letter-spacing:1px">Powered by Abacus AI</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <div id="ai-ctx-badge" style="display:none;background:rgba(200,168,75,.15);border:1px solid rgba(200,168,75,.3);border-radius:12px;padding:2px 8px;font-size:.6rem;color:var(--gold);font-weight:700;letter-spacing:.5px">📊 KONTEKSTS</div>
+      <button onclick="aiClearChat()" style="background:rgba(255,255,255,.08);border:none;border-radius:8px;padding:5px 10px;color:rgba(255,255,255,.5);font-size:.7rem;cursor:pointer;">Notīrīt</button>
+      <button onclick="toggleAIPanel()" style="background:rgba(255,255,255,.08);border:none;border-radius:8px;padding:5px 9px;color:rgba(255,255,255,.6);font-size:1rem;cursor:pointer;line-height:1">✕</button>
+    </div>
+  </div>
+
+  <!-- Context strip (shown when calculator has data) -->
+  <div id="ai-ctx-strip" style="display:none;background:#fffbf0;border-bottom:1px solid #fde68a;padding:7px 14px;font-size:.72rem;color:#78350f;flex-shrink:0">
+    <span id="ai-ctx-text"></span>
+    <button onclick="aiSendContext()" style="margin-left:8px;background:var(--gold);color:var(--navy);border:none;border-radius:8px;padding:2px 9px;font-size:.68rem;font-weight:700;cursor:pointer">Analizē ▶</button>
+  </div>
+
+  <!-- Quick buttons -->
+  <div style="padding:10px 12px 0;flex-shrink:0;background:#fafaf8;border-bottom:1px solid #f0ede6">
+    <div style="display:flex;flex-wrap:wrap;gap:5px;padding-bottom:8px">
+      <button class="ai-qbtn" onclick="aiQuick('Kur sākt ja gribu celt māju? Izskaidro soli pa solim.')">🏗 Kā sākt?</button>
+      <button class="ai-qbtn" onclick="aiQuick('Man ir patvaļīgi celta ēka. Ko darīt — pilns process?')">⚠️ Patvaļīga ēka</button>
+      <button class="ai-qbtn" onclick="aiQuick('Kas ir NOD un kāpēc tas vajadzīgs?')">📋 Kas ir NOD?</button>
+      <button class="ai-qbtn" onclick="aiQuick('Kāda atļauja vajadzīga manai situācijai?')">📑 Kāda atļauja?</button>
+      <button class="ai-qbtn" onclick="aiQuick('Kas ir BIS sistēma un kā tā darbojas?')">💻 Kas ir BIS?</button>
+      <button class="ai-qbtn" onclick="aiQuick('Cik maksā legalizācija? Dod orientējošu aprēķinu.')">💰 Cenas?</button>
+      <button class="ai-qbtn" onclick="aiQuick('Cik ilgi aizņem büvniecības process?')">⏱️ Termiņi?</button>
+      <button class="ai-qbtn" onclick="aiQuick('Kādi dokumenti vajadzīgi no klienta?')">📁 Dokumenti</button>
+    </div>
+  </div>
+
+  <!-- Chat messages -->
+  <div id="ai-chat-window" style="
+    flex:1;overflow-y:auto;padding:14px;
+    background:#fafaf8;
+    scroll-behavior:smooth;
+  "></div>
+
+  <!-- Input -->
+  <div style="padding:10px 12px;background:white;border-top:1px solid #e8e4da;flex-shrink:0">
+    <div style="display:flex;gap:8px;align-items:flex-end">
+      <textarea id="ai-input" rows="1" placeholder="Uzdod jautājumu latviski..." onkeydown="aiKeydown(event)" style="
+        flex:1;padding:9px 12px;border:1px solid #e2e8f0;border-radius:10px;
+        font-size:.88rem;outline:none;resize:none;height:40px;max-height:100px;
+        font-family:inherit;background:#fafaf8;transition:border-color .2s;
+      "></textarea>
+      <button id="ai-send-btn" onclick="aiSend()" style="
+        width:40px;height:40px;flex-shrink:0;
+        background:var(--navy);color:var(--gold);
+        border:none;border-radius:10px;font-size:1rem;
+        cursor:pointer;display:flex;align-items:center;justify-content:center;
+        transition:opacity .2s;
+      ">▶</button>
+    </div>
+    <div style="text-align:center;margin-top:5px;font-size:.6rem;color:#bbb">
+      Abacus AI · Volko Engineering zināšanu bāze
+    </div>
+  </div>
+</div>
+
+<style>
+.ai-qbtn {
+  font-size:.68rem;padding:4px 9px;
+  background:white;border:1px solid #e2e8f0;
+  border-radius:14px;cursor:pointer;color:#374151;
+  transition:all .15s;white-space:nowrap;
+}
+.ai-qbtn:hover { border-color:var(--gold);background:#fffbf0;color:var(--navy); }
+.msg { max-width:88%;margin-bottom:10px;line-height:1.55; }
+.msg.user {
+  margin-left:auto;background:var(--navy);color:white;
+  padding:9px 13px;border-radius:14px 14px 3px 14px;font-size:.86rem;
+}
+.msg.ai {
+  background:white;border:1px solid #e8e4da;
+  padding:10px 13px;border-radius:14px 14px 14px 3px;
+  font-size:.84rem;color:#1a2b3c;
+  box-shadow:0 1px 3px rgba(0,0,0,.06);
+}
+.msg.ai strong { color:var(--navy); }
+.msg.error { background:#fff5f5;border:1px solid #fca5a5;padding:9px 12px;border-radius:8px;font-size:.82rem;color:#c00; }
+.loading-dots { display:inline-flex;gap:4px;align-items:center;padding:4px 0; }
+.loading-dots span { width:6px;height:6px;background:var(--gold);border-radius:50%;animation:bounce 1.1s infinite; }
+.loading-dots span:nth-child(2){animation-delay:.18s}
+.loading-dots span:nth-child(3){animation-delay:.36s}
+@keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
+@keyframes pulse-ring {
+  0% { box-shadow:0 4px 20px rgba(0,0,0,.4),0 0 0 0 rgba(200,168,75,.5); }
+  70% { box-shadow:0 4px 20px rgba(0,0,0,.4),0 0 0 12px rgba(200,168,75,0); }
+  100% { box-shadow:0 4px 20px rgba(0,0,0,.4),0 0 0 0 rgba(200,168,75,0); }
+}
+#ai-fab:hover { transform:scale(1.1);box-shadow:0 6px 28px rgba(0,0,0,.5); }
+#ai-panel.open {
+  display:flex !important;
+  transform:translateY(0) scale(1);
+  opacity:1;
+}
+</style>
+
 </body>
 </html>
