@@ -1073,44 +1073,52 @@ body.wiz #ar-wizard ~ *{display:none!important}
 body.wiz #ai-float-btn{display:flex!important}
 body.wiz #ai-panel.open{display:flex!important}
 body:not(.wiz) #ar-wizard{display:none}
-.wiz-wrap{max-width:780px;margin:0 auto}
-.wiz-top{display:flex;gap:8px;align-items:center;font-size:.74rem;color:var(--muted);margin-bottom:16px}
-.wiz-dot{width:9px;height:9px;border-radius:50%;background:var(--border)}
-.wiz-dot.on{background:var(--gold)}
+/* ── Vizarda izskats v2 (06.07.2026): iekšējais darba rīks — ērti, ātri, šiki ── */
+body.wiz{background:linear-gradient(180deg,#f6f6f1 0%,#eeeee7 100%)}
+.wiz-wrap{max-width:960px;margin:0 auto;padding:0 8px}
+.wiz-top{display:flex;gap:9px;align-items:center;font-size:.76rem;font-weight:700;color:var(--muted);margin-bottom:18px}
+.wiz-dot{width:12px;height:12px;border-radius:50%;background:var(--border);transition:all .2s}
+.wiz-dot.on{background:var(--gold);box-shadow:0 0 0 4px rgba(200,168,75,.18)}
 .wiz-dot.done{background:var(--navy)}
 .wiz-step{display:none}
-.wiz-step.active{display:block}
-.wiz-h{font-size:1.3rem;font-weight:800;color:var(--navy);margin:0 0 4px}
-.wiz-sub{font-size:.84rem;color:var(--muted);margin-bottom:18px}
-.wiz-opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.wiz-step.active{display:block;background:#fff;border:1px solid var(--border);border-radius:16px;padding:26px 30px;box-shadow:0 1px 2px rgba(26,43,60,.05),0 14px 34px -18px rgba(26,43,60,.18)}
+@media(max-width:700px){.wiz-step.active{padding:18px 14px}}
+.wiz-h{font-size:1.5rem;font-weight:800;color:var(--navy);margin:0 0 4px;letter-spacing:-.01em}
+.wiz-sub{font-size:.86rem;color:var(--muted);margin-bottom:20px}
+.wiz-opts{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 @media(max-width:620px){.wiz-opts{grid-template-columns:1fr}}
-.wiz-opt{display:flex;gap:12px;align-items:flex-start;text-align:left;border:2px solid var(--border);background:#fff;border-radius:12px;padding:15px;cursor:pointer;font-family:inherit;transition:all .12s}
-.wiz-opt:hover{border-color:var(--gold);background:#fffdf6}
-.wiz-opt .ic{font-size:1.4rem;line-height:1}
+.wiz-opt{display:flex;gap:13px;align-items:flex-start;text-align:left;border:2px solid var(--border);background:#fff;border-radius:14px;padding:16px 17px;cursor:pointer;font-family:inherit;transition:all .14s}
+.wiz-opt:hover{border-color:var(--gold);background:#fffdf6;transform:translateY(-2px);box-shadow:0 8px 22px -12px rgba(26,43,60,.28)}
+.wiz-opt .ic{font-size:1.5rem;line-height:1}
 .wiz-opt>span:last-child{display:block;flex:1}
-.wiz-opt .t{display:block;font-size:.93rem;font-weight:800;color:var(--navy);margin-bottom:3px}
-.wiz-opt .d{display:block;font-size:.75rem;color:var(--muted);line-height:1.4;font-weight:400}
-.wiz-nav{display:flex;justify-content:space-between;margin-top:22px;gap:10px}
-.wiz-btn{padding:11px 20px;border-radius:9px;font-size:.85rem;font-weight:700;font-family:inherit;cursor:pointer;border:1px solid var(--border);background:#fff;color:var(--navy)}
-.wiz-btn:hover{border-color:var(--gold)}
-.wiz-btn.primary{background:var(--navy);color:var(--gold);border-color:var(--navy)}
-.wiz-field{margin-bottom:15px}
-.wiz-field>label{display:block;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:6px}
-.wiz-field select,.wiz-field input{width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:9px;font-size:.9rem;font-family:inherit;background:#fff;color:var(--text)}
+.wiz-opt .t{display:block;font-size:.95rem;font-weight:800;color:var(--navy);margin-bottom:3px}
+.wiz-opt .d{display:block;font-size:.76rem;color:var(--muted);line-height:1.45;font-weight:400}
+.wiz-nav{display:flex;justify-content:space-between;margin-top:24px;gap:10px}
+.wiz-btn{padding:12px 22px;border-radius:10px;font-size:.86rem;font-weight:700;font-family:inherit;cursor:pointer;border:1px solid var(--border);background:#fff;color:var(--navy);transition:all .13s}
+.wiz-btn:hover{border-color:var(--gold);transform:translateY(-1px);box-shadow:0 6px 16px -10px rgba(26,43,60,.35)}
+.wiz-btn.primary{background:linear-gradient(135deg,var(--navy),#26405a);color:var(--gold);border-color:var(--navy)}
+.wiz-field{margin-bottom:16px}
+.wiz-field>label{display:block;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.55px;color:var(--muted);margin-bottom:6px}
+.wiz-field select,.wiz-field input{width:100%;padding:12px 13px;border:1px solid var(--border);border-radius:10px;font-size:.92rem;font-family:inherit;background:#fff;color:var(--text);transition:border-color .12s,box-shadow .12s}
+.wiz-field select:focus,.wiz-field input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(200,168,75,.18)}
 .wiz-link{background:none;border:none;color:#2563eb;font-size:.78rem;cursor:pointer;font-family:inherit}
 .wiz-rchk{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
-.wiz-rchk label{display:flex;gap:6px;align-items:center;font-size:.8rem;border:1px solid var(--border);border-radius:8px;padding:7px 10px;cursor:pointer;background:#fff}
-.wiz-path{border:0.5px solid var(--border);border-left:4px solid var(--gold);border-radius:0 10px 10px 0;padding:14px 16px;background:#fffbef;margin-bottom:18px}
-.wiz-path .pd{font-size:.68rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--muted)}
-.wiz-path .pn{font-size:1.15rem;font-weight:800;color:var(--navy);margin:3px 0 5px}
-.wiz-path .pr{font-size:.8rem;color:var(--text);line-height:1.5}
-.wiz-sec-h{font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin:18px 0 6px}
-.wiz-srow{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px dashed #e2e8f0}
-.wiz-pill{flex:0 0 auto;font-size:.6rem;font-weight:800;padding:4px 8px;border-radius:20px;min-width:108px;text-align:center;white-space:nowrap}
-.wiz-seqitem{display:flex;gap:12px;padding:10px 0;border-bottom:1px dashed #e2e8f0}
+.wiz-rchk label{display:flex;gap:6px;align-items:center;font-size:.8rem;border:1px solid var(--border);border-radius:9px;padding:8px 11px;cursor:pointer;background:#fff;transition:all .12s}
+.wiz-rchk label:hover{border-color:var(--gold)}
+.wiz-path{border:1px solid #eadfbc;border-left:5px solid var(--gold);border-radius:0 12px 12px 0;padding:15px 18px;background:linear-gradient(135deg,#fffbef,#fff7e0);margin-bottom:18px}
+.wiz-path .pd{font-size:.68rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:#9a7d2e}
+.wiz-path .pn{font-size:1.2rem;font-weight:800;color:var(--navy);margin:3px 0 5px}
+.wiz-path .pr{font-size:.81rem;color:var(--text);line-height:1.55}
+.wiz-sec-h{font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--navy);margin:22px 0 8px;padding-bottom:5px;border-bottom:2px solid var(--gold);display:inline-block}
+.wiz-srow{display:flex;gap:12px;align-items:flex-start;padding:11px 6px;border-bottom:1px dashed #e2e8f0;border-radius:8px;transition:background .12s}
+.wiz-srow:hover{background:#fafaf4}
+.wiz-pill{flex:0 0 auto;font-size:.6rem;font-weight:800;padding:5px 8px;border-radius:20px;min-width:108px;text-align:center;white-space:nowrap;margin-top:1px}
+.wiz-seqitem{display:flex;gap:12px;padding:11px 6px;border-bottom:1px dashed #e2e8f0}
 .wiz-seqnum{flex:0 0 26px;width:26px;height:26px;border-radius:50%;background:var(--navy);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:800}
-.wiz-co{display:flex;align-items:center;justify-content:space-between;border-top:2px solid var(--navy);margin-top:14px;padding-top:13px}
-.wiz-co .v{font-size:1.5rem;font-weight:800;color:var(--navy)}
+/* Kopsumma — lipīga navy josla, vienmēr redzama ritinot */
+.wiz-co{position:sticky;bottom:10px;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:12px;background:linear-gradient(135deg,var(--navy),#26405a);border-radius:13px;margin-top:18px;padding:13px 18px;box-shadow:0 10px 26px -10px rgba(26,43,60,.55)}
+.wiz-co>span:first-child{color:rgba(255,255,255,.78)!important;font-size:.8rem}
+.wiz-co .v{font-size:1.55rem;font-weight:800;color:var(--gold);letter-spacing:.01em}
 #print-summary{display:none}
 @media print{
   body.printing>*:not(#print-summary){display:none!important}
@@ -5605,8 +5613,8 @@ function renderARPanels(type, area, svcCoef) {
       html+='<div class="wiz-srow"><span class="wiz-pill" style="background:'+p[1]+';color:'+p[2]+'">'+p[0]+'</span><div style="flex:1;min-width:0"><div style="font-weight:700;color:var(--navy);font-size:.82rem">'+s.name+'</div><div style="font-size:.74rem;color:var(--text);line-height:1.45;margin-top:1px">'+s.why+'</div></div>'+(checkable?'<span style="display:flex;align-items:center;gap:6px;margin-top:3px;white-space:nowrap"><input type="number" class="wiz-svc-price" data-svc="'+s.id+'" value="'+price+'" min="0" step="50" style="width:74px;text-align:right;border:1px dashed var(--gold);border-radius:6px;padding:2px 4px;font-weight:700;color:var(--navy);font-size:.85rem;background:transparent"><span style="font-size:.8rem;color:var(--muted)">€</span><input type="checkbox" class="wiz-svc" data-svc="'+s.id+'" data-price="'+price+'" data-name="'+s.name.replace(/"/g,'&quot;')+'" '+(checked?'checked':'')+'></span>':'')+'</div>';
     });
     html+='<div class="wiz-srow"><span class="wiz-pill" style="background:#f1f5f9;color:#64748b">VĒLĀK</span><div style="flex:1"><div style="font-weight:700;color:var(--navy);font-size:.82rem">NOD — nodošana ekspluatācijā</div><div style="font-size:.74rem;color:var(--text);line-height:1.45;margin-top:1px">Atsevišķs līgums pēc būvdarbu pabeigšanas — nav iekļauts šajā cenā.</div></div></div>';
-    // Kopā — cena + izvēlētie papildu pakalpojumi
-    html+='<div class="wiz-co"><span style="font-size:.8rem;color:var(--muted)">Kopā klientam (orientējoši, bez PVN)</span><span class="v wiz-total">—</span></div><div style="font-size:.68rem;color:var(--muted);margin-top:6px;display:flex;justify-content:space-between;gap:8px"><span>Cenas ✎ vari labot tieši šeit — kopsumma un izdruka pārrēķinās.</span><a href="#" onclick="wizResetPrices();return false" style="color:var(--gold);font-weight:700;white-space:nowrap">↺ Atjaunot aprēķinātās</a></div>';
+    // Cenu labošanas padoms (pie servisiem)
+    html+='<div style="font-size:.68rem;color:var(--muted);margin-top:6px;display:flex;justify-content:space-between;gap:8px"><span>Cenas ✎ vari labot tieši šeit — kopsumma un izdruka pārrēķinās.</span><a href="#" onclick="wizResetPrices();return false" style="color:var(--gold);font-weight:700;white-space:nowrap">↺ Atjaunot aprēķinātās</a></div>';
     // ③ CEĻŠ — ieceres dokuments un process (beigās)
     html+='<div class="wiz-sec-h">Ceļš — ieceres dokuments un process</div>'+pathHtml;
     const pdata=(typeof getPassportData==='function')?getPassportData(type):null;
@@ -5614,6 +5622,8 @@ function renderARPanels(type, area, svcCoef) {
       html+='<div class="wiz-sec-h">Process soli pa solim</div>';
       pdata.steps.forEach((st,i)=>{ html+='<div class="wiz-seqitem"><span class="wiz-seqnum">'+(i+1)+'</span><div style="flex:1"><div style="font-weight:700;color:var(--navy);font-size:.83rem">'+st.t+'</div><div style="font-size:.7rem;color:var(--muted)">'+(st.who?'Veic: '+st.who:'')+(st.dur?' · '+st.dur:'')+'</div>'+(st.why?'<div style="font-size:.73rem;color:var(--text);line-height:1.4;margin-top:2px">'+st.why+'</div>':'')+'</div></div>'; });
     }
+    // Kopā — KONTEINERA BEIGĀS, lai sticky josla ir redzama visu ritināšanas laiku
+    html+='<div class="wiz-co"><span style="font-size:.8rem;color:var(--muted)">Kopā klientam (orientējoši, bez PVN)</span><span class="v wiz-total">—</span></div>';
     res.innerHTML=html;
     function recalc(){ const bEl=res.querySelector('.wiz-price-base'); const b=bEl?(Math.max(0,parseInt(bEl.value)||0)):base; let t=b; res.querySelectorAll('.wiz-svc:checked').forEach(c=>{ t+=parseInt(c.dataset.price)||0; }); const el=res.querySelector('.wiz-total'); if(el) el.textContent=(b>0?t.toLocaleString('lv-LV')+' €':'pēc paketes'); }
     res.querySelectorAll('.wiz-svc').forEach(c=>c.addEventListener('change',recalc));
@@ -5743,7 +5753,7 @@ function renderARPanels(type, area, svcCoef) {
   box-shadow:0 4px 20px rgba(0,0,0,.4),0 0 0 0 rgba(200,168,75,.4);
   cursor:pointer;display:flex;align-items:center;justify-content:center;
   font-size:1.4rem;transition:all .2s;
-  animation:pulse-ring 2.5s ease-out infinite;
+  animation:pulse-ring 2.5s ease-out 3;
 " id="ai-fab">🤖</button>
 
 <!-- Floating panel -->
