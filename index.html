@@ -1173,9 +1173,9 @@ body.wiz{background:linear-gradient(180deg,#f6f6f1 0%,#eeeee7 100%)}
     </div>
     <div class="wiz-field" id="wiz-1993-wrap" style="display:none"><label>Cenas pamats</label>
       <div class="wiz-rchk">
-        <label><input type="checkbox" id="wiz-pirms1993" onchange="wizSync()"> Ēka celta PIRMS 1993. gada</label>
+        <label><input type="checkbox" id="wiz-pec1993" onchange="wizSync()"> Ēka celta PĒC 1993. gada (ja NAV atzīmēts — pieņem pirms 1993)</label>
       </div>
-      <div style="font-size:.7rem;color:var(--muted);margin-top:4px">Ēka nekad nav bijusi legāla — nosaka cenu likmi (izmaiņu projekts pirms 1993 / jaunbūve pēc 1993), procesu nemaina.</div>
+      <div style="font-size:.7rem;color:var(--muted);margin-top:4px">Ēka nekad nav bijusi legāla — noklusējums Izmaiņu projekts (pirms 1993), atzīmē ja PĒC 1993 → Jaunbūve. Procesu nemaina.</div>
     </div>
     <div class="wiz-field" id="wiz-ap-wrap" style="display:none"><label>Dzīvoklis / telpu grupa</label>
       <div class="wiz-rchk">
@@ -1333,9 +1333,9 @@ body[data-artype="jaunbuve"] #ar-jaunbuve-note{display:block}
 <label class="lbl">Legalizācijas cenas pamats</label>
 <label class="chk"><input type="checkbox" id="ar-nekad-nodota" onchange="calcAR()"> Ēka NEKAD nav nodota ekspluatācijā (uzcelta pilnībā bez atļaujas, nekad nebijusi legāla)</label>
 <div id="ar-1993-sub" style="display:none;margin-top:6px;padding-left:22px">
-<label class="chk"><input type="checkbox" id="ar-pirms-1993" onchange="calcAR()"> Celta PIRMS 1993. gada</label>
+<label class="chk"><input type="checkbox" id="ar-pec-1993" onchange="calcAR()"> Celta PĒC 1993. gada (ja NAV atzīmēts — pieņem pirms 1993)</label>
 </div>
-<div style="font-size:.66rem;color:var(--muted);margin-top:5px">Rekonstrukcijas cena der TIKAI jau legālas (nodotas ekspluatācijā) ēkas pārbūvei. Ja ēka NEKAD nav bijusi legāla — cena pēc Izmaiņu projekta likmes (pirms 1993) vai Jaunbūves likmes (pēc 1993); process/dokuments paliek legalizācijas ceļš.</div>
+<div style="font-size:.66rem;color:var(--muted);margin-top:5px">Rekonstrukcijas cena der TIKAI jau legālas (nodotas ekspluatācijā) ēkas pārbūvei. Ja ēka NEKAD nav bijusi legāla — noklusējums Izmaiņu projekta likme (pirms 1993, biežākais gadījums); atzīmē, ja tiešām celta pēc 1993 — tad Jaunbūves likme. Process/dokuments paliek legalizācijas ceļš.</div>
 </div>
 <div class="field"><label class="lbl">Pašvaldība</label>
 <div class="muni-ac">
@@ -3104,11 +3104,11 @@ function calcAR(){
   const vecumsWrap=document.getElementById("ar-vecums-wrap");
   if(vecumsWrap)vecumsWrap.style.display=legalRisk?'block':'none';
   const nekadNodota=legalRisk&&document.getElementById('ar-nekad-nodota')?.checked;
-  const pirms1993=document.getElementById('ar-pirms-1993')?.checked;
+  const pec1993=document.getElementById('ar-pec-1993')?.checked;
   const sub1993=document.getElementById('ar-1993-sub');
   if(sub1993)sub1993.style.display=nekadNodota?'block':'none';
   let rKey=isLeg?(LEGAL_RATE[type]||"rekonstrukcija"):type;
-  if(nekadNodota) rKey=pirms1993?"izmaiņu":"jaunbuve";
+  if(nekadNodota) rKey=pec1993?"jaunbuve":"izmaiņu";
   const rates=AR_RATES[rKey];if(!rates)return;
   const rate=rates[bi(area)];
   const base=area*rate*fCoef*gCoef*muni.p*eCoef;
@@ -3123,7 +3123,7 @@ function calcAR(){
   document.getElementById("ar-p-client").textContent=eur(totCli);
   document.getElementById("ar-p-int").textContent=eur(totInt);
   let bh=`<div class="br"><span>Likme (${rKey})</span><span>${rate} €/m²</span></div><div class="br"><span>Platība</span><span>${area} m²</span></div><div class="br"><span>Funkcija</span><span>×${fCoef.toFixed(2)}</span></div><div class="br"><span>Sarežģītība (cenu grupa ${gP})</span><span>×${gCoef.toFixed(2)}</span></div>${g!==gP?`<div class="br"><span style="color:var(--muted);font-size:.7rem">ℹ️ Juridiski ${g} grupa (MK 500), cenai lieto ${gP} gr. likmi</span><span></span></div>`:""}<div class="br"><span>Pašvaldība</span><span>×${muni.p.toFixed(2)}</span></div>${encs>0?`<div class="br"><span>Apgrūtinājumi (${encs}×10%)</span><span>×${eCoef.toFixed(2)}</span></div>`:""}<div class="br tot"><span>AR projekts</span><span>${eur(arInt)}</span></div>`;
-  if(nekadNodota) bh = `<div class="br"><span style="color:var(--muted);font-size:.7rem">Ēka nekad nav nodota ekspluatācijā (celta ${pirms1993?'pirms':'pēc'} 1993) — lieto ${pirms1993?'Izmaiņu projekta':'Jaunbūves'} likmi, ne rekonstrukcijas</span><span></span></div>` + bh;
+  if(nekadNodota) bh = `<div class="br"><span style="color:var(--muted);font-size:.7rem">Ēka nekad nav nodota ekspluatācijā (celta ${pec1993?'pēc':'pirms'} 1993) — lieto ${pec1993?'Jaunbūves':'Izmaiņu projekta'} likmi, ne rekonstrukcijas</span><span></span></div>` + bh;
   document.getElementById("ar-brkd").innerHTML=bh;
   window._lastArInt=arInt; // legalizācijas paketes lieto šo pašu AR cenu (konsistencei ar galveno)
   renderARPanels(type,area,muni.s);
@@ -5540,7 +5540,7 @@ function renderARPanels(type, area, svcCoef) {
     cur=sit;
     document.getElementById('wiz-risk-wrap').style.display=(sit.k==='legaliz')?'block':'none';
     const w93=document.getElementById('wiz-1993-wrap'); if(w93) w93.style.display=(sit.k==='legaliz')?'block':'none';
-    const wp93=document.getElementById('wiz-pirms1993'); if(wp93) wp93.checked=false;
+    const wp93=document.getElementById('wiz-pec1993'); if(wp93) wp93.checked=false;
     const subw=document.getElementById('wiz-sub-wrap'); if(subw) subw.style.display=(sit.special==='aktiva')?'block':'none';
     document.getElementById('wiz-s2sub').textContent=sit.special==='aktiva'?'Izvēlies, ko vajag ar esošo būvatļauju (ēkas dati noder izmaiņu novērtējumam).':'Daži dati, lai noteiktu būves grupu un ceļu.';
     if(!sit.special){
@@ -5550,7 +5550,7 @@ function renderARPanels(type, area, svcCoef) {
       const c2=document.getElementById('c2'); if(c2) c2.checked=!!sit.c2;
       // "Uzbūvēts BEZ atļaujas" = ēka NEKAD nav bijusi legāla -> auto-atzīmē (skat. volko-legalizacija-1993-price-tier)
       const nn=document.getElementById('ar-nekad-nodota'); if(nn) nn.checked=(sit.k==='legaliz');
-      const p93=document.getElementById('ar-pirms-1993'); if(p93) p93.checked=false;
+      const p93=document.getElementById('ar-pec-1993'); if(p93) p93.checked=false;
     }
     wizPrefill();
     wizGo(2);
@@ -5569,7 +5569,7 @@ function renderARPanels(type, area, svcCoef) {
     const wa=document.getElementById('wiz-area'), aa=document.getElementById('ar-area'); if(wa&&aa) aa.value=wa.value;
     const wfl=document.getElementById('wiz-floors'), afl=document.getElementById('ar-floors'); if(wfl&&afl) afl.value=wfl.value;
     if(cur&&cur.k==='legaliz'){ ['c1','c3','c4'].forEach(id=>{ const w=document.getElementById('wiz-'+id), a=document.getElementById(id); if(w&&a) a.checked=w.checked; });
-      const wp=document.getElementById('wiz-pirms1993'), ap=document.getElementById('ar-pirms-1993'); if(wp&&ap) ap.checked=wp.checked; }
+      const wp=document.getElementById('wiz-pec1993'), ap=document.getElementById('ar-pec-1993'); if(wp&&ap) ap.checked=wp.checked; }
     // Dzīvokļa (telpu grupas) jautājumi — rāda tikai, ja izvēlēta dzīvokļa funkcija; sinhronizē uz galveno formu
     const cat=af&&af.selectedOptions[0]?af.selectedOptions[0].dataset.cat:'';
     const apw=document.getElementById('wiz-ap-wrap'); if(apw) apw.style.display=(cat==='apartment')?'block':'none';
