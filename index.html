@@ -2782,6 +2782,14 @@ const PZ_A=400;  // Klients dara pats (ko likums pieļauj) — Volko tikai palī
 const PZ_B=950;  // Volko sagatavo pilnu paziņojumu (SA + situācijas plāns/novietojums), BEZ skices — minimums
 const PZ_C=1800; // + Volko sagatavo arī skici (papildu, likumā nav obligāti) — sākot ar, + pēc pašvaldības
 const GC={I:0.75,II:1.20,III:1.80};
+// AR likmes (€/m²) manuāla pārrakstīšana — saistīta ar konkrētu likmju tabulu+diapazonu, atkrīt ja tie mainās.
+let _rateOv=null; // {rKey, bracket, val}
+function editRate(el){
+  const v=parseFloat(el.value);
+  if(!isNaN(v)&&v>=0) _rateOv={rKey:window._lastRKey,bracket:window._lastBracket,val:v};
+  if(typeof calcAR==="function") calcAR();
+}
+function resetRate(){ _rateOv=null; if(typeof calcAR==="function") calcAR(); }
 const LEGAL_RATE={la:"rekonstrukcija",lbv:"vienk",lbp:"rekonstrukcija",lc:"rekonstrukcija"};
 // NOD (nodošana ekspluatācijā) NETIEK iekļauta pirmajā līgumā — atsevišķs līgums pēc būvniecības
 const LEGAL_SVC={la:{I:[],II:[["ESI",950],["TAA",400]],III:[["ESI",950],["TAA",400]]},lbv:{I:[],II:[],III:[]},lbp:{I:[["TAA",400]],II:[["TAA",400]],III:[["TAA",400]]},lc:{I:[["ESI",950]],II:[["ESI",950]],III:[["ESI",950]]}};
@@ -3110,7 +3118,10 @@ function calcAR(){
   let rKey=isLeg?(LEGAL_RATE[type]||"rekonstrukcija"):type;
   if(nekadNodota) rKey=pec1993?"jaunbuve":"izmaiņu";
   const rates=AR_RATES[rKey];if(!rates)return;
-  const rate=rates[bi(area)];
+  const bracket=bi(area);
+  const rateCalc=rates[bracket];
+  const rate=(_rateOv&&_rateOv.rKey===rKey&&_rateOv.bracket===bracket)?_rateOv.val:rateCalc;
+  window._lastRKey=rKey; window._lastBracket=bracket;
   const base=area*rate*fCoef*gCoef*muni.p*eCoef;
   const minA=AR_MINS[nekadNodota?rKey:(isLeg?type:rKey)];
   const minV=minA?(area<=60?minA[0]:minA[1]):0;
@@ -3122,7 +3133,10 @@ function calcAR(){
   document.getElementById("ar-p-fixed").style.display="none";
   document.getElementById("ar-p-client").textContent=eur(totCli);
   document.getElementById("ar-p-int").textContent=eur(totInt);
-  let bh=`<div class="br"><span>Likme (${rKey})</span><span>${rate} €/m²</span></div><div class="br"><span>Platība</span><span>${area} m²</span></div><div class="br"><span>Funkcija</span><span>×${fCoef.toFixed(2)}</span></div><div class="br"><span>Sarežģītība (cenu grupa ${gP})</span><span>×${gCoef.toFixed(2)}</span></div>${g!==gP?`<div class="br"><span style="color:var(--muted);font-size:.7rem">ℹ️ Juridiski ${g} grupa (MK 500), cenai lieto ${gP} gr. likmi</span><span></span></div>`:""}<div class="br"><span>Pašvaldība</span><span>×${muni.p.toFixed(2)}</span></div>${encs>0?`<div class="br"><span>Apgrūtinājumi (${encs}×10%)</span><span>×${eCoef.toFixed(2)}</span></div>`:""}<div class="br tot"><span>AR projekts</span><span>${eur(arInt)}</span></div>`;
+  const rateOverridden=(_rateOv&&_rateOv.rKey===rKey&&_rateOv.bracket===bracket);
+  const _RO_LINK=rateOverridden?' <a href="#" onclick="resetRate();return false" title="Atjaunot aprēķināto likmi" style="color:#2563eb;font-size:.68rem">↺</a>':'';
+  const _RATE_INPUT=`<input type="number" min="0" step="0.5" value="${rate}" onchange="editRate(this)" title="Maini likmi €/m²" style="width:56px;text-align:right;padding:2px 5px;border:1px solid ${rateOverridden?'var(--gold)':'var(--border)'};border-radius:5px;font-family:inherit;font-size:.8rem"> €/m²`;
+  let bh=`<div class="br"><span>Likme (${rKey})${_RO_LINK}</span><span>${_RATE_INPUT}</span></div><div class="br"><span>Platība</span><span>${area} m²</span></div><div class="br"><span>Funkcija</span><span>×${fCoef.toFixed(2)}</span></div><div class="br"><span>Sarežģītība (cenu grupa ${gP})</span><span>×${gCoef.toFixed(2)}</span></div>${g!==gP?`<div class="br"><span style="color:var(--muted);font-size:.7rem">ℹ️ Juridiski ${g} grupa (MK 500), cenai lieto ${gP} gr. likmi</span><span></span></div>`:""}<div class="br"><span>Pašvaldība</span><span>×${muni.p.toFixed(2)}</span></div>${encs>0?`<div class="br"><span>Apgrūtinājumi (${encs}×10%)</span><span>×${eCoef.toFixed(2)}</span></div>`:""}<div class="br tot"><span>AR projekts</span><span>${eur(arInt)}</span></div>`;
   if(nekadNodota) bh = `<div class="br"><span style="color:var(--muted);font-size:.7rem">Ēka nekad nav nodota ekspluatācijā (celta ${pec1993?'pēc':'pirms'} 1993) — lieto ${pec1993?'Jaunbūves':'Izmaiņu projekta'} likmi, ne rekonstrukcijas</span><span></span></div>` + bh;
   document.getElementById("ar-brkd").innerHTML=bh;
   window._lastArInt=arInt; // legalizācijas paketes lieto šo pašu AR cenu (konsistencei ar galveno)
