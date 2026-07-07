@@ -1048,7 +1048,7 @@ body { font-family:-apple-system,'Segoe UI',sans-serif; background:var(--bg); co
 
 <div id="app" style="display:none">
 <header>
-<div class="h-logo">
+<div class="h-logo" onclick="if(typeof wizEnter==='function')wizEnter()" style="cursor:pointer" title="Uz sākumu">
 <svg width="30" height="30" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><defs>
 <linearGradient id="lghd" x1="0" y1="0" x2="0" y2="1">
 <stop offset="0%" stop-color="#f0d060"/>
@@ -1319,6 +1319,18 @@ body[data-artype="jaunbuve"] #ar-jaunbuve-note{display:block}
 </div>
 <div style="font-size:.66rem;color:var(--muted);margin-top:5px;line-height:1.45">Telpu grupai būves grupu (I/II/III pēc MK 500) <strong>nenosaka</strong> — dokumenta veidu nosaka darbu raksturs: <strong>apvienošana / robežu maiņa = pārbūve</strong> (Būvniecības likums) → paskaidrojuma raksts; <strong>atjaunošana</strong> bez robežu maiņas un nesošo skaršanas → paziņojums par būvniecību. Projekta veidu izvēlies augšā: pārbūve/apvienošana → "Rekonstrukcija / pārbūve"; atjaunošana → "Vienkāršota atjaunošana".</div>
 </div>
+<div class="field" id="ar-nemaina-wrap" style="display:none">
+<label class="chk"><input type="checkbox" id="ar-nemaina-apjomu" onchange="calcAR()"> Pārbūve/atjaunošana NEMAINA būvapjomu, lietošanas veidu vai arhitektonisko veidolu (fasādi)</label>
+<div style="font-size:.66rem;color:var(--muted);margin-top:3px">Ja atzīmēts UN ēka jau ir LEGĀLA (ne legalizācija) → EBN 7.3.1./7.4.1. — nekāds ieceres dokuments nav vajadzīgs.</div>
+</div>
+<div class="field" id="ar-vecums-wrap" style="display:none;background:#fffbf0;border:1px solid var(--gold);border-radius:10px;padding:11px 13px">
+<label class="lbl">Legalizācijas cenas pamats</label>
+<label class="chk"><input type="checkbox" id="ar-nekad-nodota" onchange="calcAR()"> Ēka NEKAD nav nodota ekspluatācijā (uzcelta pilnībā bez atļaujas, nekad nebijusi legāla)</label>
+<div id="ar-1993-sub" style="display:none;margin-top:6px;padding-left:22px">
+<label class="chk"><input type="checkbox" id="ar-pirms-1993" onchange="calcAR()"> Celta PIRMS 1993. gada</label>
+</div>
+<div style="font-size:.66rem;color:var(--muted);margin-top:5px">Rekonstrukcijas cena der TIKAI jau legālas (nodotas ekspluatācijā) ēkas pārbūvei. Ja ēka NEKAD nav bijusi legāla — cena pēc Izmaiņu projekta likmes (pirms 1993) vai Jaunbūves likmes (pēc 1993); process/dokuments paliek legalizācijas ceļš.</div>
+</div>
 <div class="field"><label class="lbl">Pašvaldība</label>
 <div class="muni-ac">
   <input type="text" id="ar-muni-search" autocomplete="off" placeholder="Sāc rakstīt: Rīga, Mārupe, Kuldīga…" oninput="muniFilter(this.value)" onfocus="muniFilter(this.value)" onblur="muniBlur()">
@@ -1357,6 +1369,14 @@ body[data-artype="jaunbuve"] #ar-jaunbuve-note{display:block}
 <label class="chk"><input type="checkbox" id="c5" onchange="calcAR()"> Steidzams termiņš</label>
 <div class="risk-box" id="rb5"><strong>Steidzamība</strong>Mūsu darbu var paātrināt. Pašvaldības 30 dienas — nemainās.</div>
 </div></div>
+<div class="field" id="ar-pz-gp-wrap" style="display:none">
+<label class="lbl">Paziņojuma pakalpojuma līmenis</label>
+<div class="checks">
+<label class="chk"><input type="radio" name="ar-pz-tier" id="ar-pz-a" value="a" onchange="calcAR()"> Klients dara pats — Volko tikai iesniedz BIS (400€)</label>
+<label class="chk"><input type="radio" name="ar-pz-tier" id="ar-pz-b" value="b" onchange="calcAR()" checked> Volko sagatavo pilnu paziņojumu (SA + situācijas plāns), bez skices (950€)</label>
+<label class="chk"><input type="radio" name="ar-pz-tier" id="ar-pz-c" value="c" onchange="calcAR()"> + Volko sagatavo arī skici (papildu, nav obligāti pēc likuma) — sākot ar 1800€</label>
+</div>
+</div>
 </div>
 </div>
 <div>
@@ -2750,6 +2770,11 @@ function toggleView(){
 const AR_RATES={jaunbuve:[32,30,28,26,24,22,21,20,19,18,16],"izmaiņu":[22,20,18,16,15,14,13,12,11,10,9],rekonstrukcija:[30,28,26,24,22,20,19,18,17,16,14],vienk:[21,19,17,15,14,13,12,11,10,9,8],"nojaukšana":[10,9,8,7,6,5,5,5,4,4,4],tipveida:[14,12,11,10,9,8,7,6,6,6,5]};
 const AR_BRACKS=[30,60,90,120,150,180,210,240,270,300,Infinity];
 const AR_MINS={jaunbuve:[1700,2100],"izmaiņu":[1700,2100],rekonstrukcija:[2500,2900],la:[2500,2900],lbp:[2500,2900]};
+// Paziņojums par būvniecību (7.¹4.) — AR/TAA/BK NAV vajadzīgi (Māras tabula JN7).
+// Cenas apstiprinājis Vladimirs (07.07.2026, e-pasts "Cena Paziņojums par būvniecību"), 3 līmeņi:
+const PZ_A=400;  // Klients dara pats (ko likums pieļauj) — Volko tikai palīdz iesniegt BIS
+const PZ_B=950;  // Volko sagatavo pilnu paziņojumu (SA + situācijas plāns/novietojums), BEZ skices — minimums
+const PZ_C=1800; // + Volko sagatavo arī skici (papildu, likumā nav obligāti) — sākot ar, + pēc pašvaldības
 const GC={I:0.75,II:1.20,III:1.80};
 const LEGAL_RATE={la:"rekonstrukcija",lbv:"vienk",lbp:"rekonstrukcija",lc:"rekonstrukcija"};
 // NOD (nodošana ekspluatācijā) NETIEK iekļauta pirmajā līgumā — atsevišķs līgums pēc būvniecības
@@ -2805,8 +2830,8 @@ function bkRequired(type,g,cat,area){
   if(g==="III") return {f:'yes', t:'III grupai vajadzīgs būvprojekts → būvkonstrukciju (BK) daļa obligāta.'};
   if(cat==="aux" && g!=="I"){
     if(type==="rekonstrukcija"||type==="lbp"||type==="la")
-      return {f:'cond', t:'Palīgēkas pārbūvei/legalizācijai — ja darbi skar nesošās konstrukcijas, BK daļa vajadzīga (EBN P3 — nosacīti); ja ne, pietiek ar paskaidrojuma rakstu. ⚠ Liela apjoma saimniecības/lauksaimniecības ēka var būt III grupa → tad BK obligāts (precizē grupu Vladimiram).'};
-    return {f:'no', t:'Palīgēkas (pirts, saimniecības ēka, garāža) jaunbūvei/atjaunošanai pietiek ar paskaidrojuma rakstu — atsevišķa BK daļa nav obligāta (konstruktīvo risinājumu tomēr projektē). ⚠ Ļoti liela saimniecības ēka var būt III grupa → tad BK obligāts (precizē grupu Vladimiram).'};
+      return {f:'cond', t:'Palīgēkas pārbūvei/legalizācijai — ja darbi skar nesošās konstrukcijas, BK daļa vajadzīga (EBN P3 — nosacīti); ja ne, pietiek ar paskaidrojuma rakstu. Būves grupa noteikta: II (ja tā ir ražošanas/noliktavas mēroga ēka >2000 m² → izvēlies funkciju "Noliktava"/"Ražošana", tad grupa pārrēķinās uz III).'};
+    return {f:'no', t:'Palīgēkas (pirts, saimniecības ēka, garāža) jaunbūvei/atjaunošanai pietiek ar paskaidrojuma rakstu — atsevišķa BK daļa nav obligāta (konstruktīvo risinājumu tomēr projektē). Būves grupa noteikta: II (ja tā ir ražošanas/noliktavas mēroga ēka >2000 m² → izvēlies funkciju "Noliktava"/"Ražošana", tad grupa pārrēķinās uz III).'};
   }
   if(g==="I") return {f:'no', t:'I grupas ēkai pietiek ar paskaidrojuma rakstu — BK daļa nav obligāta.'};
   if(type==="vienk") return {f:'no', t:'Vienkāršotā atjaunošanā nesošās konstrukcijas netiek skartas → BK daļa nav nepieciešama.'};
@@ -2850,8 +2875,13 @@ function pathReason(dt,g,cat,sub,area){
   if(type==='lc') return 'Lietošanas veida (funkcijas) maiņa BEZ pārbūves — paskaidrojuma raksts (MK Nr. 529 7.²7.), ja pašvaldības TIAN atļauj jauno funkciju. Kopā ar pārbūvi → būvprojekts.';
   // Pārbūve / rekonstrukcija / legalizācija
   if(type==='rekonstrukcija'||type==='lbp'||type==='la'){
+    const legRiskPr=type==='la'||type==='lbp'||document.getElementById('c2')?.checked;
+    const nemainaPr=document.getElementById('ar-nemaina-apjomu')?.checked;
+    const floorsPr=parseInt(document.getElementById('ar-floors')?.value)||1;
     if(g==='III') return 'III grupas ēkas pārbūve → būvprojekts + būvatļauja (MK Nr. 529 7.³).';
+    if(!legRiskPr&&nemainaPr&&g==='I') return 'I grupas ēkas pārbūve, NEmainot būvapjomu, lietošanas veidu vai arhitektonisko veidolu — NEKĀDS ieceres dokuments nav vajadzīgs (MK Nr. 529 7.3.1.). Der tikai jau legālai ēkai.';
     if(g==='I') return 'I grupas ēkas pārbūve, nepārsniedzot I grupas rādītājus — paskaidrojuma raksts (MK Nr. 529 7.²4.).';
+    if(!legRiskPr&&nemainaPr&&cat==='aux'&&floorsPr<=1&&g==='II') return 'Vienstāva 2. grupas palīgēkas pārbūve/atjaunošana, NEmainot būvapjomu vai lietošanas veidu — NEKĀDS ieceres dokuments nav vajadzīgs (MK Nr. 529 7.4.1.). Der tikai jau legālai ēkai.';
     if(cat==='aux') return 'Palīgēkas / lauksaimniecības nedzīvojamās ēkas pārbūve, nemainot grupu — paskaidrojuma raksts (MK Nr. 529 7.²11.).';
     if(cat==='dwelling'&&sub==='single') return 'Viena vai divu dzīvokļu mājas pārbūve, NEMAINOT lietošanas veidu un grupu — paskaidrojuma raksts (MK Nr. 529 7.²11.; pārbūvei nav 200 m² ierobežojuma). Ja maina apjomu/funkciju vai ceļ grupu → būvprojekts.';
     return 'Daudzdzīvokļu / publiskas II grupas ēkas pārbūve → būvprojekts + būvatļauja (MK Nr. 529 7.³).';
@@ -2882,13 +2912,22 @@ function determineServices(type,g,cat,area){
     // BK — atkārtoti izmanto bkRequired (apartment-aware)
     const bk=bkRequired(type,g,cat,area);
     apt.push({id:'bk',name:'BK — Būvkonstrukciju daļa',status:bk.f,why:bk.t});
-    // Kopīpašnieku saskaņojums
-    apt.push({id:'koop',name:'Kopīpašnieku saskaņojums',status:(enc('c3')||zg)?'yes':'cond',why:'Daudzdzīvokļu mājā telpu grupas robežu maiņa / apvienošana skar kopīpašumu — vajadzīgs pārējo dzīvokļu īpašnieku saskaņojums (parasti dzīvokļu īpašnieku kopības lēmums).'});
-    // Kadastrālā uzmērīšana + ZG — mērķim ierakstīt zemesgrāmatā
-    if(zg){
-      apt.push({id:'kad',name:'Kadastrālā uzmērīšana + datu aktualizācija kadastrā',status:'yes',why:'Lai apvienoto/izmainīto telpu grupu ierakstītu zemesgrāmatā, pēc būvvaldes saskaņošanas vajadzīga kadastrālā uzmērīšana un telpu grupas datu aktualizācija VZD kadastrā.'});
-      apt.push({id:'zg',name:'Ieraksts zemesgrāmatā',status:'yes',why:'Dzīvokļa īpašuma izmaiņas (apvienošana) nostiprina zemesgrāmatā — dzīvokļa īpašums uzskatāms par nodibinātu tikai ar ierakstu zemesgrāmatā (Dzīvokļa īpašuma likuma 6. pants).'});
-    }
+    // EPS — dzīvoklim energosertifikāts parasti nav vajadzīgs, bet rādām ar pamatojumu (ne noslēpjam)
+    apt.push({id:'eps',name:'EPS — Energoefektivitāte',status:'no',why:'Atsevišķam dzīvoklim / telpu grupai energoefektivitātes pārskats parasti nav vajadzīgs — to sagatavo visai ēkai, ne vienam dzīvoklim. Ieslēdz tikai, ja pašvaldība to konkrēti pieprasa.'});
+    // TI — topogrāfija dzīvoklim nav vajadzīga (darbi ēkas iekšienē, nav ĢP/novietnes), bet rādām ar pamatojumu
+    apt.push({id:'ti',name:'TI — Topogrāfija',status:'no',why:'Darbi notiek ēkas iekšienē — nav ģenerālplāna vai novietnes daļas, tāpēc topogrāfija nav vajadzīga. Ieslēdz tikai, ja projekts tomēr skar ārtelpu.'});
+    // Kopīpašnieku saskaņojums — CIK PARAKSTU (Dzīvokļa īpašuma likums, verificēts likumi.lv)
+    apt.push({id:'koop',name:'Kopīpašnieku saskaņojums',status:(enc('c3')||zg||load)?'yes':'cond',
+      why: load
+        ? 'Darbi skar nesošās konstrukcijas — tās ir mājas kopīpašums, tāpēc vajadzīga VISU dzīvokļu īpašnieku (100%) piekrišana (Dzīvokļa īpašuma likuma 16. panta 2. daļas 1. punkts + 17. panta 5. daļa — kopīpašumā esošās daļas pārgrozīšana).'
+        : 'Telpu grupas pārbūvei, kas neskar kopīpašumu, pietiek ar dzīvokļu īpašnieku kopības lēmumu — "par" vairāk nekā puse, t.i. >50% visu dzīvokļu īpašumu (Dzīvokļa īpašuma likuma 17. panta 3. daļa). ⚠ Ja apvienošana maina kopīpašuma domājamās daļas → vajadzīga VISU īpašnieku (100%) piekrišana.'});
+    // Kadastrālā uzmērīšana + ZG — rāda VIENMĒR, statuss pēc mērķa (nenoslēpjam)
+    apt.push({id:'kad',name:'Kadastrālā uzmērīšana + datu aktualizācija kadastrā',status:zg?'yes':'no',why: zg
+      ? 'Lai apvienoto/izmainīto telpu grupu ierakstītu zemesgrāmatā, pēc būvvaldes saskaņošanas vajadzīga kadastrālā uzmērīšana un telpu grupas datu aktualizācija VZD kadastrā.'
+      : 'Vajadzīga tikai, ja mērķis ir ierakstīt izmaiņas zemesgrāmatā (atzīmē "Mērķis — ieraksts zemesgrāmatā" augšā).'});
+    apt.push({id:'zg',name:'Ieraksts zemesgrāmatā',status:zg?'yes':'no',why: zg
+      ? 'Dzīvokļa īpašuma izmaiņas (apvienošana) nostiprina zemesgrāmatā — dzīvokļa īpašums uzskatāms par nodibinātu tikai ar ierakstu zemesgrāmatā (Dzīvokļa īpašuma likuma 6. pants).'
+      : 'Attiecas tikai uz mērķi ierakstīt izmaiņas zemesgrāmatā — atsevišķs posms pēc būvvaldes akcepta.'});
     return apt;
   }
   const heated=(cat==='dwelling'||cat==='public');
@@ -2934,7 +2973,7 @@ function renderSvcAuto(type,area,floors,cat){
   const sub=document.getElementById('ar-func')?.selectedOptions[0]?.dataset.sub||'';
   const funcName=document.getElementById('ar-func')?.selectedOptions[0]?.text||'';
   const dt=docTypeFor(area,g);
-  const DOC={pr:{lbl:'📋 Paskaidrojuma raksts',bg:'#fffbeb',br:'var(--gold)'},pz:{lbl:'📨 Paziņojums par būvniecību',bg:'#eff6ff',br:'#2563eb'},bp:{lbl:'🏗 Būvprojekts + būvatļauja',bg:'#fef2f2',br:'#dc2626'}};
+  const DOC={pr:{lbl:'📋 Paskaidrojuma raksts',bg:'#fffbeb',br:'var(--gold)'},pz:{lbl:'📨 Paziņojums par būvniecību',bg:'#eff6ff',br:'#2563eb'},bp:{lbl:'🏗 Būvprojekts + būvatļauja',bg:'#fef2f2',br:'#dc2626'},none:{lbl:'✓ Nav dokumenta nepieciešams',bg:'#f0fdf4',br:'#16a34a'}};
   const d=DOC[dt]||DOC.bp;
   const grpLine=cat==='apartment'?'Telpu grupa (dzīvoklis) — būves grupu nenosaka':'Būves grupa: <strong>'+g+'</strong>';
   document.getElementById('ar-svc-path').innerHTML=`<div style="padding:11px 14px;border-radius:0 8px 8px 0;background:${d.bg};border-left:3px solid ${d.br}">
@@ -2996,6 +3035,50 @@ function calcAR(){
     return;
   }
   const g=grp(area,floors,cat);const gP=grpPrice(area,floors);const gCoef=GC[gP];
+  const legRiskNow=type==='la'||type==='lbp'||document.getElementById('c2')?.checked;
+  const nemainaWrap=document.getElementById("ar-nemaina-wrap");
+  if(nemainaWrap)nemainaWrap.style.display=(type==='rekonstrukcija'&&!legRiskNow)?'block':'none';
+  const dt=docTypeFor(area,g);
+  const pzWrap=document.getElementById("ar-pz-gp-wrap");
+  if(pzWrap)pzWrap.style.display=(dt==='pz'&&!isLeg)?'block':'none';
+  if(dt==='none'){
+    document.getElementById("ar-p-empty").style.display="none";
+    document.getElementById("ar-p-result").style.display="block";
+    document.getElementById("ar-p-fixed").style.display="none";
+    document.getElementById("ar-p-client").textContent=eur(0);
+    document.getElementById("ar-p-int").textContent=eur(0);
+    document.getElementById("ar-brkd").innerHTML=`<div class="br"><span style="color:#166534;font-weight:700">✓ Nekāds ieceres dokuments nav vajadzīgs (EBN 7. p. — nav nepieciešams)</span><span>0 €</span></div><div class="br"><span style="color:var(--muted);font-size:.7rem">ℹ️ Der TIKAI jau legālai (saskaņotai) ēkai, kad pārbūve/atjaunošana nemaina apjomu, lietošanas veidu vai veidolu. Volko papildu pakalpojumi (konsultācija u.c.) — pēc vienošanās, nav obligāti šai darbībai.</span><span></span></div>`;
+    window._lastArInt=0;
+    renderARPanels(type,area,muni.s);
+    const _mname0=document.getElementById("ar-muni-search")?.value||window._arMuniName||"";
+    renderPassport(type,area,floors,_mname0,muni.s);
+    if(typeof showMuniInfo==="function") showMuniInfo(document.getElementById("ar-muni").value);
+    if(typeof showPreChecklist==="function") showPreChecklist(type);
+    return;
+  }
+  if(dt==='pz'&&!isLeg){
+    const tier=(document.querySelector('input[name="ar-pz-tier"]:checked')||{}).value||'b';
+    const PZ_ROWS={
+      a:{price:PZ_A,label:'Klients dara pats — Volko tikai iesniedz BIS',note:'Klients pats sagatavo saturu; Volko palīdz iesniegt BIS.'},
+      b:{price:PZ_B,label:'Volko sagatavo pilnu paziņojumu (SA + situācijas plāns)',note:'Bez skices. Minimums šādiem gadījumiem.'},
+      c:{price:r50(PZ_C*muni.p),label:'Volko sagatavo paziņojumu + skici',note:'Skice nav obligāta pēc likuma — papildu pakalpojums pēc klienta vēlēšanās. Cena sākot ar, atkarīga no pašvaldības.'}
+    };
+    const row=PZ_ROWS[tier];
+    const pzTotal=row.price;
+    document.getElementById("ar-p-empty").style.display="none";
+    document.getElementById("ar-p-result").style.display="block";
+    document.getElementById("ar-p-fixed").style.display="none";
+    document.getElementById("ar-p-client").textContent=eur(pzTotal);
+    document.getElementById("ar-p-int").textContent=eur(pzTotal);
+    document.getElementById("ar-brkd").innerHTML=`<div class="br"><span>${row.label}</span><span>${eur(pzTotal)}</span></div><div class="br"><span style="color:var(--muted);font-size:.7rem">ℹ️ ${row.note}</span><span></span></div><div class="br tot"><span>Paziņojums kopā</span><span>${eur(pzTotal)}</span></div>`;
+    window._lastArInt=pzTotal;
+    renderARPanels(type,area,muni.s);
+    const _mname=document.getElementById("ar-muni-search")?.value||window._arMuniName||"";
+    renderPassport(type,area,floors,_mname,muni.s);
+    if(typeof showMuniInfo==="function") showMuniInfo(document.getElementById("ar-muni").value);
+    if(typeof showPreChecklist==="function") showPreChecklist(type);
+    return;
+  }
   if(gP==="I"&&!isLeg){
     const fp=I_FIXED.find(x=>area<=x.max)||I_FIXED[I_FIXED.length-1];
     document.getElementById("ar-p-empty").style.display="none";
@@ -3008,11 +3091,22 @@ function calcAR(){
     document.getElementById("ar-passport")?.classList.remove("visible"); // fiksētai mazēkai pase nav vajadzīga (novērš stale datus)
     return;
   }
-  const rKey=isLeg?(LEGAL_RATE[type]||"rekonstrukcija"):type;
+  // Legalizācija "uzcelts BEZ atļaujas" (nekad nav nodota ekspluatācijā) — rekonstrukcijas cena NEDER
+  // (tā ir domāta JAU LEGĀLAS ēkas pārbūvei). Pēc Toma noteikuma: nekad-nodotai ēkai lieto
+  // Izmaiņu projekta likmi (pirms 1993) vai Jaunbūves likmi (pēc 1993) — process/dokumenta veids paliek tāds pats.
+  const legalRisk=isLeg||(type==='rekonstrukcija'&&document.getElementById('c2')?.checked);
+  const vecumsWrap=document.getElementById("ar-vecums-wrap");
+  if(vecumsWrap)vecumsWrap.style.display=legalRisk?'block':'none';
+  const nekadNodota=legalRisk&&document.getElementById('ar-nekad-nodota')?.checked;
+  const pirms1993=document.getElementById('ar-pirms-1993')?.checked;
+  const sub1993=document.getElementById('ar-1993-sub');
+  if(sub1993)sub1993.style.display=nekadNodota?'block':'none';
+  let rKey=isLeg?(LEGAL_RATE[type]||"rekonstrukcija"):type;
+  if(nekadNodota) rKey=pirms1993?"izmaiņu":"jaunbuve";
   const rates=AR_RATES[rKey];if(!rates)return;
   const rate=rates[bi(area)];
   const base=area*rate*fCoef*gCoef*muni.p*eCoef;
-  const minA=AR_MINS[isLeg?type:rKey];
+  const minA=AR_MINS[nekadNodota?rKey:(isLeg?type:rKey)];
   const minV=minA?(area<=60?minA[0]:minA[1]):0;
   const arInt=r50(Math.max(base,minV));
   // Galvenā cena = TIKAI AR projekts, BEZ 20% rezerves (Toms 2026-06-10). Papildpakalpojumiem rezerve paliek.
@@ -3023,6 +3117,7 @@ function calcAR(){
   document.getElementById("ar-p-client").textContent=eur(totCli);
   document.getElementById("ar-p-int").textContent=eur(totInt);
   let bh=`<div class="br"><span>Likme (${rKey})</span><span>${rate} €/m²</span></div><div class="br"><span>Platība</span><span>${area} m²</span></div><div class="br"><span>Funkcija</span><span>×${fCoef.toFixed(2)}</span></div><div class="br"><span>Sarežģītība (cenu grupa ${gP})</span><span>×${gCoef.toFixed(2)}</span></div>${g!==gP?`<div class="br"><span style="color:var(--muted);font-size:.7rem">ℹ️ Juridiski ${g} grupa (MK 500), cenai lieto ${gP} gr. likmi</span><span></span></div>`:""}<div class="br"><span>Pašvaldība</span><span>×${muni.p.toFixed(2)}</span></div>${encs>0?`<div class="br"><span>Apgrūtinājumi (${encs}×10%)</span><span>×${eCoef.toFixed(2)}</span></div>`:""}<div class="br tot"><span>AR projekts</span><span>${eur(arInt)}</span></div>`;
+  if(nekadNodota) bh = `<div class="br"><span style="color:var(--muted);font-size:.7rem">Ēka nekad nav nodota ekspluatācijā (celta ${pirms1993?'pirms':'pēc'} 1993) — lieto ${pirms1993?'Izmaiņu projekta':'Jaunbūves'} likmi, ne rekonstrukcijas</span><span></span></div>` + bh;
   document.getElementById("ar-brkd").innerHTML=bh;
   window._lastArInt=arInt; // legalizācijas paketes lieto šo pašu AR cenu (konsistencei ar galveno)
   renderARPanels(type,area,muni.s);
@@ -3996,8 +4091,14 @@ function docTypeFor(area, g){
   if (type==='nojaukšana') return 'pr';                                      // 7.²5. (I gr. — paziņojums 7.¹3.)
   // Pārbūve / rekonstrukcija / legalizācija (7.²11. vs 7.³)
   if (type==='rekonstrukcija' || type==='lbp' || type==='la'){
+    // 7.3.1./7.4.1. izņēmums — TIKAI jau legālai ēkai (NE legalizācijai) UN NEmainot apjomu/veidu/veidolu.
+    const legRisk = type==='la' || type==='lbp' || document.getElementById('c2')?.checked;
+    const nemainaApjomu = document.getElementById('ar-nemaina-apjomu')?.checked;
+    const floors = parseInt(document.getElementById('ar-floors')?.value) || 1;
     if (g === 'III') return 'bp';
+    if (!legRisk && nemainaApjomu && g === 'I') return 'none';               // 7.3.1. — I grupas ēkas pārbūve
     if (g === 'I') return 'pr';                                             // 7.²4.
+    if (!legRisk && nemainaApjomu && cat==='aux' && floors<=1 && g==='II') return 'none'; // 7.4.1. — vienstāva II gr. palīgēka
     if (cat === 'aux') return 'pr';                                         // 7.²11. palīgēka / lauks. nedzīvojamā
     if (cat === 'dwelling' && sub === 'single') return 'pr';               // 7.²11. viena/divu dzīvokļu (nemainot grupu) — pārbūvei nav 200 m² limita
     return 'bp';                                                           // daudzdzīvokļu / publiska II → 7.³
@@ -4092,6 +4193,7 @@ function estimateDuration(type,g,area){
   const dt=docTypeFor(area,g);
   if(dt==='bp'){lo+=2;hi+=4;parts.push(['Būvatļaujas process (pašvaldība)','2–4 mēn.']);}
   else if(dt==='pz'){lo+=0.5;hi+=1;parts.push(['Paziņojuma procedūra (BIS)','0,5–1 mēn.']);}
+  else if(dt==='none'){lo=0;hi=0.25;parts.length=0;parts.push(['Nav BIS procedūras — dokuments nav vajadzīgs','0–1 ned.']);}
   else{lo+=1.5;hi+=2.5;parts.push(['BIS saskaņošana (30 darba d. + precizējumi)','1,5–2,5 mēn.']);}
   if(g==='III'){lo+=1;hi+=2;parts.push(['III grupas papildu prasības','+1–2 mēn.']);}
   const add=(id,name,a,b,lbl)=>{if(document.getElementById(id)?.checked){lo+=a;hi+=b;parts.push([name,lbl]);}};
@@ -4218,16 +4320,26 @@ const PASSPORT_DATA = {
 
   // ── REKONSTRUKCIJA ──────────────────────────────────────────
   rekonstrukcija: {
-    permit: (area, grp) => docTypeFor(area, grp) === 'pr' ? {
-      name: 'Paskaidrojuma raksts',
-      law: 'MK Nr. 529 (EBN) 7.² punkts — pārbūve',
-      desc: 'Viena dzīvokļa mājai un palīgēkām — paskaidrojuma raksts, ja nemaina büvapjomu vai lietošanas veidu. Ja maina apjomu vai funkciju — büvprojekts.',
-      bisType: 'Paskaidrojuma raksts'
-    } : {
-      name: 'Büvatļauja',
-      law: 'MK Nr. 529 (EBN) 7.³ punkts — pārbūve',
-      desc: 'Daudzdzīvokļu, publiskām, III grupas ēkām un apjoma/funkcijas maiņai — büvprojekts un büvatļauja. Termiņš 5+8 gadi.',
-      bisType: 'Büvatļauja'
+    permit: (area, grp) => {
+      const _dt = docTypeFor(area, grp);
+      if (_dt === 'none') return {
+        name: 'Nav dokumenta',
+        law: 'MK Nr. 529 (EBN) 7. punkts — ieceres dokumenti nav nepieciešami',
+        desc: 'Pārbūve/atjaunošana, NEmainot büvapjomu, lietošanas veidu vai veidolu — der TIKAI jau legālai ēkai (7.3.1./7.4.1.).',
+        bisType: 'Nav nepieciešams'
+      };
+      if (_dt === 'pr') return {
+        name: 'Paskaidrojuma raksts',
+        law: 'MK Nr. 529 (EBN) 7.² punkts — pārbūve',
+        desc: 'Viena dzīvokļa mājai un palīgēkām — paskaidrojuma raksts, ja nemaina büvapjomu vai lietošanas veidu. Ja maina apjomu vai funkciju — büvprojekts.',
+        bisType: 'Paskaidrojuma raksts'
+      };
+      return {
+        name: 'Büvatļauja',
+        law: 'MK Nr. 529 (EBN) 7.³ punkts — pārbūve',
+        desc: 'Daudzdzīvokļu, publiskām, III grupas ēkām un apjoma/funkcijas maiņai — büvprojekts un büvatļauja. Termiņš 5+8 gadi.',
+        bisType: 'Büvatļauja'
+      };
     },
     clientDocs: [
       { icon:'📄', name:'Zemesgrāmatas apliecība', note:'zemesgramata.lv', req:'must' },
@@ -5577,7 +5689,7 @@ function renderARPanels(type, area, svcCoef) {
     const svc=determineServices(type,g,cat,area);
     let muniS=1.10; try{ muniS=JSON.parse(document.getElementById('ar-muni').value).s||1.10; }catch(e){}
     const recs=(typeof getRecs==='function')?getRecs(type):[];
-    const priceOf=id=>{ if(window._wizPrice&&window._wizPrice[id]!=null) return window._wizPrice[id]; const r=recs.find(x=>x.id===id); return (r&&r.priceFn)?r.priceFn(area,muniS):0; };
+    const priceOf=id=>{ if(window._wizPrice&&window._wizPrice[id]!=null) return window._wizPrice[id]; const r=recs.find(x=>x.id===id); if(r&&r.priceFn) return r.priceFn(area,muniS); const m=(typeof SVC_MENU!=='undefined')?SVC_MENU.find(x=>x.id===id):null; return (m&&m.priceFn)?m.priceFn(area,muniS):0; };
     const base=basePrice(area,floors,type);
     // IEKĻAUTS AR cenā
     const incl=['Arhitektūras (AR) projekts — plāni, fasādes, griezumi, '+(dt==='pz'?'paziņojuma sagatavošana BIS':pr?'paskaidrojuma raksts':'projekta tekstuālā daļa')];
@@ -5594,7 +5706,9 @@ function renderARPanels(type, area, svcCoef) {
         html+='<div class="wiz-srow"><span class="wiz-pill" style="background:'+p[1]+';color:'+p[2]+'">'+p[0]+'</span><div style="flex:1;min-width:0"><div style="font-weight:700;color:var(--navy);font-size:.82rem">'+s.name+' <span style="color:var(--muted);font-weight:600">· atsevišķs piedāvājums</span></div><div style="font-size:.74rem;color:var(--text);line-height:1.45;margin-top:1px">'+s.why+' Tā ir palīgopcija sarežģītiem uzdevumiem pirms projekta — cenu nosaka atsevišķi, neietilpst projekta cenā.</div></div></div>';
         return;
       }
-      const price=(s.status!=='no')?priceOf(s.id):0, checkable=(s.status!=='no'&&price>0), checked=(s.status==='yes');
+      // VISI cenotie pakalpojumi (TAA, BK, EPS, TI) rāda cenu + ķeksi VIENMĒR — arī kad "nevajag",
+      // lai sarunas laikā var manuāli pielikt, ja izlemj ka tomēr vajag (Toms 2026-07-07).
+      const price=priceOf(s.id), checkable=(price>0), checked=(s.status==='yes');
       html+='<div class="wiz-srow"><span class="wiz-pill" style="background:'+p[1]+';color:'+p[2]+'">'+p[0]+'</span><div style="flex:1;min-width:0"><div style="font-weight:700;color:var(--navy);font-size:.82rem">'+s.name+'</div><div style="font-size:.74rem;color:var(--text);line-height:1.45;margin-top:1px">'+s.why+'</div></div>'+(checkable?'<span style="display:flex;align-items:center;gap:6px;margin-top:3px;white-space:nowrap"><input type="number" class="wiz-svc-price" data-svc="'+s.id+'" value="'+price+'" min="0" step="50" style="width:74px;text-align:right;border:1px dashed var(--gold);border-radius:6px;padding:2px 4px;font-weight:700;color:var(--navy);font-size:.85rem;background:transparent"><span style="font-size:.8rem;color:var(--muted)">€</span><input type="checkbox" class="wiz-svc" data-svc="'+s.id+'" data-price="'+price+'" data-name="'+s.name.replace(/"/g,'&quot;')+'" '+(checked?'checked':'')+'></span>':'')+'</div>';
     });
     html+='<div class="wiz-srow"><span class="wiz-pill" style="background:#f1f5f9;color:#64748b">VĒLĀK</span><div style="flex:1"><div style="font-weight:700;color:var(--navy);font-size:.82rem">NOD — nodošana ekspluatācijā</div><div style="font-size:.74rem;color:var(--text);line-height:1.45;margin-top:1px">Atsevišķs līgums pēc būvdarbu pabeigšanas — nav iekļauts šajā cenā.</div></div></div>';
@@ -5605,7 +5719,15 @@ function renderARPanels(type, area, svcCoef) {
     const pdata=(typeof getPassportData==='function')?getPassportData(type):null;
     if(pdata&&pdata.steps){
       html+='<div class="wiz-sec-h">Process soli pa solim</div>';
-      pdata.steps.forEach((st,i)=>{ html+='<div class="wiz-seqitem"><span class="wiz-seqnum">'+(i+1)+'</span><div style="flex:1"><div style="font-weight:700;color:var(--navy);font-size:.83rem">'+st.t+'</div><div style="font-size:.7rem;color:var(--muted)">'+(st.who?'Veic: '+st.who:'')+(st.dur?' · '+st.dur:'')+'</div>'+(st.why?'<div style="font-size:.73rem;color:var(--text);line-height:1.4;margin-top:2px">'+st.why+'</div>':'')+'</div></div>'; });
+      // Solis saskaņots ar noteikto BK statusu — ja BK atzīts par obligātu, nerakstām "ja vajag" (Toms 2026-07-07)
+      const bkStatus=(svc.find(x=>x.id==='bk')||{}).status;
+      pdata.steps.forEach((st,i)=>{
+        let title=st.t;
+        if(/BK ja vajag/i.test(title)){
+          if(bkStatus==='yes') title=title.replace(/BK ja vajag/i,'BK');
+          else if(bkStatus==='no') title=title.replace(/AR \+ BK ja vajag/i,'AR (BK nav vajadzīgs)');
+        }
+        html+='<div class="wiz-seqitem"><span class="wiz-seqnum">'+(i+1)+'</span><div style="flex:1"><div style="font-weight:700;color:var(--navy);font-size:.83rem">'+title+'</div><div style="font-size:.7rem;color:var(--muted)">'+(st.who?'Veic: '+st.who:'')+(st.dur?' · '+st.dur:'')+'</div>'+(st.why?'<div style="font-size:.73rem;color:var(--text);line-height:1.4;margin-top:2px">'+st.why+'</div>':'')+'</div></div>'; });
     }
     // Kopā — KONTEINERA BEIGĀS, lai sticky josla ir redzama visu ritināšanas laiku
     html+='<div class="wiz-co"><span style="font-size:.8rem;color:var(--muted)">Kopā klientam (orientējoši, bez PVN)</span><span class="v wiz-total">—</span></div>';
