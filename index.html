@@ -1171,6 +1171,12 @@ body.wiz{background:linear-gradient(180deg,#f6f6f1 0%,#eeeee7 100%)}
         <label><input type="checkbox" id="wiz-c4" onchange="wizSync()"> Robeža tuvāk par 4 m</label>
       </div>
     </div>
+    <div class="wiz-field" id="wiz-1993-wrap" style="display:none"><label>Cenas pamats</label>
+      <div class="wiz-rchk">
+        <label><input type="checkbox" id="wiz-pirms1993" onchange="wizSync()"> Ēka celta PIRMS 1993. gada</label>
+      </div>
+      <div style="font-size:.7rem;color:var(--muted);margin-top:4px">Ēka nekad nav bijusi legāla — nosaka cenu likmi (izmaiņu projekts pirms 1993 / jaunbūve pēc 1993), procesu nemaina.</div>
+    </div>
     <div class="wiz-field" id="wiz-ap-wrap" style="display:none"><label>Dzīvoklis / telpu grupa</label>
       <div class="wiz-rchk">
         <label><input type="checkbox" id="wiz-ap-load" onchange="wizSync()"> Darbi skar nesošās konstrukcijas</label>
@@ -5533,6 +5539,8 @@ function renderARPanels(type, area, svcCoef) {
   function wizPick(sit){
     cur=sit;
     document.getElementById('wiz-risk-wrap').style.display=(sit.k==='legaliz')?'block':'none';
+    const w93=document.getElementById('wiz-1993-wrap'); if(w93) w93.style.display=(sit.k==='legaliz')?'block':'none';
+    const wp93=document.getElementById('wiz-pirms1993'); if(wp93) wp93.checked=false;
     const subw=document.getElementById('wiz-sub-wrap'); if(subw) subw.style.display=(sit.special==='aktiva')?'block':'none';
     document.getElementById('wiz-s2sub').textContent=sit.special==='aktiva'?'Izvēlies, ko vajag ar esošo būvatļauju (ēkas dati noder izmaiņu novērtējumam).':'Daži dati, lai noteiktu būves grupu un ceļu.';
     if(!sit.special){
@@ -5540,6 +5548,9 @@ function renderARPanels(type, area, svcCoef) {
       ensureType(sit.type);
       ['c1','c3','c4','c5'].forEach(id=>{ const c=document.getElementById(id); if(c) c.checked=false; });
       const c2=document.getElementById('c2'); if(c2) c2.checked=!!sit.c2;
+      // "Uzbūvēts BEZ atļaujas" = ēka NEKAD nav bijusi legāla -> auto-atzīmē (skat. volko-legalizacija-1993-price-tier)
+      const nn=document.getElementById('ar-nekad-nodota'); if(nn) nn.checked=(sit.k==='legaliz');
+      const p93=document.getElementById('ar-pirms-1993'); if(p93) p93.checked=false;
     }
     wizPrefill();
     wizGo(2);
@@ -5557,7 +5568,8 @@ function renderARPanels(type, area, svcCoef) {
     const wf=document.getElementById('wiz-func'), af=document.getElementById('ar-func'); if(wf&&af) af.selectedIndex=wf.selectedIndex;
     const wa=document.getElementById('wiz-area'), aa=document.getElementById('ar-area'); if(wa&&aa) aa.value=wa.value;
     const wfl=document.getElementById('wiz-floors'), afl=document.getElementById('ar-floors'); if(wfl&&afl) afl.value=wfl.value;
-    if(cur&&cur.k==='legaliz'){ ['c1','c3','c4'].forEach(id=>{ const w=document.getElementById('wiz-'+id), a=document.getElementById(id); if(w&&a) a.checked=w.checked; }); }
+    if(cur&&cur.k==='legaliz'){ ['c1','c3','c4'].forEach(id=>{ const w=document.getElementById('wiz-'+id), a=document.getElementById(id); if(w&&a) a.checked=w.checked; });
+      const wp=document.getElementById('wiz-pirms1993'), ap=document.getElementById('ar-pirms-1993'); if(wp&&ap) ap.checked=wp.checked; }
     // Dzīvokļa (telpu grupas) jautājumi — rāda tikai, ja izvēlēta dzīvokļa funkcija; sinhronizē uz galveno formu
     const cat=af&&af.selectedOptions[0]?af.selectedOptions[0].dataset.cat:'';
     const apw=document.getElementById('wiz-ap-wrap'); if(apw) apw.style.display=(cat==='apartment')?'block':'none';
