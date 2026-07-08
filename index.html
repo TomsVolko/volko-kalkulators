@@ -1168,6 +1168,14 @@ body.wiz{background:linear-gradient(180deg,#f6f6f1 0%,#eeeee7 100%)}
     <div class="wiz-field"><label>Ēkas funkcija</label><select id="wiz-func" onchange="wizSync()"></select></div>
     <div class="wiz-field"><label>Kopējā platība (m²)</label><input type="number" id="wiz-area" min="1" placeholder="piem. 120" oninput="wizSync()"><div style="font-size:.7rem;color:var(--muted);margin-top:4px">Visu stāvu platība kopā (pēc tās 200 / 1000 / 2000 m² sliekšņi).</div></div>
     <div class="wiz-field"><label>Stāvu skaits</label><select id="wiz-floors" onchange="wizSync()"><option value="1">1 stāvs</option><option value="2">2 stāvi</option><option value="3">3 stāvi</option><option value="4">4 stāvi</option><option value="5">5 stāvi</option><option value="6">6 stāvi</option><option value="7">7+ stāvi</option></select></div>
+    <div class="wiz-field">
+      <label class="wiz-rchk" style="display:flex;align-items:center;gap:8px;font-weight:700"><input type="checkbox" id="wiz-has-extra" onchange="wizToggleExtra()"> Šajā objektā ir arī palīgēkas (leģalizējam kopā ar māju)</label>
+      <div id="wiz-extra-wrap" style="display:none;margin-top:8px">
+        <div id="wiz-extra-list"></div>
+        <button type="button" onclick="wizAddExtraBuilding()" style="margin-top:4px;padding:7px 12px;border:1px dashed var(--gold);border-radius:8px;background:#fffbf0;font-size:.76rem;font-weight:700;color:var(--navy);cursor:pointer;font-family:inherit">+ Pievienot palīgēku</button>
+        <div style="font-size:.66rem;color:var(--muted);margin-top:5px">Maza palīgēka (≤60 m²) leģalizēta KOPĀ ar māju maksā daudz mazāk — gandrīz bez papildu darba. Liela palīgēka tuvāk pilnai cenai.</div>
+      </div>
+    </div>
     <div class="wiz-field" id="wiz-apjoms-wrap" style="display:none"><label>Pārbūves apjoms</label>
       <div class="wiz-rchk">
         <label><input type="checkbox" id="wiz-nemaina-apjomu" onchange="wizSync()"> NEmaina būvapjomu, lietošanas veidu vai fasādi (veidolu)</label>
@@ -4907,17 +4915,17 @@ const MUNI_INFO = {
 const _MT={R:'{"p":1.20,"s":1.05}',P:'{"p":1.10,"s":1.05}',S:'{"p":1.00,"s":1.10}',G:'{"p":1.02,"s":1.15}',C:'{"p":1.05,"s":1.20}'};
 const MUNI_LIST=[
   {g:'Rīga',items:[['Rīga',_MT.R]]},
-  {g:'Pierīga',items:[['Mārupes novads',_MT.P],['Ķekavas novads',_MT.P],['Salaspils novads',_MT.P],['Ādažu novads',_MT.P],['Ropažu novads',_MT.P],['Olaines novads',_MT.P]]},
+  {g:'Pierīga',items:[['Mārupes novads',_MT.P],['Ķekavas novads',_MT.P],['Salaspils novads',_MT.P],['Ādažu novads',_MT.P],['Ropažu novads',_MT.P],['Olaines novads',_MT.P],['Garkalnes novads',_MT.P],['Stopiņu novads',_MT.P],['Babītes novads',_MT.P],['Carnikavas novads',_MT.P]]},
   {g:'Valstspilsētas',items:[['Jūrmala',_MT.S],['Jelgava',_MT.S],['Liepāja',_MT.C],['Ventspils',_MT.C],['Daugavpils',_MT.C],['Rēzekne',_MT.C]]},
   {g:'Novadi',items:[
-    ['Aizkraukles novads',_MT.S],['Alūksnes novads',_MT.G],['Augšdaugavas novads',_MT.G],['Balvu novads',_MT.G],
-    ['Bauskas novads',_MT.S],['Cēsu novads',_MT.S],['Dienvidkurzemes novads',_MT.G],['Dobeles novads',_MT.S],
-    ['Gulbenes novads',_MT.G],['Jelgavas novads',_MT.S],['Jēkabpils novads',_MT.G],['Krāslavas novads',_MT.G],
-    ['Kuldīgas novads',_MT.G],['Limbažu novads',_MT.S],['Līvānu novads',_MT.G],['Ludzas novads',_MT.G],
-    ['Madonas novads',_MT.G],['Ogres novads',_MT.S],['Preiļu novads',_MT.G],['Rēzeknes novads',_MT.G],
+    ['Aizkraukles novads',_MT.S],['Alūksnes novads',_MT.C],['Augšdaugavas novads',_MT.G],['Balvu novads',_MT.C],
+    ['Bauskas novads',_MT.S],['Cēsu novads',_MT.S],['Daugavpils novads',_MT.C],['Dienvidkurzemes novads',_MT.G],['Dobeles novads',_MT.S],
+    ['Gulbenes novads',_MT.G],['Jelgavas novads',_MT.S],['Jēkabpils novads',_MT.G],['Krāslavas novads',_MT.C],
+    ['Kuldīgas novads',_MT.G],['Limbažu novads',_MT.S],['Līvānu novads',_MT.C],['Ludzas novads',_MT.C],
+    ['Madonas novads',_MT.G],['Ogres novads',_MT.S],['Preiļu novads',_MT.G],['Rēzeknes novads',_MT.C],
     ['Saldus novads',_MT.G],['Saulkrastu novads',_MT.S],['Siguldas novads',_MT.S],['Smiltenes novads',_MT.G],
     ['Talsu novads',_MT.G],['Tukuma novads',_MT.S],['Valkas novads',_MT.G],['Valmieras novads',_MT.G],
-    ['Varakļānu novads',_MT.G],['Ventspils novads',_MT.G]
+    ['Varakļānu novads',_MT.C],['Ventspils novads',_MT.C]
   ]},
 ];
 function muniNorm(s){return (s||'').toLowerCase().replace(/[āčēģīķļņšūž]/g,c=>({'ā':'a','č':'c','ē':'e','ģ':'g','ī':'i','ķ':'k','ļ':'l','ņ':'n','š':'s','ū':'u','ž':'z'}[c]||c));}
@@ -5616,8 +5624,7 @@ function renderARPanels(type, area, svcCoef) {
     const live=document.getElementById('wiz-live'); if(!live) return;
     const solo=cur&&(cur.special==='esi'||cur.special==='nod');
     const area=parseFloat(document.getElementById('wiz-area').value)||0;
-    const hasEkas=(window._ekas||[]).length>0;
-    if(!solo&&!(area>0)&&!hasEkas){ live.style.display='none'; return; }
+    if(!solo&&!(area>0)){ live.style.display='none'; return; }
     live.style.display='block';
     wizRenderPath(document.getElementById('wiz-live-h'), document.getElementById('wiz-live-sub'), document.getElementById('wiz-live-result'));
   }
@@ -5752,33 +5759,58 @@ function renderARPanels(type, area, svcCoef) {
     wizSync(true);
     wizRenderPath(document.getElementById('wiz-s3h'), document.getElementById('wiz-s3sub'), document.getElementById('wiz-result'));
   }
-  // Vairākas ēkas vienā objektā (māja + palīgēkas u.c.) — saraksts vedņa iekšienē (window._ekas ir kopīgs ar detalizēto skatu)
-  function wizEkasHtml(){
-    const arr=window._ekas||[];
-    if(!arr.length) return '';
-    const tot=arr.reduce((s,e)=>s+(e.total||0),0);
-    let h='<div style="margin-top:14px;border-top:2px solid var(--navy);padding-top:10px">';
-    h+='<div style="font-weight:800;color:var(--navy);font-size:.85rem;margin-bottom:6px">🏘 Ēkas objektā ('+arr.length+')</div>';
-    arr.forEach((e,i)=>{
-      h+='<div style="display:flex;justify-content:space-between;gap:8px;font-size:.78rem;padding:4px 0;border-bottom:1px dashed var(--border)"><span>'+(i+1)+'. '+e.t+' · '+e.area+' m² · '+e.g+' gr.</span><span style="white-space:nowrap;color:var(--navy);font-weight:700">'+(e.total||0).toLocaleString('lv-LV')+' € <a href="#" onclick="wizRemoveEka('+i+');return false" title="Noņemt" style="color:#b91c1c;text-decoration:none;margin-left:4px;font-weight:700">✕</a></span></div>';
-    });
-    h+='<div style="display:flex;justify-content:space-between;font-size:.88rem;font-weight:800;color:var(--navy);padding-top:8px"><span>KOPĀ OBJEKTAM (visas pievienotās ēkas)</span><span style="color:var(--gold)">'+tot.toLocaleString('lv-LV')+' €</span></div>';
-    h+='<div style="font-size:.65rem;color:var(--muted);margin-top:4px">⚖️ Visas ēkas vienā būvniecības iecerē — piemēro augstākās grupas kārtību (MK 500 7. p.). Konfigurē nākamo ēku augšā (platība/funkcija) un spied "Pievienot" vēlreiz.</div>';
-    h+='</div>';
-    return h;
-  }
-  window.wizAddEka=function(){
-    const s=wizState();
-    if(s.solo){ alert('ESI/NOD ir atsevišķs pakalpojums, nevis ēka — nevar pievienot sarakstam.'); return; }
-    if(!(s.area>0)){ alert('Ievadi platību.'); return; }
-    const total=s.base+s.extras.reduce((sum,x)=>sum+x.price,0);
-    window._ekas=window._ekas||[];
-    window._ekas.push({t:(s.sit||s.type), area:s.area, g:s.g, ar:s.base, services:s.extras, total:total});
-    window._wizPrice={};
-    const wa=document.getElementById('wiz-area'); if(wa) wa.value='';
+  // Palīgēkas TAJĀ PAŠĀ objektā, leģalizētas KOPĀ ar galveno ēku (Toms 2026-07-08) — inline sarakstiņš Solī 2,
+  // NAV atsevišķa "pievieno un notīra" plūsma. Mazai palīgēkai (≤60m²) liela atlaide, jo tā tikai "pieminēta" projektā;
+  // lielai — tuvāk pilnai cenai, jo reāli jāprojektē.
+  window._wizExtras = window._wizExtras || [];
+  window.wizToggleExtra=function(){
+    const on=document.getElementById('wiz-has-extra').checked;
+    const wrap=document.getElementById('wiz-extra-wrap'); if(wrap) wrap.style.display=on?'block':'none';
+    if(on && window._wizExtras.length===0) wizAddExtraBuilding(); else wizSync();
+  };
+  window.wizAddExtraBuilding=function(){
+    const fs=document.getElementById('ar-func'); const opt=fs&&fs.options[0];
+    window._wizExtras.push({area:null, floors:1, funcVal:opt?opt.value:'1.00', funcText:opt?opt.text:'', cat:opt?(opt.dataset.cat||'dwelling'):'dwelling', sub:opt?(opt.dataset.sub||''):''});
+    wizRenderExtraList();
     wizSync();
   };
-  window.wizRemoveEka=function(i){ window._ekas.splice(i,1); wizSync(); };
+  window.wizRemoveExtraBuilding=function(i){ window._wizExtras.splice(i,1); wizRenderExtraList(); wizSync(); };
+  function wizRenderExtraList(){
+    const box=document.getElementById('wiz-extra-list'); if(!box) return;
+    const fs=document.getElementById('ar-func');
+    const funcOptsHtml=fs?[...fs.options].map(o=>'<option value="'+o.value+'" data-cat="'+(o.dataset.cat||'')+'" data-sub="'+(o.dataset.sub||'')+'">'+o.text+'</option>').join(''):'';
+    box.innerHTML=window._wizExtras.map((e,i)=>
+      '<div style="display:flex;gap:6px;align-items:center;margin-bottom:6px;flex-wrap:wrap">'+
+      '<select class="wiz-extra-func" data-i="'+i+'" style="flex:1;min-width:140px;padding:7px 8px;border:1px solid var(--border);border-radius:7px;font-size:.78rem;font-family:inherit">'+funcOptsHtml+'</select>'+
+      '<input type="number" class="wiz-extra-area" data-i="'+i+'" placeholder="m²" min="1" value="'+(e.area||'')+'" style="width:70px;padding:7px 8px;border:1px solid var(--border);border-radius:7px;font-size:.78rem;font-family:inherit">'+
+      '<select class="wiz-extra-floors" data-i="'+i+'" style="width:78px;padding:7px 8px;border:1px solid var(--border);border-radius:7px;font-size:.78rem;font-family:inherit"><option value="1">1 st.</option><option value="2">2 st.</option><option value="3">3 st.</option></select>'+
+      '<a href="#" data-i="'+i+'" class="wiz-extra-rm" title="Noņemt" style="color:#b91c1c;font-weight:700;text-decoration:none;font-size:1.1rem;line-height:1">✕</a>'+
+      '</div>'
+    ).join('');
+    box.querySelectorAll('.wiz-extra-func').forEach(sel=>{
+      const i=+sel.dataset.i; sel.value=window._wizExtras[i].funcVal;
+      sel.addEventListener('change',()=>{ const o=sel.selectedOptions[0]; const it=window._wizExtras[i]; it.funcVal=sel.value; it.funcText=o.text; it.cat=o.dataset.cat||'dwelling'; it.sub=o.dataset.sub||''; wizSync(); });
+    });
+    box.querySelectorAll('.wiz-extra-area').forEach(inp=>{ inp.addEventListener('input',()=>{ window._wizExtras[+inp.dataset.i].area=parseFloat(inp.value)||0; wizSync(); }); });
+    box.querySelectorAll('.wiz-extra-floors').forEach(sel=>{ const i=+sel.dataset.i; sel.value=window._wizExtras[i].floors; sel.addEventListener('change',()=>{ window._wizExtras[i].floors=parseInt(sel.value)||1; wizSync(); }); });
+    box.querySelectorAll('.wiz-extra-rm').forEach(a=>a.addEventListener('click',(ev)=>{ ev.preventDefault(); wizRemoveExtraBuilding(+a.dataset.i); }));
+  }
+  // Palīgēkas cena: pati AR formula (tā pati likme/koef kā galvenajai ēkai), TAD atlaide pēc izmēra —
+  // ≤60m² = 40% (I gr., gandrīz bez papildu darba), 61-150m² = 70%, >150m² = 100% (Toms 2026-07-08 apstiprināts).
+  function wizExtraBuildingPrice(e){
+    const rKey=window._lastRKey;
+    if(!rKey||typeof AR_RATES==='undefined'||!AR_RATES[rKey]||!(e.area>0)) return {full:0,disc:0,pct:1,g:'—'};
+    const bracket=bi(e.area);
+    const rate=AR_RATES[rKey][bracket];
+    const g=grp(e.area,e.floors,e.cat||'dwelling'), gP=grpPrice(e.area,e.floors), gCoef=GC[gP]||1;
+    const fCoef=parseFloat(e.funcVal)||1;
+    let muniP=1.00; try{ muniP=JSON.parse(document.getElementById('ar-muni').value).p||1.00; }catch(err){}
+    const encs=['c1','c2','c3','c4','c5'].filter(id=>document.getElementById(id)?.checked).length;
+    const eCoef=encs>0?(1+encs*0.10):1.00;
+    const full=r50(e.area*rate*fCoef*gCoef*muniP*eCoef);
+    const pct=e.area<=60?0.40:(e.area<=150?0.70:1.00);
+    return {full, disc:r50(full*pct), pct, g};
+  }
   function wizRenderPath(h,sub,res){
     if(!h||!sub||!res) return;
     if(cur&&cur.special==='esi'){ wizRenderEsi(h,sub,res); return; }
@@ -5791,7 +5823,7 @@ function renderARPanels(type, area, svcCoef) {
     }
     const type=document.getElementById('ar-type').value, area=parseFloat(document.getElementById('ar-area').value)||0, floors=parseInt(document.getElementById('ar-floors').value)||1, cat=window._arCat||'dwelling';
     h.textContent='Cena un ceļš';
-    if(!(area>0)){ sub.textContent=''; res.innerHTML='<div style="color:var(--muted);padding:12px">Ievadi platību iepriekšējā solī.</div>'+wizEkasHtml(); return; }
+    if(!(area>0)){ sub.textContent=''; res.innerHTML='<div style="color:var(--muted);padding:12px">Ievadi platību iepriekšējā solī.</div>'; return; }
     if(type==='jaunbuve'){ wizRenderJaunbuve(h,sub,res,area); return; }
     if(type==='tipveida'){ wizRenderTipveida(h,sub,res,area); return; }
     const g=grp(area,floors,cat), dt=docTypeFor(area,g), pr=dt==='pr', sub2=document.getElementById('ar-func').selectedOptions[0]?.dataset.sub||'';
@@ -5824,6 +5856,17 @@ function renderARPanels(type, area, svcCoef) {
         html+='<div style="font-size:.7rem;color:var(--muted);padding:0 0 8px;line-height:1.5">Likme: <b style="color:var(--navy)">'+rateInfo+' €/m²</b> × '+area+' m² × funkcija ×'+fCoef.toFixed(2)+' × sarežģītība ('+gPInfo+' gr.) ×'+(GC[gPInfo]||1).toFixed(2)+' × pašvaldība ×'+muniPInfo.toFixed(2)+(encs>0?' × apgrūtinājumi ×'+(1+encs*0.10).toFixed(2):'')+'</div>';
       }
     })();
+    // Palīgēkas tajā pašā objektā — leģalizē KOPĀ ar galveno ēku, tāpēc atlaide pēc izmēra (Toms 2026-07-08)
+    const wizExtras=(window._wizExtras||[]).filter(e=>e.area>0);
+    if(wizExtras.length){
+      html+='<div class="wiz-sec-h">Palīgēkas šajā objektā (leģalizē kopā — lētāk)</div>';
+      wizExtras.forEach((e,i)=>{
+        const pr=wizExtraBuildingPrice(e), key='ext'+i;
+        const nameEsc=(e.funcText+' ('+e.area+' m²)').replace(/"/g,'&quot;');
+        const val=(window._wizPrice&&window._wizPrice[key]!=null)?window._wizPrice[key]:pr.disc;
+        html+='<div class="wiz-srow"><span class="wiz-pill" style="background:#dcfce7;color:#15803d">IEKĻAUTS</span><div style="flex:1;min-width:0"><div style="font-weight:700;color:var(--navy);font-size:.82rem">'+e.funcText+' · '+e.area+' m² · '+pr.g+' gr.</div><div style="font-size:.72rem;color:var(--text);line-height:1.4;margin-top:1px">'+Math.round(pr.pct*100)+'% no pilnas aprēķinātās cenas ('+pr.full.toLocaleString('lv-LV')+' €), jo leģalizēta kopā ar galveno ēku</div></div><span style="white-space:nowrap;margin-top:3px"><input type="number" class="wiz-ext-price" data-key="'+key+'" data-name="'+nameEsc+'" value="'+val+'" min="0" step="50" style="width:80px;text-align:right;border:1px dashed var(--gold);border-radius:6px;padding:2px 5px;font-weight:700;color:var(--navy);font-size:.85rem;background:transparent"> €</span></div>';
+      });
+    }
     // PAPILDUS — atsevišķi, nav iekļauts
     html+='<div class="wiz-sec-h">Papildus — pēc vajadzības (atsevišķi, nav iekļauts cenā)</div>';
     svc.forEach(s=>{
@@ -5834,8 +5877,17 @@ function renderARPanels(type, area, svcCoef) {
       }
       // VISI cenotie pakalpojumi (TAA, BK, EPS, TI) rāda cenu + ķeksi VIENMĒR — arī kad "nevajag",
       // lai sarunas laikā var manuāli pielikt, ja izlemj ka tomēr vajag (Toms 2026-07-07).
-      const price=priceOf(s.id), checkable=(price>0), checked=(s.status==='yes');
-      html+='<div class="wiz-srow"><span class="wiz-pill" style="background:'+p[1]+';color:'+p[2]+'">'+p[0]+'</span><div style="flex:1;min-width:0"><div style="font-weight:700;color:var(--navy);font-size:.82rem">'+s.name+'</div><div style="font-size:.74rem;color:var(--text);line-height:1.45;margin-top:1px">'+s.why+'</div></div>'+(checkable?'<span style="display:flex;align-items:center;gap:6px;margin-top:3px;white-space:nowrap"><input type="number" class="wiz-svc-price" data-svc="'+s.id+'" value="'+price+'" min="0" step="50" style="width:74px;text-align:right;border:1px dashed var(--gold);border-radius:6px;padding:2px 4px;font-weight:700;color:var(--navy);font-size:.85rem;background:transparent"><span style="font-size:.8rem;color:var(--muted)">€</span><input type="checkbox" class="wiz-svc" data-svc="'+s.id+'" data-price="'+price+'" data-name="'+s.name.replace(/"/g,'&quot;')+'" '+(checked?'checked':'')+'></span>':'')+'</div>';
+      // Cena reizinās ar "piemērojamo" ēku skaitu (galvenā + palīgēkas, kam ŠIS pakalpojums arī status!=='no') — Toms 2026-07-08.
+      const unitPrice=priceOf(s.id), checkable=(unitPrice>0), checked=(s.status==='yes');
+      let count=(s.status!=='no')?1:0;
+      wizExtras.forEach(e=>{
+        const eg=grp(e.area,e.floors,e.cat||'dwelling');
+        const est=(determineServices(type,eg,e.cat||'dwelling',e.area).find(x=>x.id===s.id)||{}).status;
+        if(est&&est!=='no') count++;
+      });
+      const price=unitPrice*Math.max(count,1);
+      const nameSuffix=count>1?' <span style="color:var(--gold)">×'+count+'</span>':'';
+      html+='<div class="wiz-srow"><span class="wiz-pill" style="background:'+p[1]+';color:'+p[2]+'">'+p[0]+'</span><div style="flex:1;min-width:0"><div style="font-weight:700;color:var(--navy);font-size:.82rem">'+s.name+nameSuffix+'</div><div style="font-size:.74rem;color:var(--text);line-height:1.45;margin-top:1px">'+s.why+'</div></div>'+(checkable?'<span style="display:flex;align-items:center;gap:6px;margin-top:3px;white-space:nowrap"><input type="number" class="wiz-svc-price" data-svc="'+s.id+'" value="'+price+'" min="0" step="50" style="width:74px;text-align:right;border:1px dashed var(--gold);border-radius:6px;padding:2px 4px;font-weight:700;color:var(--navy);font-size:.85rem;background:transparent"><span style="font-size:.8rem;color:var(--muted)">€</span><input type="checkbox" class="wiz-svc" data-svc="'+s.id+'" data-price="'+price+'" data-name="'+s.name.replace(/"/g,'&quot;')+(count>1?' ×'+count:'')+'" '+(checked?'checked':'')+'></span>':'')+'</div>';
     });
     html+='<div class="wiz-srow"><span class="wiz-pill" style="background:#f1f5f9;color:#64748b">VĒLĀK</span><div style="flex:1"><div style="font-weight:700;color:var(--navy);font-size:.82rem">NOD — nodošana ekspluatācijā</div><div style="font-size:.74rem;color:var(--text);line-height:1.45;margin-top:1px">Atsevišķs līgums pēc būvdarbu pabeigšanas — nav iekļauts šajā cenā.</div></div></div>';
     // Cenu labošanas padoms (pie servisiem)
@@ -5857,16 +5909,22 @@ function renderARPanels(type, area, svcCoef) {
     }
     // Kopā — KONTEINERA BEIGĀS, lai sticky josla ir redzama visu ritināšanas laiku
     html+='<div class="wiz-co"><span style="font-size:.8rem;color:var(--muted)">Kopā klientam (orientējoši, bez PVN)</span><span class="v wiz-total">—</span></div>';
-    // Vairākas ēkas objektā (palīgēkas u.c.) — pievieno šo ēku sarakstam un konfigurē nākamo
-    html+='<div style="margin-top:8px"><button type="button" onclick="wizAddEka()" style="width:100%;padding:9px;border:1px dashed var(--gold);border-radius:8px;background:#fffbf0;font-size:.78rem;font-weight:700;color:var(--navy);cursor:pointer;font-family:inherit">➕ Pievienot šo ēku sarakstam (nākamā ēka objektā — palīgēka u.c.)</button></div>';
-    html+=wizEkasHtml();
     res.innerHTML=html;
-    function recalc(){ const bEl=res.querySelector('.wiz-price-base'); const b=bEl?(Math.max(0,parseInt(bEl.value)||0)):base; let t=b; res.querySelectorAll('.wiz-svc:checked').forEach(c=>{ t+=parseInt(c.dataset.price)||0; }); const el=res.querySelector('.wiz-total'); if(el) el.textContent=(b>0?t.toLocaleString('lv-LV')+' €':'pēc paketes'); }
+    function recalc(){
+      const bEl=res.querySelector('.wiz-price-base'); const b=bEl?(Math.max(0,parseInt(bEl.value)||0)):base;
+      let t=b;
+      res.querySelectorAll('.wiz-ext-price').forEach(inp=>{ t+=Math.max(0,parseInt(inp.value)||0); });
+      res.querySelectorAll('.wiz-svc:checked').forEach(c=>{ t+=parseInt(c.dataset.price)||0; });
+      const el=res.querySelector('.wiz-total'); if(el) el.textContent=(b>0?t.toLocaleString('lv-LV')+' €':'pēc paketes');
+    }
     res.querySelectorAll('.wiz-svc').forEach(c=>c.addEventListener('change',recalc));
     // Manuālās cenu korekcijas (sesijas ietvaros; ietekmē arī izdruku un Kopēt Claude caur _wizPrice)
     res.querySelectorAll('.wiz-svc-price').forEach(inp=>inp.addEventListener('input',()=>{
       const v=Math.max(0,parseInt(inp.value)||0); window._wizPrice=window._wizPrice||{}; window._wizPrice[inp.dataset.svc]=v;
       const cb=res.querySelector('.wiz-svc[data-svc="'+inp.dataset.svc+'"]'); if(cb) cb.dataset.price=v; recalc();
+    }));
+    res.querySelectorAll('.wiz-ext-price').forEach(inp=>inp.addEventListener('input',()=>{
+      const v=Math.max(0,parseInt(inp.value)||0); window._wizPrice=window._wizPrice||{}; window._wizPrice[inp.dataset.key]=v; recalc();
     }));
     const bIn=res.querySelector('.wiz-price-base');
     if(bIn) bIn.addEventListener('input',()=>{ window._wizPrice=window._wizPrice||{}; window._wizPrice._base=Math.max(0,parseInt(bIn.value)||0); recalc(); });
@@ -5900,7 +5958,8 @@ function renderARPanels(type, area, svcCoef) {
     const svc=determineServices(type,g,cat,area).map(s=>({name:s.name,status:s.status,why:s.why,price:(s.status!=='no')?priceOf(s.id):0}));
     const base=basePrice(area,floors,type);
     const box=document.getElementById('wiz-live-result')||document.getElementById('wiz-result');
-    const extras=box?[...box.querySelectorAll('.wiz-svc:checked')].map(c=>({name:c.dataset.name||'Pakalpojums',price:parseInt(c.dataset.price)||0})):[];
+    const extras=box?[...box.querySelectorAll('.wiz-svc:checked')].map(c=>({name:c.dataset.name||'Pakalpojums',price:parseInt(c.dataset.price)||0}))
+      .concat([...box.querySelectorAll('.wiz-ext-price')].map(inp=>({name:inp.dataset.name||'Palīgēka',price:parseInt(inp.value)||0}))):[];
     const total=base+extras.reduce((s,x)=>s+x.price,0);
     const steps=(typeof getPassportData==='function'&&getPassportData(type)&&getPassportData(type).steps)?getPassportData(type).steps:[];
     const riski=['c1','c2','c3','c4'].filter(id=>document.getElementById(id)?.checked)
