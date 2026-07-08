@@ -1122,7 +1122,8 @@ body.wiz{background:linear-gradient(180deg,#f6f6f1 0%,#eeeee7 100%)}
 #print-summary{display:none}
 @media print{
   body.printing>*:not(#print-summary){display:none!important}
-  body.printing #print-summary{display:block!important}
+  body.printing #print-summary{display:block!important;padding:16mm 14mm}
+  @page{margin:0}
 }
 </style>
 <div id="ar-wizard" class="wiz-wrap">
@@ -1131,7 +1132,6 @@ body.wiz{background:linear-gradient(180deg,#f6f6f1 0%,#eeeee7 100%)}
     <span id="wiz-progtext" style="margin-left:4px">Solis 1 no 3</span>
     <span style="margin-left:auto;display:flex;gap:14px;align-items:center">
       <button class="wiz-link" onclick="wizEnter()">🏠 Sākums</button>
-      <button class="wiz-link" onclick="wizExit()">Detalizētais skats →</button>
     </span>
   </div>
 
@@ -1161,15 +1161,18 @@ body.wiz{background:linear-gradient(180deg,#f6f6f1 0%,#eeeee7 100%)}
         <label><input type="radio" name="wizsub" value="pabeigt"> Pabeigt — nodot ekspluatācijā (NOD)</label>
       </div>
     </div>
+    <div class="wiz-field" id="wiz-solo-wrap" style="display:none">
+      <div style="font-size:.85rem;color:var(--text);line-height:1.55" id="wiz-solo-txt"></div>
+    </div>
+    <div id="wiz-normal-fields">
     <div class="wiz-field"><label>Ēkas funkcija</label><select id="wiz-func" onchange="wizSync()"></select></div>
     <div class="wiz-field"><label>Kopējā platība (m²)</label><input type="number" id="wiz-area" min="1" placeholder="piem. 120" oninput="wizSync()"><div style="font-size:.7rem;color:var(--muted);margin-top:4px">Visu stāvu platība kopā (pēc tās 200 / 1000 / 2000 m² sliekšņi).</div></div>
     <div class="wiz-field"><label>Stāvu skaits</label><select id="wiz-floors" onchange="wizSync()"><option value="1">1 stāvs</option><option value="2">2 stāvi</option><option value="3">3 stāvi</option><option value="4">4 stāvi</option><option value="5">5 stāvi</option><option value="6">6 stāvi</option><option value="7">7+ stāvi</option></select></div>
-    <div class="wiz-field" id="wiz-risk-wrap" style="display:none"><label>Riska faktori (legalizācijai)</label>
+    <div class="wiz-field" id="wiz-apjoms-wrap" style="display:none"><label>Pārbūves apjoms</label>
       <div class="wiz-rchk">
-        <label><input type="checkbox" id="wiz-c1" onchange="wizSync()"> Kultūras piemineklis / NKMP</label>
-        <label><input type="checkbox" id="wiz-c3" onchange="wizSync()"> Kopīpašums</label>
-        <label><input type="checkbox" id="wiz-c4" onchange="wizSync()"> Robeža tuvāk par 4 m</label>
+        <label><input type="checkbox" id="wiz-nemaina-apjomu" onchange="wizSync()"> NEmaina būvapjomu, lietošanas veidu vai fasādi (veidolu)</label>
       </div>
+      <div style="font-size:.7rem;color:var(--muted);margin-top:4px">Ietekmē ieceres dokumentu: ja NEmaina — vienkāršāks/lētāks ceļš (paziņojums vai pat bez dokumenta); ja maina — paskaidrojuma raksts vai būvprojekts. Der tikai jau legālai (saskaņotai) ēkai.</div>
     </div>
     <div class="wiz-field" id="wiz-1993-wrap" style="display:none"><label>Cenas pamats</label>
       <div class="wiz-rchk">
@@ -1190,6 +1193,7 @@ body.wiz{background:linear-gradient(180deg,#f6f6f1 0%,#eeeee7 100%)}
       </div>
       <div id="wiz-kad-result" style="display:none;margin-top:8px;border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;background:#fffbef;padding:10px 13px;font-size:.78rem;line-height:1.55"></div>
     </div>
+    </div>
     <!-- ── KONSULTĀCIJAS KOKPITS — dzīvie rezultāti, atjaunojas ar katru ievadi ── -->
     <div id="wiz-live" style="display:none;border-top:2px solid var(--navy);margin-top:20px;padding-top:14px">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:2px">
@@ -1202,14 +1206,14 @@ body.wiz{background:linear-gradient(180deg,#f6f6f1 0%,#eeeee7 100%)}
       <div class="wiz-sub" id="wiz-live-sub" style="margin-bottom:10px"></div>
       <div id="wiz-live-result"></div>
     </div>
-    <div class="wiz-nav"><button class="wiz-btn" onclick="wizGo(1)">← Atpakaļ</button><span style="display:flex;gap:10px"><button class="wiz-btn" onclick="wizExit()">Pielāgot detalizēti</button><button class="wiz-btn primary" onclick="wizGo(3)">Pilnekrāna rezultāts →</button></span></div>
+    <div class="wiz-nav"><button class="wiz-btn" onclick="wizGo(1)">← Atpakaļ</button><button class="wiz-btn primary" onclick="wizGo(3)">Pilnekrāna rezultāts →</button></div>
   </div>
 
   <div class="wiz-step" id="wiz-s3">
     <div class="wiz-h" id="wiz-s3h">Tavs ceļš</div>
     <div class="wiz-sub" id="wiz-s3sub"></div>
     <div id="wiz-result"></div>
-    <div class="wiz-nav"><button class="wiz-btn" onclick="wizGo(2)">← Atpakaļ</button><button class="wiz-btn" onclick="wizExit()">Pielāgot detalizēti →</button></div>
+    <div class="wiz-nav"><button class="wiz-btn" onclick="wizGo(2)">← Atpakaļ</button></div>
   </div>
 </div>
 
@@ -2883,8 +2887,8 @@ function pathReason(dt,g,cat,sub,area){
   // Esošas ēkas vienkāršie darbi
   if(type==='vienk') return 'Vienkāršota atjaunošana (funkcionāli/tehniski uzlabojumi, nemainot nesošos elementus, būvapjomu un telpu grupu robežas) → paziņojums par būvniecību (MK Nr. 529 7.¹1. — 2./3. gr. ēkai vai tās daļai). Ja darbi ir pilna atjaunošana vai maina telpu grupu robežas → paskaidrojuma raksts (7.²6.); I gr. ēkai daļa gadījumu vispār bez dokumenta (7. punkts).';
   if(type==='izmaiņu') return 'Izmaiņas esošā ēkā (fasāde, ailas, plānojums) neskarot nesošās — paskaidrojuma raksts; ailām nesošajās konstrukcijās — paziņojums (7.¹2.). Apjoma vai funkcijas maiņa → būvprojekts.';
-  if(type==='nojaukšana') return g==='I'
-    ? 'I grupas ēkas nojaukšana — paziņojums par būvniecību (MK Nr. 529 7.¹3.).'
+  if(type==='nojaukšana') return (g==='I'||(cat==='aux'&&g==='II'))
+    ? (g==='I'?'I grupas ēkas nojaukšana — paziņojums par būvniecību (MK Nr. 529 7.¹3.).':'2. grupas palīgēkas / lauksaimniecības nedzīvojamās ēkas nojaukšana — paziņojums par būvniecību (MK Nr. 529 7.¹3.).')
     : 'II/III grupas ēkas nojaukšana — paskaidrojuma raksts (MK Nr. 529 7.²5.). Pēc nojaukšanas — kadastra datu aktualizācija.';
   if(type==='lc') return 'Lietošanas veida (funkcijas) maiņa BEZ pārbūves — paskaidrojuma raksts (MK Nr. 529 7.²7.), ja pašvaldības TIAN atļauj jauno funkciju. Kopā ar pārbūvi → būvprojekts.';
   // Pārbūve / rekonstrukcija / legalizācija
@@ -2897,7 +2901,8 @@ function pathReason(dt,g,cat,sub,area){
     if(g==='I') return 'I grupas ēkas pārbūve, nepārsniedzot I grupas rādītājus — paskaidrojuma raksts (MK Nr. 529 7.²4.).';
     if(!legRiskPr&&nemainaPr&&cat==='aux'&&floorsPr<=1&&g==='II') return 'Vienstāva 2. grupas palīgēkas pārbūve/atjaunošana, NEmainot būvapjomu vai lietošanas veidu — NEKĀDS ieceres dokuments nav vajadzīgs (MK Nr. 529 7.4.1.). Der tikai jau legālai ēkai.';
     if(cat==='aux') return 'Palīgēkas / lauksaimniecības nedzīvojamās ēkas pārbūve, nemainot grupu — paskaidrojuma raksts (MK Nr. 529 7.²11.).';
-    if(cat==='dwelling'&&sub==='single') return 'Viena vai divu dzīvokļu mājas pārbūve, NEMAINOT lietošanas veidu un grupu — paskaidrojuma raksts (MK Nr. 529 7.²11.; pārbūvei nav 200 m² ierobežojuma). Ja maina apjomu/funkciju vai ceļ grupu → būvprojekts.';
+    if(cat==='dwelling'&&sub==='single'&&!legRiskPr&&nemainaPr) return '1–2 dzīvokļu mājas pārbūve, NEmainot būvapjomu un lietošanas veidu — paziņojums par būvniecību (MK Nr. 529 7.¹6.).';
+    if(cat==='dwelling'&&sub==='single') return 'Viena vai divu dzīvokļu mājas pārbūve, kas MAINA būvapjomu, nemainot lietošanas veidu — paskaidrojuma raksts (MK Nr. 529 7.²11.; bez 200 m² ierobežojuma). ⚠ Ja pārbūve KOPĀ maina arī lietošanas veidu → būvprojekts + būvatļauja (7.³), pārbaudi ar Vladimiru — šo kombināciju kalkulators automātiski nešķir.';
     return 'Daudzdzīvokļu / publiskas II grupas ēkas pārbūve → būvprojekts + būvatļauja (MK Nr. 529 7.³).';
   }
   // Jaunbūve / tipveida
@@ -2952,7 +2957,7 @@ function determineServices(type,g,cat,area){
   else
     out.push({id:'esi',name:'ESI — Juridiskā esošās situācijas izpēte',status:'cond',why:'Nav atzīmētu riska faktoru — vienkāršā gadījumā pietiek ar TIAN pārbaudi. Ja zona vai aizsargjoslas neskaidras, ESI tomēr ieteicama.'});
   // TAA — tehniskā apsekošana
-  if(type==='jaunbuve')
+  if(type==='jaunbuve'||type==='tipveida')
     out.push({id:'taa',name:'TAA — Tehniskā apsekošana',status:'no',why:'Jaunbūvei nav esošu konstrukciju, ko apsekot — TAA nav nepieciešama.'});
   else if(type==='vienk')
     out.push({id:'taa',name:'TAA — Tehniskā apsekošana',status:'cond',why:'Vienkāršotā atjaunošanā nesošās konstrukcijas netiek skartas — TAA vajadzīga tikai, ja ir šaubas par ēkas tehnisko stāvokli.'});
@@ -4108,7 +4113,7 @@ function docTypeFor(area, g){
   if (type==='vienk') return 'pz';
   // Pārējie esošas ēkas vienkāršie darbi → paskaidrojuma raksts (7.²6./7.²8./7.²7.)
   if (type==='izmaiņu' || type==='lbv' || type==='lc') return 'pr';
-  if (type==='nojaukšana') return 'pr';                                      // 7.²5. (I gr. — paziņojums 7.¹3.)
+  if (type==='nojaukšana') return (g==='I'||(cat==='aux'&&g==='II')) ? 'pz' : 'pr'; // 7.¹3. I gr. / 2.gr. palīgēka; citādi 7.²5.
   // Pārbūve / rekonstrukcija / legalizācija (7.²11. vs 7.³)
   if (type==='rekonstrukcija' || type==='lbp' || type==='la'){
     // 7.3.1./7.4.1. izņēmums — TIKAI jau legālai ēkai (NE legalizācijai) UN NEmainot apjomu/veidu/veidolu.
@@ -4120,7 +4125,7 @@ function docTypeFor(area, g){
     if (g === 'I') return 'pr';                                             // 7.²4.
     if (!legRisk && nemainaApjomu && cat==='aux' && floors<=1 && g==='II') return 'none'; // 7.4.1. — vienstāva II gr. palīgēka
     if (cat === 'aux') return 'pr';                                         // 7.²11. palīgēka / lauks. nedzīvojamā
-    if (cat === 'dwelling' && sub === 'single') return 'pr';               // 7.²11. viena/divu dzīvokļu (nemainot grupu) — pārbūvei nav 200 m² limita
+    if (cat === 'dwelling' && sub === 'single') return (!legRisk && nemainaApjomu) ? 'pz' : 'pr'; // 7.¹6. ja NEmaina apjomu/liet.veidu; citādi 7.²11. (bez 200 m² limita)
     return 'bp';                                                           // daudzdzīvokļu / publiska II → 7.³
   }
   // Jaunbūve / tipveida / novietošana (7.¹4. / 7.²1. / 7.³)
@@ -5471,11 +5476,15 @@ function renderARPanels(type, area, svcCoef) {
     {k:'legaliz', ic:'⚖️', t:'Uzbūvēts BEZ atļaujas', d:'Jālegalizē patvaļīga būvniecība.', mode:'legalizacija', type:'rekonstrukcija', c2:true, groups:['esosa']},
     {k:'funkcija', ic:'🔄', t:'Mainīšu lietošanas veidu', d:'Piem. saimniecības → dzīvojamā, bez pārbūves.', mode:'legalizacija', type:'lc', groups:['esosa']},
     {k:'nojauk', ic:'🏚', t:'Nojaukšu ēku', d:'Reģistrētas ēkas nojaukšana.', mode:'legalizacija', type:'nojaukšana', groups:['jauna','esosa']},
-    {k:'aktiva', ic:'📋', t:'Man ir aktīva būvatļauja', d:'Izmaiņas projektā, termiņa pagarināšana vai pabeigšana.', special:'aktiva', groups:['esosa']}
+    {k:'aktiva', ic:'📋', t:'Man ir aktīva būvatļauja', d:'Izmaiņas projektā, termiņa pagarināšana vai pabeigšana.', special:'aktiva', groups:['esosa']},
+    {k:'esi', ic:'⚖️', t:'Tikai juridiskā izpēte (ESI)', d:'Pārbaudu, vai iecere vispār iespējama, pirms projektēšanas.', special:'esi', groups:['esi']},
+    {k:'nod', ic:'🏁', t:'Tikai nodošana ekspluatācijā (NOD)', d:'Ēka jau uzbūvēta — vajag noformēt nodošanu.', special:'nod', groups:['nod']}
   ];
   const GRP=[
     {g:'jauna', ic:'🏗', t:'Jauna būve', d:'Jauna ēka uz zemes gabala — no nulles. Ietver arī tipveida projektu un vecās būves nojaukšanu pirms jaunbūves.'},
-    {g:'esosa', ic:'🏠', t:'Esoša ēka', d:'Darbs ar jau esošu ēku — pārbūve/paplašināšana, atjaunošana, lietošanas maiņa, legalizācija, nojaukšana vai aktīva būvatļauja.'}
+    {g:'esosa', ic:'🏠', t:'Esoša ēka', d:'Darbs ar jau esošu ēku — pārbūve/paplašināšana, atjaunošana, lietošanas maiņa, legalizācija, nojaukšana vai aktīva būvatļauja.'},
+    {g:'esi', ic:'⚖️', t:'Tikai ESI izpēte', d:'Vēlos tikai juridisko izpēti pirms lēmuma — vai iecere vispār iespējama.'},
+    {g:'nod', ic:'🏁', t:'Tikai NOD', d:'Ēka jau uzbūvēta — vajag tikai nodošanu ekspluatācijā.'}
   ];
   const GRPSUB={jauna:'Kas tieši būvējams (ēkas datus precizēsim nākamajā solī).', esosa:'Kas jādara ar esošo ēku.'};
   const GLOSS=[
@@ -5552,11 +5561,21 @@ function renderARPanels(type, area, svcCoef) {
   function ensureType(t){ const s=document.getElementById('ar-type'); if(!s) return; if(![...s.options].some(o=>o.value===t)){ const o=document.createElement('option'); o.value=t; o.textContent=t; s.appendChild(o);} s.value=t; }
   function wizPick(sit){
     cur=sit;
-    document.getElementById('wiz-risk-wrap').style.display=(sit.k==='legaliz')?'block':'none';
     const w93=document.getElementById('wiz-1993-wrap'); if(w93) w93.style.display=(sit.k==='legaliz')?'block':'none';
     const wp93=document.getElementById('wiz-pec1993'); if(wp93) wp93.checked=false;
+    const wApjWrap=document.getElementById('wiz-apjoms-wrap'); if(wApjWrap) wApjWrap.style.display=(sit.k==='parbuve')?'block':'none';
+    const wApj=document.getElementById('wiz-nemaina-apjomu'); if(wApj) wApj.checked=false;
+    const arApj=document.getElementById('ar-nemaina-apjomu'); if(arApj) arApj.checked=false;
     const subw=document.getElementById('wiz-sub-wrap'); if(subw) subw.style.display=(sit.special==='aktiva')?'block':'none';
-    document.getElementById('wiz-s2sub').textContent=sit.special==='aktiva'?'Izvēlies, ko vajag ar esošo būvatļauju (ēkas dati noder izmaiņu novērtējumam).':'Daži dati, lai noteiktu būves grupu un ceļu.';
+    const solo=(sit.special==='esi'||sit.special==='nod');
+    const soloWrap=document.getElementById('wiz-solo-wrap'), normalFields=document.getElementById('wiz-normal-fields');
+    if(soloWrap) soloWrap.style.display=solo?'block':'none';
+    if(normalFields) normalFields.style.display=solo?'none':'';
+    const soloTxt=document.getElementById('wiz-solo-txt');
+    if(soloTxt) soloTxt.textContent=sit.special==='esi'
+      ?'Šis ir atsevišķs pakalpojums — cena fiksēta, nav atkarīga no ēkas platības. Rezultāts redzams uzreiz zemāk.'
+      :(sit.special==='nod'?'Šis ir atsevišķs pakalpojums — cena fiksēta. Rezultāts redzams uzreiz zemāk.':'');
+    document.getElementById('wiz-s2sub').textContent=sit.special==='aktiva'?'Izvēlies, ko vajag ar esošo būvatļauju (ēkas dati noder izmaiņu novērtējumam).':(solo?'Fiksēts pakalpojums — datu ievade nav vajadzīga.':'Daži dati, lai noteiktu būves grupu un ceļu.');
     if(!sit.special){
       if(typeof arMode==='function') arMode(sit.mode);
       ensureType(sit.type);
@@ -5582,8 +5601,8 @@ function renderARPanels(type, area, svcCoef) {
     const wf=document.getElementById('wiz-func'), af=document.getElementById('ar-func'); if(wf&&af) af.selectedIndex=wf.selectedIndex;
     const wa=document.getElementById('wiz-area'), aa=document.getElementById('ar-area'); if(wa&&aa) aa.value=wa.value;
     const wfl=document.getElementById('wiz-floors'), afl=document.getElementById('ar-floors'); if(wfl&&afl) afl.value=wfl.value;
-    if(cur&&cur.k==='legaliz'){ ['c1','c3','c4'].forEach(id=>{ const w=document.getElementById('wiz-'+id), a=document.getElementById(id); if(w&&a) a.checked=w.checked; });
-      const wp=document.getElementById('wiz-pec1993'), ap=document.getElementById('ar-pec-1993'); if(wp&&ap) ap.checked=wp.checked; }
+    if(cur&&cur.k==='legaliz'){ const wp=document.getElementById('wiz-pec1993'), ap=document.getElementById('ar-pec-1993'); if(wp&&ap) ap.checked=wp.checked; }
+    if(cur&&cur.k==='parbuve'){ const wApj=document.getElementById('wiz-nemaina-apjomu'), aApj=document.getElementById('ar-nemaina-apjomu'); if(wApj&&aApj) aApj.checked=wApj.checked; }
     // Dzīvokļa (telpu grupas) jautājumi — rāda tikai, ja izvēlēta dzīvokļa funkcija; sinhronizē uz galveno formu
     const cat=af&&af.selectedOptions[0]?af.selectedOptions[0].dataset.cat:'';
     const apw=document.getElementById('wiz-ap-wrap'); if(apw) apw.style.display=(cat==='apartment')?'block':'none';
@@ -5595,8 +5614,9 @@ function renderARPanels(type, area, svcCoef) {
   // Dzīvais kokpits 2. solī — tas pats renderis, kas 3. solim
   function wizRenderLive(){
     const live=document.getElementById('wiz-live'); if(!live) return;
+    const solo=cur&&(cur.special==='esi'||cur.special==='nod');
     const area=parseFloat(document.getElementById('wiz-area').value)||0;
-    if(!(area>0)){ live.style.display='none'; return; }
+    if(!solo&&!(area>0)){ live.style.display='none'; return; }
     live.style.display='block';
     wizRenderPath(document.getElementById('wiz-live-h'), document.getElementById('wiz-live-sub'), document.getElementById('wiz-live-result'));
   }
@@ -5654,6 +5674,16 @@ function renderARPanels(type, area, svcCoef) {
     ['Izpilddokumentācijas sakārtošana','Atzinumi (inženiertīkli, VUGD u.c. — ja attiecas)','BIS — pieprasījums pieņemšanai ekspluatācijā','Pašvaldības/komisijas apsekošana','Akts par pieņemšanu ekspluatācijā'].forEach((s,i)=>{ html+=seqRow(i+1,s); });
     res.innerHTML=html;
   }
+  function wizRenderEsi(h,sub,res){
+    h.textContent='ESI — juridiskā esošās situācijas izpēte';
+    sub.textContent='Pārbaude pirms projektēšanas — vai iecere vispār iespējama.';
+    let html='<div class="wiz-path"><div class="pd">Ceļš</div><div class="pn">⚖️ Juridiskā esošās situācijas izpēte (ESI)</div><div class="pr">Pārbauda zonu (TIAN), aizsargjoslas, servitūtus, kopīpašumu un funkcijas maiņas iespēju PIRMS naudas ieguldīšanas projektā. Rezultāts — atskaite ar secinājumu, vai iecere iespējama, un ar ko jārēķinās.</div></div>';
+    html+='<div class="wiz-sec-h">Iekļauts cenā (ESI)</div>'+inclRow('Zonas un TIAN pārbaude')+inclRow('Aizsargjoslu, servitūtu, kopīpašuma pārbaude')+inclRow('Rakstiska atskaite ar secinājumu')+priceRow('ESI — pamatcena', 950);
+    html+='<div class="wiz-sec-h">Process soli pa solim</div>';
+    ['Kadastra un zonējuma dati','TIAN un aizsargjoslu pārbaude','Secinājums un atskaite'].forEach((s,i)=>{ html+=seqRow(i+1,s); });
+    html+='<div style="font-size:.72rem;color:var(--muted);margin-top:12px;border-top:1px dashed var(--border);padding-top:8px">Ja secinājums ir "iespējams" — nākamais solis ir pats projekts (AR/BK), cena tam atsevišķi.</div>';
+    res.innerHTML=html;
+  }
   function wizRenderJaunbuve(h,sub,res,area){
     h.textContent='Cena — izvēlies līmeni';
     sub.textContent=(cur?cur.t:'')+' · '+(document.getElementById('ar-func').selectedOptions[0]?.text||'')+' · '+area+' m²';
@@ -5689,12 +5719,42 @@ function renderARPanels(type, area, svcCoef) {
     html+='</div>';
     res.innerHTML=html;
   }
+  // Tipveida projekta sadaļas — pēc Z500 konkurenta piedāvājuma struktūras (2024, kopā 4360€ visām sadaļām).
+  // Katra sadaļa atsevišķi izvēlama/labojama, jo klients var jau būt iegādājies daļu citur (Vladimirs, 07.07.2026).
+  const TIPVEIDA_ITEMS=[
+    {id:'tp-projekts', name:'Projekts', price:960, why:'Arhitektūras un būvkonstrukciju daļa — plāni, griezumi, fasādes, krāsu pase, pamatu/pārsegumu/jumta konstrukciju risinājumi un specifikācijas.'},
+    {id:'tp-adapt', name:'Adaptācija', price:580, why:'Pamatu adaptācija ģeoloģijai, siltinājuma adaptācija energoaprēķinam, konstruktīvā risinājuma adaptācija konkrētajai vietai.'},
+    {id:'tp-noform', name:'Noformēšana', price:250, why:'Projektēšanas uzdevums, tehniskie noteikumi, projekta sadaļu ievietošana un parakstīšana BIS.'},
+    {id:'tp-darbu', name:'Darbu organizēšana', price:490, why:'Būvdarbu organizācijas projekts un ģenerālplāns — drošības pasākumi, materiālu novietne, transporta kustība.'},
+    {id:'tp-piesaiste', name:'Piesaiste', price:1040, why:'Ģenerālplāns ar ēkas novietni zemesgabalā, labiekārtojums, komunikāciju izvietojums, žoga projekts.'},
+    {id:'tp-saskan', name:'Saskaņošana', price:1040, why:'Projekta saskaņošana pašvaldības instancēs un būvvaldē caur BIS, būvatļaujas saņemšana.'}
+  ];
+  function wizRenderTipveida(h,sub,res,area){
+    h.textContent='Tipveida projekts — izvēlies sadaļas';
+    sub.textContent=(cur?cur.t:'')+' · '+(document.getElementById('ar-func').selectedOptions[0]?.text||'')+' · '+area+' m²';
+    let html='<div class="wiz-path"><div class="pd">Ceļš</div><div class="pn">📐 Tipveida projekts (atkārtoti izmantojams)</div><div class="pr">Gatavs/atkārtoti izmantojams mājas projekts, pielāgots konkrētajam zemes gabalam. Katru sadaļu klients var izvēlēties atsevišķi — piemēram, ja projekts jau iegādāts citur, vajag tikai piesaisti un saskaņošanu.</div></div>';
+    html+='<div class="wiz-sec-h">Sadaļas — atzīmē vajadzīgās</div>';
+    TIPVEIDA_ITEMS.forEach(it=>{
+      html+='<div class="wiz-srow"><span class="wiz-pill" style="background:#dcfce7;color:#15803d">IZVĒLĒTS</span><div style="flex:1;min-width:0"><div style="font-weight:700;color:var(--navy);font-size:.82rem">'+it.name+'</div><div style="font-size:.74rem;color:var(--text);line-height:1.45;margin-top:1px">'+it.why+'</div></div><span style="display:flex;align-items:center;gap:6px;margin-top:3px;white-space:nowrap"><input type="number" class="wiz-tp-price" data-tp="'+it.id+'" value="'+it.price+'" min="0" step="10" style="width:74px;text-align:right;border:1px dashed var(--gold);border-radius:6px;padding:2px 4px;font-weight:700;color:var(--navy);font-size:.85rem;background:transparent"><span style="font-size:.8rem;color:var(--muted)">€</span><input type="checkbox" class="wiz-tp" data-tp="'+it.id+'" data-price="'+it.price+'" data-name="'+it.name+'" checked></span></div>';
+    });
+    html+='<div style="font-size:.68rem;color:var(--muted);margin-top:6px">Cenas ✎ vari labot tieši šeit — sākotnējais atsauces punkts: konkurenta (Z500) piedāvājums, kopā 4360€ par visām sadaļām. Pielāgo pēc vajadzības.</div>';
+    html+='<div class="wiz-co"><span style="font-size:.8rem;color:var(--muted)">Kopā klientam (orientējoši, bez PVN)</span><span class="v wiz-tp-total">—</span></div>';
+    res.innerHTML=html;
+    function recalc(){ let t=0; res.querySelectorAll('.wiz-tp:checked').forEach(c=>{ t+=parseInt(c.dataset.price)||0; }); const el=res.querySelector('.wiz-tp-total'); if(el) el.textContent=t.toLocaleString('lv-LV')+' €'; window._lastArInt=t; }
+    res.querySelectorAll('.wiz-tp').forEach(c=>c.addEventListener('change',recalc));
+    res.querySelectorAll('.wiz-tp-price').forEach(inp=>inp.addEventListener('input',()=>{
+      const v=Math.max(0,parseInt(inp.value)||0); const cb=res.querySelector('.wiz-tp[data-tp="'+inp.dataset.tp+'"]'); if(cb) cb.dataset.price=v; recalc();
+    }));
+    recalc();
+  }
   function wizRender3(){
     wizSync(true);
     wizRenderPath(document.getElementById('wiz-s3h'), document.getElementById('wiz-s3sub'), document.getElementById('wiz-result'));
   }
   function wizRenderPath(h,sub,res){
     if(!h||!sub||!res) return;
+    if(cur&&cur.special==='esi'){ wizRenderEsi(h,sub,res); return; }
+    if(cur&&cur.special==='nod'){ wizRenderPabeigt(h,sub,res); return; }
     if(cur&&cur.special==='aktiva'){
       const subv=(document.querySelector('input[name=wizsub]:checked')||{}).value||'izmaiņas';
       if(subv==='pagarināt'){ wizRenderPagarinat(h,sub,res); return; }
@@ -5705,6 +5765,7 @@ function renderARPanels(type, area, svcCoef) {
     h.textContent='Cena un ceļš';
     if(!(area>0)){ sub.textContent=''; res.innerHTML='<div style="color:var(--muted);padding:12px">Ievadi platību iepriekšējā solī.</div>'; return; }
     if(type==='jaunbuve'){ wizRenderJaunbuve(h,sub,res,area); return; }
+    if(type==='tipveida'){ wizRenderTipveida(h,sub,res,area); return; }
     const g=grp(area,floors,cat), dt=docTypeFor(area,g), pr=dt==='pr', sub2=document.getElementById('ar-func').selectedOptions[0]?.dataset.sub||'';
     const DOCW={pr:'📋 Paskaidrojuma raksts',pz:'📨 Paziņojums par būvniecību',bp:'🏗 Būvprojekts + būvatļauja'};
     const grpW=cat==='apartment'?'Telpu grupa (dzīvoklis) — būves grupu nenosaka':'Būves grupa: <b>'+g+'</b>';
@@ -5777,6 +5838,10 @@ function renderARPanels(type, area, svcCoef) {
   };
   // ── KONSULTĀCIJAS IZEJA: izdruka klientam + kopēšana Claude ──
   function wizState(){
+    if(cur&&(cur.special==='esi'||cur.special==='nod')){
+      const isEsi=cur.special==='esi';
+      return {solo:true, sit:cur.t, price:950, name:isEsi?'ESI — Juridiskā esošās situācijas izpēte':'NOD — Nodošana ekspluatācijā', kad:(document.getElementById('wiz-kadastrs')?.value||'').trim()};
+    }
     const type=document.getElementById('ar-type')?.value||'';
     const area=parseFloat(document.getElementById('ar-area')?.value)||0;
     const floors=parseInt(document.getElementById('ar-floors')?.value)||1;
@@ -5802,12 +5867,23 @@ function renderARPanels(type, area, svcCoef) {
   }
   window.volkoPrintSummary=function(){
     const s=wizState();
-    if(!(s.area>0)){ alert('Ievadi platību.'); return; }
+    if(!s.solo&&!(s.area>0)){ alert('Ievadi platību.'); return; }
     let ps=document.getElementById('print-summary');
     if(!ps){ ps=document.createElement('div'); ps.id='print-summary'; document.body.appendChild(ps); }
     const d=new Date(), dat=('0'+d.getDate()).slice(-2)+'.'+('0'+(d.getMonth()+1)).slice(-2)+'.'+d.getFullYear();
     let h='<div style="font-family:Segoe UI,Arial,sans-serif;color:#1a2b3c;max-width:720px;margin:0 auto;font-size:13px;line-height:1.5">';
     h+='<div style="display:flex;justify-content:space-between;border-bottom:3px solid #c8a84b;padding-bottom:8px;margin-bottom:14px"><div style="font-size:20px;font-weight:800">VOLKO <span style="color:#c8a84b">Engineering</span></div><div style="text-align:right;font-size:11px;color:#666">Konsultācijas kopsavilkums<br>'+dat+'</div></div>';
+    if(s.solo){
+      h+='<div style="font-weight:800;font-size:15px;margin-bottom:2px">'+s.name+'</div>';
+      h+='<div style="color:#555;margin-bottom:12px">Atsevišķs pakalpojums'+(s.kad?' · kadastrs '+s.kad:'')+'</div>';
+      h+='<table style="width:100%;border-collapse:collapse;margin-bottom:14px"><tr><td style="padding:8px 0;font-weight:800">Cena (orientējoši, bez PVN)</td><td style="text-align:right;font-weight:800;font-size:16px">'+s.price.toLocaleString('lv-LV')+' €</td></tr></table>';
+      h+='<div style="margin-top:16px;padding-top:8px;border-top:1px solid #ddd;font-size:10.5px;color:#777">Šis ir orientējošs konsultācijas kopsavilkums — nav piedāvājums. Cenas bez PVN. VOLKO Engineering SIA · Vienības gatve 109, Rīga · www.volkoengineering.com</div></div>';
+      ps.innerHTML=h;
+      document.body.classList.add('printing');
+      window.print();
+      setTimeout(()=>document.body.classList.remove('printing'),2000);
+      return;
+    }
     h+='<div style="font-weight:800;font-size:15px;margin-bottom:2px">'+(s.sit||'Projekts')+'</div>';
     h+='<div style="color:#555;margin-bottom:12px">'+s.funkcija+' · '+s.area+' m² · '+s.floors+' st.'+(s.muni?' · '+s.muni:'')+(s.kad?' · kadastrs '+s.kad:'')+(s.cat==='apartment'?'':' · būves grupa '+s.g)+'</div>';
     h+='<div style="border:1px solid #ddd;border-left:4px solid #c8a84b;border-radius:0 8px 8px 0;background:#fffbef;padding:10px 14px;margin-bottom:14px"><div style="font-size:10px;font-weight:800;text-transform:uppercase;color:#888">Nepieciešamais dokuments</div><div style="font-size:16px;font-weight:800">'+s.dok+'</div><div style="font-size:12px;margin-top:3px">'+s.reason+'</div></div>';
@@ -5830,11 +5906,22 @@ function renderARPanels(type, area, svcCoef) {
   window.addEventListener('afterprint',()=>document.body.classList.remove('printing'));
   window.volkoCopySummary=function(btn){
     const s=wizState();
-    if(!(s.area>0)){ alert('Ievadi platību.'); return; }
+    if(!s.solo&&!(s.area>0)){ alert('Ievadi platību.'); return; }
     const L=[];
     L.push('KALKULATORA KONSULTĀCIJAS KOPSAVILKUMS ('+new Date().toISOString().slice(0,10)+')');
+    if(s.solo){
+      L.push('Situācija: '+s.name+' (atsevišķs pakalpojums)');
+      L.push('Kadastra Nr.: '+(s.kad||'[JĀNOSKAIDRO]'));
+      L.push('CENA (orientējoši, bez PVN): '+s.price+' EUR');
+      const txt=L.join('\n');
+      (navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>{
+        if(btn){ const o=btn.textContent; btn.textContent='✓ Nokopēts'; setTimeout(()=>{btn.textContent=o;},2500); }
+      }).catch(()=>{ window.prompt('Nokopē manuāli:',txt); });
+      return;
+    }
     L.push('Situācija: '+(s.sit||s.type));
-    L.push('Objekts: '+s.funkcija+' · '+s.area+' m² · '+s.floors+' st.'+(s.muni?' · '+s.muni:'')+(s.kad?' · kadastrs '+s.kad:''));
+    L.push('Objekts: '+s.funkcija+' · '+s.area+' m² · '+s.floors+' st.'+(s.muni?' · '+s.muni:''));
+    L.push('Kadastra Nr.: '+(s.kad||'[JĀNOSKAIDRO]'));
     L.push('Būves grupa: '+(s.cat==='apartment'?'telpu grupa (nenosaka)':s.g));
     L.push('Ieceres dokuments: '+s.dok);
     L.push('Pamatojums: '+s.reason);
@@ -5867,7 +5954,10 @@ function renderARPanels(type, area, svcCoef) {
   function wizInit(){
     const gc=document.getElementById('wiz-grp'); if(!gc) return;
     gc.innerHTML=GRP.map(x=>wizOptHtml(x,'data-g="'+x.g+'"')).join('');
-    gc.querySelectorAll('.wiz-opt').forEach(b=>b.addEventListener('click',()=>wizShowSits(b.dataset.g)));
+    gc.querySelectorAll('.wiz-opt').forEach(b=>b.addEventListener('click',()=>{
+      const g=b.dataset.g, items=SIT.filter(s=>s.groups&&s.groups.indexOf(g)>=0);
+      if(items.length===1){ curGroup=g; wizPick(items[0]); } else { wizShowSits(g); }
+    }));
     wizShowGroups();
     const wf=document.getElementById('wiz-func'), af=document.getElementById('ar-func'); if(wf&&af) wf.innerHTML=[...af.options].map(o=>'<option>'+o.text+'</option>').join('');
     document.body.classList.add('wiz');
