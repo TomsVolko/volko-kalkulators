@@ -3067,7 +3067,7 @@ function calcAR(){
   if(nemainaWrap)nemainaWrap.style.display=(type==='rekonstrukcija'&&!legRiskNow)?'block':'none';
   const dt=docTypeFor(area,g);
   const pzWrap=document.getElementById("ar-pz-gp-wrap");
-  if(pzWrap)pzWrap.style.display=(dt==='pz'&&!isLeg)?'block':'none';
+  if(pzWrap)pzWrap.style.display=(dt==='pz')?'block':'none';
   if(dt==='none'){
     document.getElementById("ar-p-empty").style.display="none";
     document.getElementById("ar-p-result").style.display="block";
@@ -3083,7 +3083,7 @@ function calcAR(){
     if(typeof showPreChecklist==="function") showPreChecklist(type);
     return;
   }
-  if(dt==='pz'&&!isLeg){
+  if(dt==='pz'){
     const tier=(document.querySelector('input[name="ar-pz-tier"]:checked')||{}).value||'b';
     const PZ_ROWS={
       a:{price:PZ_A,label:'Klients dara pats — Volko tikai iesniedz BIS',note:'Klients pats sagatavo saturu; Volko palīdz iesniegt BIS.'},
@@ -3097,7 +3097,8 @@ function calcAR(){
     document.getElementById("ar-p-fixed").style.display="none";
     document.getElementById("ar-p-client").textContent=eur(pzTotal);
     document.getElementById("ar-p-int").textContent=eur(pzTotal);
-    document.getElementById("ar-brkd").innerHTML=`<div class="br"><span>${row.label}</span><span>${eur(pzTotal)}</span></div><div class="br"><span style="color:var(--muted);font-size:.7rem">ℹ️ ${row.note}</span><span></span></div><div class="br tot"><span>Paziņojums kopā</span><span>${eur(pzTotal)}</span></div>`;
+    const _legNote=isLeg?`<div class="br"><span style="color:var(--muted);font-size:.7rem">ℹ️ Legalizācija (I gr., paziņojums): cenā ietverta esošā stāvokļa fiksācija. Tehniskā apsekošana (TAA ~450 €) atsevišķi, tikai ja būvvalde pieprasa.</span><span></span></div>`:'';
+    document.getElementById("ar-brkd").innerHTML=`<div class="br"><span>${row.label}</span><span>${eur(pzTotal)}</span></div><div class="br"><span style="color:var(--muted);font-size:.7rem">ℹ️ ${row.note}</span><span></span></div>${_legNote}<div class="br tot"><span>Paziņojums kopā</span><span>${eur(pzTotal)}</span></div>`;
     window._lastArInt=pzTotal;
     renderARPanels(type,area,muni.s);
     const _mname=document.getElementById("ar-muni-search")?.value||window._arMuniName||"";
@@ -4130,7 +4131,7 @@ function docTypeFor(area, g){
     const floors = parseInt(document.getElementById('ar-floors')?.value) || 1;
     if (g === 'III') return 'bp';
     if (!legRisk && nemainaApjomu && g === 'I') return 'none';               // 7.3.1. — I grupas ēkas pārbūve
-    if (g === 'I') return 'pr';                                             // 7.²4.
+    if (g === 'I') return (type==='la') ? 'pz' : 'pr';                       // patvaļīgas jaunbūves legalizācija I gr. → paziņojums (7.¹4); pārbūve/pārbūves legalizācija I gr. → PR (7.²4) — salāgots ar legalizacijas_cels.py
     if (!legRisk && nemainaApjomu && cat==='aux' && floors<=1 && g==='II') return 'none'; // 7.4.1. — vienstāva II gr. palīgēka
     if (cat === 'aux') return 'pr';                                         // 7.²11. palīgēka / lauks. nedzīvojamā
     if (cat === 'dwelling' && sub === 'single') return (!legRisk && nemainaApjomu) ? 'pz' : 'pr'; // 7.¹6. ja NEmaina apjomu/liet.veidu; citādi 7.²11. (bez 200 m² limita)
