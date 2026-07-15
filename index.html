@@ -1182,6 +1182,18 @@ body.wiz{background:linear-gradient(180deg,#f6f6f1 0%,#eeeee7 100%)}
       </div>
       <div style="font-size:.7rem;color:var(--muted);margin-top:4px">Ietekmē ieceres dokumentu: ja NEmaina — vienkāršāks/lētāks ceļš (paziņojums vai pat bez dokumenta); ja maina — paskaidrojuma raksts vai būvprojekts. Der tikai jau legālai (saskaņotai) ēkai.</div>
     </div>
+    <div class="wiz-field" id="wiz-lc-wrap" style="display:none"><label>Lietošanas maiņa</label>
+      <div class="wiz-rchk">
+        <label><input type="checkbox" id="wiz-lc-parbuve" onchange="wizSync()"> Kopā ar lietošanas maiņu ir/bija arī PĀRBŪVE (apjoma, plānojuma vai nesošo izmaiņas)</label>
+      </div>
+      <div style="font-size:.7rem;color:var(--muted);margin-top:4px">Ja atzīmēts — pārbūve kopā ar lietošanas veida maiņu prasa būvprojektu + būvatļauju (MK Nr. 529 7.³), ne paskaidrojuma rakstu (7.²7.).</div>
+    </div>
+    <div class="wiz-field" id="wiz-aux-heated-wrap" style="display:none"><label>Saimniecības ēka / palīgēka</label>
+      <div class="wiz-rchk">
+        <label><input type="checkbox" id="wiz-aux-heated" onchange="wizSync()"> Ēka ir APSILDĀMA (apkurināma)</label>
+      </div>
+      <div style="font-size:.7rem;color:var(--muted);margin-top:4px">Energosertifikāts (EPS) palīgēkai vajadzīgs tikai tad, ja tā ir apsildāma. Neapsildāmai (šķūnis, garāža, nojume) — EPS neliek.</div>
+    </div>
     <div class="wiz-field" id="wiz-1993-wrap" style="display:none"><label>Cenas pamats</label>
       <div class="wiz-rchk">
         <label><input type="checkbox" id="wiz-pec1993" onchange="wizSync()"> Ēka celta PĒC 1993. gada (ja NAV atzīmēts — pieņem pirms 1993)</label>
@@ -1340,6 +1352,14 @@ body[data-artype="jaunbuve"] #ar-jaunbuve-note{display:block}
 <div class="field" id="ar-nemaina-wrap" style="display:none">
 <label class="chk"><input type="checkbox" id="ar-nemaina-apjomu" onchange="calcAR()"> Pārbūve/atjaunošana NEMAINA būvapjomu, lietošanas veidu vai arhitektonisko veidolu (fasādi)</label>
 <div style="font-size:.66rem;color:var(--muted);margin-top:3px">Ja atzīmēts UN ēka jau ir LEGĀLA (ne legalizācija) → EBN 7.3.1./7.4.1. — nekāds ieceres dokuments nav vajadzīgs.</div>
+</div>
+<div class="field" id="ar-lc-wrap" style="display:none">
+<label class="chk"><input type="checkbox" id="ar-lc-parbuve" onchange="calcAR()"> Kopā ar lietošanas maiņu ir/bija arī PĀRBŪVE (apjoma, plānojuma vai nesošo izmaiņas)</label>
+<div style="font-size:.66rem;color:var(--muted);margin-top:3px">Pārbūve KOPĀ ar lietošanas veida maiņu → būvprojekts + būvatļauja (MK Nr. 529 7.³), ne paskaidrojuma raksts (7.²7.).</div>
+</div>
+<div class="field" id="ar-aux-heated-wrap" style="display:none">
+<label class="chk"><input type="checkbox" id="ar-aux-heated" onchange="calcAR()"> Ēka ir APSILDĀMA (apkurināma)</label>
+<div style="font-size:.66rem;color:var(--muted);margin-top:3px">Saimniecības ēkai / palīgēkai energosertifikāts (EPS) vajadzīgs tikai tad, ja tā ir apsildāma.</div>
 </div>
 <div class="field" id="ar-vecums-wrap" style="display:none;background:#fffbf0;border:1px solid var(--gold);border-radius:10px;padding:11px 13px">
 <label class="lbl">Legalizācijas cenas pamats</label>
@@ -2898,7 +2918,9 @@ function pathReason(dt,g,cat,sub,area){
   if(type==='nojaukšana') return (g==='I'||(cat==='aux'&&g==='II'))
     ? (g==='I'?'I grupas ēkas nojaukšana — paziņojums par būvniecību (MK Nr. 529 7.¹3.).':'2. grupas palīgēkas / lauksaimniecības nedzīvojamās ēkas nojaukšana — paziņojums par būvniecību (MK Nr. 529 7.¹3.).')
     : 'II/III grupas ēkas nojaukšana — paskaidrojuma raksts (MK Nr. 529 7.²5.). Pēc nojaukšanas — kadastra datu aktualizācija.';
-  if(type==='lc') return 'Lietošanas veida (funkcijas) maiņa BEZ pārbūves — paskaidrojuma raksts (MK Nr. 529 7.²7.), ja pašvaldības TIAN atļauj jauno funkciju. Kopā ar pārbūvi → būvprojekts.';
+  if(type==='lc') return document.getElementById('ar-lc-parbuve')?.checked
+    ? 'Lietošanas veida (funkcijas) maiņa KOPĀ ar pārbūvi → būvprojekts + būvatļauja (MK Nr. 529 7.³). ⚠ Cenu vērtē kā pārbūvei/būvprojektam, ne lc likmei — precizē piedāvājumā.'
+    : 'Lietošanas veida (funkcijas) maiņa BEZ pārbūves — paskaidrojuma raksts (MK Nr. 529 7.²7.), ja pašvaldības TIAN atļauj jauno funkciju. Kopā ar pārbūvi → būvprojekts + būvatļauja (atzīmē ķeksīti augšā).';
   // Pārbūve / rekonstrukcija / legalizācija
   if(type==='rekonstrukcija'||type==='lbp'||type==='la'){
     const legRiskPr=type==='la'||type==='lbp'||document.getElementById('c2')?.checked;
@@ -2922,8 +2944,10 @@ function pathReason(dt,g,cat,sub,area){
     : 'Viena dzīvokļa dzīvojamā māja, kopējā platība >200 m² → būvprojekts + būvatļauja (MK Nr. 529 7.³).';
   return 'Daudzdzīvokļu / publiska / noliktavas ēka → būvprojekts + būvatļauja (MK Nr. 529 7.³).';
 }
-function determineServices(type,g,cat,area){
+function determineServices(type,g,cat,area,auxHeated){
   const enc=id=>document.getElementById(id)?.checked;
+  // Palīgēkai EPS tikai ja apsildāma (volko-offer-multi-building-service-scope); noklusēti lasa formas ķeksīti
+  if(auxHeated===undefined) auxHeated=!!enc('ar-aux-heated');
   // ── TELPU GRUPA (dzīvoklis) — savs pakalpojumu komplekts ──
   if(cat==='apartment'){
     const load=enc('ap-load'), zg=enc('ap-zg'), apt=[];
@@ -2957,7 +2981,7 @@ function determineServices(type,g,cat,area){
       : 'Attiecas tikai uz mērķi ierakstīt izmaiņas zemesgrāmatā — atsevišķs posms pēc būvvaldes akcepta.'});
     return apt;
   }
-  const heated=(cat==='dwelling'||cat==='public');
+  const heated=(cat==='dwelling'||cat==='public'||(cat==='aux'&&auxHeated));
   const out=[];
   // ESI — juridiskā izpēte (atkarīga no riska faktoriem, ne tikai platības)
   if(enc('c1')||enc('c2')||enc('c3')||enc('c4')||type==='lc')
@@ -2978,7 +3002,7 @@ function determineServices(type,g,cat,area){
   if(type==='nojaukšana')
     out.push({id:'eps',name:'EPS — Energoefektivitāte',status:'no',why:'Nojaukšanai energoefektivitātes pārskats nav nepieciešams.'});
   else if(!heated)
-    out.push({id:'eps',name:'EPS — Energoefektivitāte',status:'no',why:'Neapkurināmai ēkai (palīgēka, garāža, noliktava, inženierbūve) energoefektivitātes pārskats nav nepieciešams.'});
+    out.push({id:'eps',name:'EPS — Energoefektivitāte',status:'no',why:'Neapkurināmai ēkai (palīgēka, garāža, noliktava, inženierbūve) energoefektivitātes pārskats nav nepieciešams.'+(cat==='aux'?' Ja palīgēka tomēr ir apsildāma — atzīmē "Ēka ir APSILDĀMA", tad EPS pievienojas.':'')});
   else if(type==='vienk')
     out.push({id:'eps',name:'EPS — Energoefektivitāte',status:'cond',why:'Apkurināmai ēkai vajadzīgs tikai, ja darbi skar norobežojošās konstrukcijas (siltināšana, logu maiņa).'});
   else
@@ -3037,6 +3061,8 @@ function calcAR(){
   const fCoef=parseFloat(document.getElementById("ar-func").value)||1;
   const cat=document.getElementById("ar-func").selectedOptions[0]?.dataset.cat||"dwelling";window._arCat=cat;
   const apCtx=document.getElementById("ap-context");if(apCtx)apCtx.style.display=(cat==='apartment')?'block':'none';
+  const auxHW=document.getElementById("ar-aux-heated-wrap");if(auxHW)auxHW.style.display=(cat==='aux')?'block':'none';
+  const lcWrap=document.getElementById("ar-lc-wrap");if(lcWrap)lcWrap.style.display=(document.getElementById("ar-type")?.value==='lc'&&cat!=='apartment')?'block':'none';
   let muni={p:1.00,s:1.10};
   try{muni=JSON.parse(document.getElementById("ar-muni").value);}catch(e){}
   const encs=["c1","c2","c3","c4","c5"].filter(id=>document.getElementById(id).checked).length;
@@ -4126,8 +4152,11 @@ function docTypeFor(area, g){
   }
   // Vienkāršota atjaunošana (funkc./tehn. uzlabojumi, nemainot nesošos elementus) → paziņojums (7.¹1.)
   if (type==='vienk') return 'pz';
-  // Pārējie esošas ēkas vienkāršie darbi → paskaidrojuma raksts (7.²6./7.²8./7.²7.)
-  if (type==='izmaiņu' || type==='lbv' || type==='lc') return 'pr';
+  // Lietošanas maiņa: BEZ pārbūves → PR (7.²7.); KOPĀ ar pārbūvi → būvprojekts + būvatļauja (7.³)
+  // — salāgots ar legalizacijas_cels.py (maina_lietosanas_veidu → buvatlauja, pārbauda pirms grupu zariem)
+  if (type==='lc') return document.getElementById('ar-lc-parbuve')?.checked ? 'bp' : 'pr';
+  // Pārējie esošas ēkas vienkāršie darbi → paskaidrojuma raksts (7.²6./7.²8.)
+  if (type==='izmaiņu' || type==='lbv') return 'pr';
   if (type==='nojaukšana') return (g==='I'||(cat==='aux'&&g==='II')) ? 'pz' : 'pr'; // 7.¹3. I gr. / 2.gr. palīgēka; citādi 7.²5.
   // Pārbūve / rekonstrukcija / legalizācija (7.²11. vs 7.³)
   if (type==='rekonstrukcija' || type==='lbp' || type==='la'){
@@ -5488,7 +5517,10 @@ function renderARPanels(type, area, svcCoef) {
     {k:'tipveida', ic:'📐', t:'Tipveida projekts', d:'Atkārtoti izmantojams jaunas ēkas projekts.', mode:'jaunbuve', type:'tipveida', groups:['jauna']},
     {k:'parbuve', ic:'🔨', t:'Pārbūvēšu / paplašināšu', d:'Mainu esošu ēku — apjomu, plānojumu, nesošās.', mode:'legalizacija', type:'rekonstrukcija', groups:['esosa']},
     {k:'atjauno', ic:'🎨', t:'Atjaunošu (remonts, fasāde)', d:'Neskaru nesošās, nemainu apjomu.', mode:'legalizacija', type:'vienk', groups:['esosa']},
-    {k:'legaliz', ic:'⚖️', t:'Uzbūvēts BEZ atļaujas', d:'Jālegalizē patvaļīga būvniecība.', mode:'legalizacija', type:'rekonstrukcija', c2:true, groups:['esosa']},
+    {k:'legaliz', ic:'⚖️', t:'VISA ēka uzbūvēta BEZ atļaujas', d:'Ēka nekad nav bijusi legāla — jālegalizē patvaļīga būvniecība.', mode:'legalizacija', type:'rekonstrukcija', c2:true, groups:['esosa']},
+    // Piebūve/pārbūve bez atļaujas, pati ēka legāla → Rekonstrukcijas likme (min 2500 €), NE "nekad nodota"
+    // (Izmaiņu/Jaunbūves likme der tikai nekad-nodotai ēkai) — sk. volko-price SKILL.md A1 2. jautājums.
+    {k:'legalizpiebuve', ic:'🧱', t:'Piebūve/pārbūve BEZ atļaujas', d:'Pati ēka ir legāla (nodota ekspluatācijā), bet piebūve vai pārbūve veikta bez saskaņošanas.', mode:'legalizacija', type:'rekonstrukcija', c2:true, groups:['esosa']},
     {k:'funkcija', ic:'🔄', t:'Mainīšu lietošanas veidu', d:'Piem. saimniecības → dzīvojamā, bez pārbūves.', mode:'legalizacija', type:'lc', groups:['esosa']},
     {k:'nojauk', ic:'🏚', t:'Nojaukšu ēku', d:'Reģistrētas ēkas nojaukšana.', mode:'legalizacija', type:'nojaukšana', groups:['jauna','esosa']},
     {k:'aktiva', ic:'📋', t:'Man ir aktīva būvatļauja', d:'Izmaiņas projektā, termiņa pagarināšana vai pabeigšana.', special:'aktiva', groups:['esosa']},
@@ -5581,6 +5613,10 @@ function renderARPanels(type, area, svcCoef) {
     const wApjWrap=document.getElementById('wiz-apjoms-wrap'); if(wApjWrap) wApjWrap.style.display=(sit.k==='parbuve')?'block':'none';
     const wApj=document.getElementById('wiz-nemaina-apjomu'); if(wApj) wApj.checked=false;
     const arApj=document.getElementById('ar-nemaina-apjomu'); if(arApj) arApj.checked=false;
+    // Lietošanas maiņa: vai KOPĀ ar maiņu bijusi arī pārbūve? (jā → būvatļauja 7.³, ne PR 7.²7.)
+    const wLcWrap=document.getElementById('wiz-lc-wrap'); if(wLcWrap) wLcWrap.style.display=(sit.k==='funkcija')?'block':'none';
+    const wLc=document.getElementById('wiz-lc-parbuve'); if(wLc) wLc.checked=false;
+    const aLc=document.getElementById('ar-lc-parbuve'); if(aLc) aLc.checked=false;
     const subw=document.getElementById('wiz-sub-wrap'); if(subw) subw.style.display=(sit.special==='aktiva')?'block':'none';
     const solo=(sit.special==='esi'||sit.special==='nod');
     const soloWrap=document.getElementById('wiz-solo-wrap'), normalFields=document.getElementById('wiz-normal-fields');
@@ -5611,6 +5647,8 @@ function renderARPanels(type, area, svcCoef) {
     const afl=document.getElementById('ar-floors'), wfl=document.getElementById('wiz-floors'); if(afl&&wfl) wfl.value=afl.value;
     const al=document.getElementById('ap-load'), wl=document.getElementById('wiz-ap-load'); if(al&&wl) wl.checked=al.checked;
     const az=document.getElementById('ap-zg'), wz=document.getElementById('wiz-ap-zg'); if(az&&wz) wz.checked=az.checked;
+    const ah=document.getElementById('ar-aux-heated'), wh=document.getElementById('wiz-aux-heated'); if(ah&&wh) wh.checked=ah.checked;
+    const aLc=document.getElementById('ar-lc-parbuve'), wLc=document.getElementById('wiz-lc-parbuve'); if(aLc&&wLc) wLc.checked=aLc.checked;
   }
   window.wizSync=function(skipLive){
     const wf=document.getElementById('wiz-func'), af=document.getElementById('ar-func'); if(wf&&af) af.selectedIndex=wf.selectedIndex;
@@ -5618,9 +5656,13 @@ function renderARPanels(type, area, svcCoef) {
     const wfl=document.getElementById('wiz-floors'), afl=document.getElementById('ar-floors'); if(wfl&&afl) afl.value=wfl.value;
     if(cur&&cur.k==='legaliz'){ const wp=document.getElementById('wiz-pec1993'), ap=document.getElementById('ar-pec-1993'); if(wp&&ap) ap.checked=wp.checked; }
     if(cur&&cur.k==='parbuve'){ const wApj=document.getElementById('wiz-nemaina-apjomu'), aApj=document.getElementById('ar-nemaina-apjomu'); if(wApj&&aApj) aApj.checked=wApj.checked; }
+    if(cur&&cur.k==='funkcija'){ const wLc=document.getElementById('wiz-lc-parbuve'), aLc=document.getElementById('ar-lc-parbuve'); if(wLc&&aLc) aLc.checked=wLc.checked; }
     // Dzīvokļa (telpu grupas) jautājumi — rāda tikai, ja izvēlēta dzīvokļa funkcija; sinhronizē uz galveno formu
     const cat=af&&af.selectedOptions[0]?af.selectedOptions[0].dataset.cat:'';
     const apw=document.getElementById('wiz-ap-wrap'); if(apw) apw.style.display=(cat==='apartment')?'block':'none';
+    // Saimniecības ēkai (aux): EPS tikai ja apsildāma — jautājums parādās tikai aux funkcijai
+    const auxw=document.getElementById('wiz-aux-heated-wrap'); if(auxw) auxw.style.display=(cat==='aux')?'block':'none';
+    const wh=document.getElementById('wiz-aux-heated'), ah=document.getElementById('ar-aux-heated'); if(wh&&ah) ah.checked=wh.checked;
     const wl2=document.getElementById('wiz-ap-load'), al2=document.getElementById('ap-load'); if(wl2&&al2) al2.checked=wl2.checked;
     const wz2=document.getElementById('wiz-ap-zg'), az2=document.getElementById('ap-zg'); if(wz2&&az2) az2.checked=wz2.checked;
     if(typeof calcAR==='function') calcAR();
@@ -5889,7 +5931,7 @@ function renderARPanels(type, area, svcCoef) {
       let count=(s.status!=='no')?1:0;
       wizExtras.forEach(e=>{
         const eg=grp(e.area,e.floors,e.cat||'dwelling');
-        const est=(determineServices(type,eg,e.cat||'dwelling',e.area).find(x=>x.id===s.id)||{}).status;
+        const est=(determineServices(type,eg,e.cat||'dwelling',e.area,false).find(x=>x.id===s.id)||{}).status; // palīgēku apsildāmība nav zināma → EPS tām nedublē
         if(est&&est!=='no') count++;
       });
       const price=unitPrice*Math.max(count,1);
