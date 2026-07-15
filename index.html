@@ -3004,7 +3004,7 @@ function renderSvcAuto(type,area,floors,cat){
   const d=DOC[dt]||DOC.bp;
   const grpLine=cat==='apartment'?'Telpu grupa (dzīvoklis) — būves grupu nenosaka':'Būves grupa: <strong>'+g+'</strong>';
   // Termiņu lēmuma-atbalsts: tikai jaunbūvei, viena dzīvokļa mājai, kad iznāk PR (Vladimirs 15.07.2026, verificēts MK 500 71./77./80.2.p.).
-  // Info-only — NEMAINA klasifikāciju/cenu. Sub-200 brīvprātīgu būvatļauju apstiprina ar būvvaldi (atvērts juridisks jautājums).
+  // Info-only — NEMAINA klasifikāciju/cenu. Sub-200 BP = likuma izņēmums (Volko rutīnas prakse); precīzo MK atsauci apstiprina Vladimirs.
   const showTerm=(type==='jaunbuve'||type==='tipveida')&&dt==='pr'&&cat==='dwelling'&&sub==='single';
   const termNote=showTerm?`<div style="margin-top:7px;padding:8px 10px;border-radius:6px;background:#f8fafc;border:1px dashed #94a3b8;font-size:.72rem;color:var(--text);line-height:1.45">
       <strong>⏱ Termiņi — apsver ceļu:</strong> PR būvēšanas logs = <strong>5 gadi, nepagarināms</strong> (pēc tam iecere jākārto no jauna). Būvprojekts + būvatļauja = <strong>5 g. uzsākšanai + 8 g. pabeigšanai, pagarināms</strong>. Ja klients būvēs lēni / pa posmiem, BP dod daudz garāku logu par to pašu projektēšanas darbu — pārrunā šo ceļu. <em>(Sub-200 m² BP ir pieļaujams — likuma izņēmums, Volko rutīnas prakse; precīzo MK atsauci apstiprina Vladimirs.)</em>
