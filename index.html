@@ -3003,10 +3003,16 @@ function renderSvcAuto(type,area,floors,cat){
   const DOC={pr:{lbl:'📋 Paskaidrojuma raksts',bg:'#fffbeb',br:'var(--gold)'},pz:{lbl:'📨 Paziņojums par būvniecību',bg:'#eff6ff',br:'#2563eb'},bp:{lbl:'🏗 Būvprojekts + būvatļauja',bg:'#fef2f2',br:'#dc2626'},none:{lbl:'✓ Nav dokumenta nepieciešams',bg:'#f0fdf4',br:'#16a34a'}};
   const d=DOC[dt]||DOC.bp;
   const grpLine=cat==='apartment'?'Telpu grupa (dzīvoklis) — būves grupu nenosaka':'Būves grupa: <strong>'+g+'</strong>';
+  // Termiņu lēmuma-atbalsts: tikai jaunbūvei, viena dzīvokļa mājai, kad iznāk PR (Vladimirs 15.07.2026, verificēts MK 500 71./77./80.2.p.).
+  // Info-only — NEMAINA klasifikāciju/cenu. Sub-200 brīvprātīgu būvatļauju apstiprina ar būvvaldi (atvērts juridisks jautājums).
+  const showTerm=(type==='jaunbuve'||type==='tipveida')&&dt==='pr'&&cat==='dwelling'&&sub==='single';
+  const termNote=showTerm?`<div style="margin-top:7px;padding:8px 10px;border-radius:6px;background:#f8fafc;border:1px dashed #94a3b8;font-size:.72rem;color:var(--text);line-height:1.45">
+      <strong>⏱ Termiņi — apsver ceļu:</strong> PR būvēšanas logs = <strong>5 gadi, nepagarināms</strong> (pēc tam iecere jākārto no jauna). Būvprojekts + būvatļauja = <strong>5 g. uzsākšanai + 8 g. pabeigšanai, pagarināms</strong>. Ja klients būvēs lēni / pa posmiem, BP dod daudz garāku logu par to pašu projektēšanas darbu — pārrunā šo ceļu. <em>(Sub-200 m² brīvprātīgu būvatļauju apstiprini ar būvvaldi.)</em>
+    </div>`:'';
   document.getElementById('ar-svc-path').innerHTML=`<div style="padding:11px 14px;border-radius:0 8px 8px 0;background:${d.bg};border-left:3px solid ${d.br}">
     <div style="font-size:.68rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted)">Ieceres dokuments (auto)</div>
     <div style="font-size:1.05rem;font-weight:800;color:var(--navy);margin:2px 0 4px">${d.lbl}</div>
-    <div style="font-size:.77rem;color:var(--text);line-height:1.45">${pathReason(dt,g,cat,sub,area)}</div>
+    <div style="font-size:.77rem;color:var(--text);line-height:1.45">${pathReason(dt,g,cat,sub,area)}</div>${termNote}
     <div style="font-size:.68rem;color:var(--muted);margin-top:5px">${grpLine} · funkcija: ${funcName} · platība: ${area} m²</div>
   </div>`;
   const PILL={yes:['JĀ — vajadzīgs','#fee2e2','#b91c1c'],cond:['NOSACĪTI','#fef9c3','#b45309'],no:['NAV VAJADZĪGS','#dcfce7','#15803d']};
