@@ -131,11 +131,13 @@ footer{max-width:1240px;margin:0 auto;padding:0 20px 40px;font-size:.7rem;color:
       <label class="fl" style="margin-top:0">Kad ēka celta?</label>
       <label class="chk"><input type="radio" name="vecums" id="opt-pirms1993" onchange="calc()" checked> Pirms 1993. gada (padomju vai Ulmaņa laiks)</label>
       <label class="chk"><input type="radio" name="vecums" id="opt-pec1993" onchange="calc()"> Pēc 1993. gada</label>
+      <label class="chk" style="margin-top:6px;border-top:1px dashed var(--border);padding-top:8px"><input type="checkbox" id="opt-turpina-bez" onchange="calc()"> Būvniecība vēl turpinās / plāno vēl būvēt (nav pabeigts)</label>
     </div>
     <div class="sub-box" id="sub-legizm" style="display:none">
       <label class="fl" style="margin-top:0">Cik lielas ir nereģistrētās izmaiņas?</label>
       <label class="chk"><input type="radio" name="izm" id="opt-izm-viegli" onchange="calc()" checked> Nelielas — neskar nesošās konstrukcijas</label>
       <label class="chk"><input type="radio" name="izm" id="opt-izm-pilni" onchange="calc()"> Nozīmīgas — skar konstrukcijas vai apjomu</label>
+      <label class="chk" style="margin-top:6px;border-top:1px dashed var(--border);padding-top:8px"><input type="checkbox" id="opt-turpina-izm" onchange="calc()"> Būvniecība vēl turpinās / plāno vēl būvēt (nav pabeigts)</label>
     </div>
     <div class="sub-box" id="sub-lc" style="display:none">
       <label class="chk"><input type="checkbox" id="opt-lc-parbuve" onchange="calc()"> Kopā ar lietošanas veida maiņu notiek arī pārbūve</label>
@@ -374,7 +376,19 @@ function kadPrompt(){
 
 /* ═══ IECERES DOKUMENTS — porti no docTypeFor() (avots: ieceres_dokumenti_MK529.md) ═══ */
 /* Atgriež {dt:'pz'|'pr'|'bp'|'none', ref:'MK punkts', why:'īss pamatojums'} */
+function turpinaBuvet(){
+  return (darb==="leg-bez"&&document.getElementById("opt-turpina-bez").checked)
+       ||(darb==="leg-izm"&&document.getElementById("opt-turpina-izm").checked);
+}
 function docFor(e){
+  const res=docForBase(e);
+  /* Toma noteikums (16.07.2026): legalizācijā — ja viss jau uzbūvēts, pietiek ar PR;
+     ja būvniecība vēl turpinās, iesaka būvprojektu + būvatļauju (ilgāks logs pabeigšanai). */
+  if(isLegalDarb()&&turpinaBuvet()&&(res.dt==="pr"||res.dt==="pz"))
+    return {dt:"bp",ref:"izvēle — ilgāks termiņš",why:"Būvdarbi vēl nav pabeigti — iesakām būvprojektu + būvatļauju: logs 5 gadi uzsākšanai + 8 gadi pabeigšanai, pagarināms. Ar paskaidrojuma rakstu logs ir tikai 5 gadi bez pagarinājuma. Ja viss jau uzbūvēts, pietiek ar paskaidrojuma rakstu (noņem ķeksīti \"būvniecība vēl turpinās\")."};
+  return res;
+}
+function docForBase(e){
   const t=TIPI[e.tips],cat=t.cat,sub=t.sub||"";
   const a=parseFloat(e.platiba)||0,f=parseInt(e.stavi)||1;
   const g=grp(a,f,cat);
@@ -575,6 +589,7 @@ function calc(resetSvc){
   if(darb==="leg-bez"&&pirms1993)notes+=`<div class="note gold">🏛 <strong>Vēsturiska ēka bez nodošanas ekspluatācijā.</strong> Likums konkrētu ceļu neparedz — visā Latvijā pieņemtā prakse: izmaiņu projekta ceļš + paskaidrojuma raksts, un būvvalde procesu noformē tā, lai ēku var nodot ekspluatācijā. Cenā tāpēc lietota izmaiņu projekta likme, ne rekonstrukcijas. Dokumentos MK punktu nerakstīt — atsaukties uz būvvaldes praksi.</div>`;
   if(darb==="leg-bez"&&!pirms1993)notes+=`<div class="note gold">⚠️ Ēka celta pēc 1993. gada bez dokumentiem — legalizācija pēc Būvniecības likuma 18. panta (būvvalde lemj: legalizēt vai atjaunot iepriekšējo stāvokli). Cenā lietota jaunbūves likme (Toma noteikums nekad nenodotām ēkām).</div>`;
   if(anyPrJaunbuve)notes+=`<div class="note blue">⏱ <strong>Var izvēlēties arī būvatļauju — tas ir atļauts un bieži izdevīgi.</strong> Paskaidrojuma raksta būvēšanas logs = 5 gadi, nepagarināms; būvatļauja = 5 gadi uzsākšanai + 8 gadi pabeigšanai, pagarināms. Ja klients būvēs lēni vai pa posmiem, iesaki būvatļaujas ceļu par to pašu projektēšanas darbu.</div>`;
+  if(isLegalDarb()&&turpinaBuvet())notes+=`<div class="note blue">⏱ <strong>Būvniecība vēl turpinās</strong> — tāpēc ieteikts būvatļaujas ceļš (5+8 g., pagarināms), nevis paskaidrojuma raksts (5 g., nepagarināms). Projektēšanas cena no tā nemainās.</div>`;
   if(isLegalDarb())notes+=`<div class="note red">⚠️ Legalizācijas risks: būvvalde var atteikt — tad ēka jānojauc vai jāatjauno iepriekšējais stāvoklis. Pašvaldībai var būt pastiprināta (piem. 5×) nodeva. Sarežģītos gadījumos sāc ar ESI.</div>`;
   if(anyPz)notes+=`<div class="note green" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">📨 Paziņojuma līmenis:
     <label class="chk" style="padding:0"><input type="radio" name="pz" ${pzTier==="a"?"checked":""} onchange="setPz('a')"> A — klients pats (${PZ_A} €)</label>
