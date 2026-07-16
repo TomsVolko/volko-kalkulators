@@ -219,7 +219,7 @@ if(sessionStorage.getItem("va")){document.getElementById("lock").style.display="
 const AR_RATES={jaunbuve:[32,30,28,26,24,22,21,20,19,18,16],"izmaiņu":[22,20,18,16,15,14,13,12,11,10,9],rekonstrukcija:[30,28,26,24,22,20,19,18,17,16,14],vienk:[21,19,17,15,14,13,12,11,10,9,8],"nojaukšana":[10,9,8,7,6,5,5,5,4,4,4],tipveida:[14,12,11,10,9,8,7,6,6,6,5]};
 const AR_BRACKS=[30,60,90,120,150,180,210,240,270,300,Infinity];
 const AR_MINS={jaunbuve:[1700,2100],"izmaiņu":[1700,2100],rekonstrukcija:[2500,2900],la:[2500,2900],lbp:[2500,2900]};
-const GC={I:0.75,II:1.20,III:1.80};
+const GC={I:0.75,II:1.20,III:1.80}; // iekšējais cenu koeficients — atšifrējumā nerāda (Toms 16.07.2026)
 const I_FIXED=[{max:10,cli:800},{max:15,cli:1000},{max:20,cli:1200},{max:25,cli:1400}];
 const PZ_A=400,PZ_B=950,PZ_C=1800; // paziņojuma līmeņi (Vladimirs 07.07.2026)
 const SVC_BASE={esi:950,taa:400,nod:950,bk_s:1400,bk_m:2000,bk_l:3000,ti:400,eps:370};
@@ -237,6 +237,7 @@ function grp(a,f,cat){
   if(f<=1 && a<=60) return "I";
   return "II";
 }
+/* Cenu grupa — iekšēja, aprēķinam (Toms 16.07.2026: cenā paliek, bet nekur nerāda) */
 function grpPrice(a,f){ if(a<=25&&f<=1) return "I"; if(a>1500||f>=4) return "III"; return "II"; }
 
 /* ═══ ĒKU TIPI (funkcijas koeficienti — identiski vecajai versijai) ═══ */
@@ -273,6 +274,7 @@ function renderDarb(){
     `<button class="darb-btn${darb===d.id?' on':''}" onclick="setDarb('${d.id}')"><span class="di">${d.icon}</span>${d.n}<div style="font-weight:400;font-size:.68rem;color:var(--muted);margin-top:2px">${d.d}</div></button>`).join("");
 }
 function setDarb(id){
+  if(darb!==id)ekas.forEach(e=>delete e.rateOv); // cita darbība = citas likmes → manuālās likmes atceļ
   darb=id;renderDarb();
   document.getElementById("sub-parbuve").style.display=(id==="parbuve")?"block":"none";
   document.getElementById("sub-legbez").style.display=(id==="leg-bez")?"block":"none";
@@ -433,6 +435,9 @@ function minKey(rk){
   return rk;
 }
 function isLegalDarb(){return darb==="leg-bez"||darb==="leg-izm";}
+/* Manuāla likme €/m² konkrētai ēkai (dīla pielāgošanai) — sesijas laikā, kamēr nemaina darbību */
+function setRate(i,v){const n=parseFloat(v);if(ekas[i])ekas[i].rateOv=(!isNaN(n)&&n>0)?n:undefined;calc(false);}
+function setRateReset(i){if(ekas[i])delete ekas[i].rateOv;calc(false);}
 function eCoef(){
   let n=["r-nkmp","r-kop","r-rob","r-steidz"].filter(id=>document.getElementById(id).checked).length;
   if(isLegalDarb())n+=1; // legalizācijas apgrūtinājums (vecajā versijā ķeksis "patvaļīga būvniecība")
@@ -449,20 +454,25 @@ function priceFor(e,doc,pzTier){
     return {sum:v,rows:[[lbl,eur(v)]]};
   }
   const gP=grpPrice(a,f);
-  if(gP==="I"&&!isLegalDarb()){
+  if(gP==="I"&&a<=25&&!isLegalDarb()){
     const fp=I_FIXED.find(x=>a<=x.max)||I_FIXED[I_FIXED.length-1];
     return {sum:fp.cli,rows:[["Fiksētā cena I grupas mazēkai (≤25 m², 1 stāvs)",eur(fp.cli)]]};
   }
   const rk=rateKey();
-  const rate=AR_RATES[rk][bi(a)];
+  const rateAuto=AR_RATES[rk][bi(a)];
+  const rateOv=(e.rateOv!==undefined&&e.rateOv!==null);
+  const rate=rateOv?e.rateOv:rateAuto;
   const gC=GC[gP],ec=eCoef();
   const base=a*rate*t.k*gC*muni.p*ec;
   const mk=minKey(rk);
   const minA=mk?AR_MINS[mk]:null;
-  const minV=minA?(a<=60?minA[0]:minA[1]):0;
-  const sum=r50(Math.max(base,minV));
   const gJur=grp(a,f,t.cat);
-  const rows=[["Likme ("+rk+", "+a+" m²)",rate+" €/m²"],["Funkcija ("+t.n+")","×"+t.k.toFixed(2)],["Cenu grupa "+gP+(gJur!==gP&&gJur!=="TG"?" (juridiski "+gJur+" grupa — cenai lieto "+gP+" gr. likmi)":""),"×"+gC.toFixed(2)]];
+  let minV=minA?(a<=60?minA[0]:minA[1]):0;
+  if(gJur==="I")minV=Math.min(minV||1400,1400); // I grupas ēkai (vienstāva ≤60 m²) minimums 1400 EUR (Toms 16.07.2026)
+  const sum=r50(Math.max(base,minV));
+  const ei=ekas.indexOf(e);
+  const rateCell=`<input type="number" min="0" step="0.5" value="${rate}" onchange="setRate(${ei},this.value)" title="Likme €/m² — maini manuāli, ja jāpielāgo dīlam" style="width:60px;text-align:right;padding:2px 5px;border:1px solid ${rateOv?"var(--gold)":"var(--border)"};border-radius:6px;font-family:inherit;font-size:.76rem;background:${rateOv?"#fffbf0":"#fff"}"> €/m²${rateOv?` <a href="#" onclick="setRateReset(${ei});return false" title="Atjaunot aprēķināto likmi (${rateAuto} €/m²)" style="text-decoration:none">↺</a>`:""}`;
+  const rows=[["Likme ("+rk+", "+a+" m²)"+(rateOv?" — manuāla":""),rateCell],["Funkcija ("+t.n+")","×"+t.k.toFixed(2)]];
   if(muni.p!==1)rows.push(["Pašvaldība"+(muni.name?" ("+muni.name+")":""),"×"+muni.p.toFixed(2)]);
   if(ec!==1)rows.push(["Apgrūtinājumi","×"+ec.toFixed(2)]);
   if(minV&&base<minV)rows.push(["Minimālā cena ("+(a<=60?"mazā":"lielā")+" ēka)",eur(minV)]);
