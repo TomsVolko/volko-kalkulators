@@ -470,6 +470,16 @@ function priceFor(e,doc,pzTier){
 }
 
 /* ═══ PAPILDU PAKALPOJUMI ═══ */
+/* Toma manuāli pārrakstītās pakalpojumu klienta cenas — saglabājas pārlūkā (tā pati atslēga kā vecajā versijā) */
+let _svcPrice={};
+try{_svcPrice=JSON.parse(localStorage.getItem("volkoSvcPrice")||"{}");}catch(e){_svcPrice={};}
+function svcPrice(id,val){
+  const v=parseInt(val);
+  if(!isNaN(v)&&v>=0)_svcPrice[id]=v; else delete _svcPrice[id];
+  localStorage.setItem("volkoSvcPrice",JSON.stringify(_svcPrice));
+  calc(false);
+}
+function svcPriceReset(id){delete _svcPrice[id];localStorage.setItem("volkoSvcPrice",JSON.stringify(_svcPrice));calc(false);}
 function svcList(mainE){
   const t=TIPI[mainE.tips],cat=t.cat;
   const a=parseFloat(mainE.platiba)||0,f=parseInt(mainE.stavi)||1;
@@ -569,12 +579,13 @@ function calc(resetSvc){
   const PILL={yes:"JĀ — vajadzīgs",cond:"NOSACĪTI",no:"NAV VAJADZĪGS"};
   document.getElementById("svc").innerHTML=svcs.map(s=>{
     const on=svcChecked[s.id]??(s.st==="yes");svcChecked[s.id]=on;
+    const ov=_svcPrice[s.id]!==undefined, ep=ov?_svcPrice[s.id]:s.p;
     return `<div class="svc"><input type="checkbox" ${on?"checked":""} onchange="toggleSvc('${s.id}',this.checked)">
     <div style="flex:1"><span class="sv-n">${s.n}</span> <span class="pill ${s.st}">${PILL[s.st]}</span><div class="sv-w">${s.w}</div></div>
-    <span class="sv-p">${eur(s.p)}</span></div>`;
+    <span class="sv-p"><input type="number" min="0" step="50" value="${ep}" onchange="svcPrice('${s.id}',this.value)" title="Klienta cena — maini manuāli, saglabājas pārlūkā" style="width:74px;text-align:right;padding:3px 5px;border:1px solid ${ov?"var(--gold)":"var(--border)"};border-radius:6px;font-family:inherit;font-size:.8rem;background:${ov?"#fffbf0":"#fff"}"> €${ov?` <a href="#" onclick="svcPriceReset('${s.id}');return false" title="Atjaunot aprēķināto cenu (${eur(s.p)})" style="text-decoration:none">↺</a>`:""}</span></div>`;
   }).join("");
   let svcSum=0;
-  svcs.forEach(s=>{if(svcChecked[s.id]){svcSum+=s.p;brk+=`<div class="br"><span>${s.n.split(" — ")[0]}</span><span>${eur(s.p)}</span></div>`;}});
+  svcs.forEach(s=>{const ep=_svcPrice[s.id]!==undefined?_svcPrice[s.id]:s.p;if(svcChecked[s.id]){svcSum+=ep;brk+=`<div class="br"><span>${s.n.split(" — ")[0]}${_svcPrice[s.id]!==undefined?" (manuāla cena)":""}</span><span>${eur(ep)}</span></div>`;}});
   brk+=`<div class="br tot"><span>KOPĀ</span><span>${eur(sum+svcSum)}</span></div>`;
   document.getElementById("brk").innerHTML=brk;
 
