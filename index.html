@@ -142,12 +142,16 @@ footer{max-width:1240px;margin:0 auto;padding:0 20px 40px;font-size:.7rem;color:
     <div class="sub-box" id="sub-lc" style="display:none">
       <label class="chk"><input type="checkbox" id="opt-lc-parbuve" onchange="calc()"> Kopā ar lietošanas veida maiņu notiek arī pārbūve</label>
     </div>
+    <div class="sub-box" id="sub-dziv" style="display:none">
+      <label class="chk"><input type="checkbox" id="opt-dziv-nesosas" onchange="calc()"> Darbi skar nesošās sienas vai maina telpu (dzīvokļu) robežas</label>
+      <label class="chk" style="margin-top:6px;border-top:1px dashed var(--border);padding-top:8px"><input type="checkbox" id="opt-dziv-skice" onchange="calc()"> Vajadzīga pārplānošanas skice — Volko izstrādā jauno plānojumu (cena 950 € vietā 450 €)</label>
+    </div>
   </div>
 
   <div class="card">
     <h2><span class="num">2</span> Ēkas un izmēri</h2>
     <div id="ekas"></div>
-    <button class="add-eka" onclick="addEka()">＋ Pievienot palīgēku (pirts, garāža, šķūnis …)</button>
+    <button class="add-eka" id="add-eka-btn" onclick="addEka()">＋ Pievienot palīgēku (pirts, garāža, šķūnis …)</button>
   </div>
 
   <div class="card">
@@ -194,7 +198,6 @@ footer{max-width:1240px;margin:0 auto;padding:0 20px 40px;font-size:.7rem;color:
   <div class="res-card" id="svc-card" style="display:none">
     <h3>🧩 Papildu pakalpojumi (atzīmē, ko iekļaut)</h3>
     <div id="svc"></div>
-    <div class="note blue" style="margin-bottom:0">ℹ️ NOD — nodošana ekspluatācijā (~950 €) vienmēr ir atsevišķs līgums pēc būvniecības; pirmajā līgumā to neiekļauj.</div>
   </div>
 
   <div class="res-card" id="empty-card"><div class="empty">⬅ Izvēlies, kas jādara, un ievadi ēkas izmērus.<br>Cena, ceļš un pakalpojumi parādīsies šeit.</div></div>
@@ -224,6 +227,7 @@ const AR_MINS={jaunbuve:[1700,2100],"izmaiņu":[1700,2100],rekonstrukcija:[2500,
 const GC={I:0.75,II:1.20,III:1.80}; // iekšējais cenu koeficients — atšifrējumā nerāda (Toms 16.07.2026)
 const I_FIXED=[{max:10,cli:800},{max:15,cli:1000},{max:20,cli:1200},{max:25,cli:1400}];
 const PZ_A=400,PZ_B=950,PZ_C=1800; // paziņojuma līmeņi (Vladimirs 07.07.2026)
+const APT_BASE=450,APT_SKICE=950; // dzīvokļa (telpu grupas) pārplānošana: bez skices / ar skici (Toms+Vladimirs 27.07.2026)
 const SVC_BASE={esi:950,taa:400,nod:950,bk_s:1400,bk_m:2000,bk_l:3000,ti:400,eps:370};
 function bi(a){for(let i=0;i<AR_BRACKS.length;i++)if(a<=AR_BRACKS[i])return i;return AR_BRACKS.length-1;}
 function r50(n){return Math.round(n/50)*50;}
@@ -264,6 +268,7 @@ const TIPI=[
 const DARBS=[
   {id:"jaunbuve",icon:"🏗",n:"Jaunbūve",d:"Jauna ēka uz brīvas zemes"},
   {id:"parbuve",icon:"🔨",n:"Pārbūve / paplašināšana",d:"Esošas legālas ēkas izmaiņas"},
+  {id:"dziv",icon:"🏠",n:"Dzīvokļa pārplānošana",d:"Telpu grupas pārbūve / atjaunošana"},
   {id:"leg-bez",icon:"⚠️",n:"Legalizācija — uzcelts bez dokumentiem",d:"Ēka nekad nav nodota ekspluatācijā"},
   {id:"leg-izm",icon:"📝",n:"Legalizācija — izmaiņas nav reģistrētas",d:"Ēka legāla, bet izmaiņas nav BIS"},
   {id:"lc",icon:"🔄",n:"Lietošanas veida maiņa",d:"Piem. saimniecības ēka → dzīvojamā"},
@@ -276,12 +281,18 @@ function renderDarb(){
     `<button class="darb-btn${darb===d.id?' on':''}" onclick="setDarb('${d.id}')"><span class="di">${d.icon}</span>${d.n}<div style="font-weight:400;font-size:.68rem;color:var(--muted);margin-top:2px">${d.d}</div></button>`).join("");
 }
 function setDarb(id){
-  if(darb!==id)ekas.forEach(e=>delete e.rateOv); // cita darbība = citas likmes → manuālās likmes atceļ
+  if(darb!==id){ekas.forEach(e=>delete e.rateOv);docChoice="auto";} // cita darbība = citas likmes → manuālie pārrakstījumi atceļas
+  const wasDziv=darb==="dziv";
   darb=id;renderDarb();
+  if(id==="dziv"){ekas=[{tips:5,platiba:ekas[0]?.platiba||"",stavi:1,apsild:false}];} // telpu grupa — viena "ēka", bez palīgēkām
+  else if(wasDziv){ekas=[{tips:0,platiba:ekas[0]?.platiba||"",stavi:1,apsild:false}];} // atpakaļ uz parastu ēku, saglabā platību
+  renderEkas();
+  document.getElementById("add-eka-btn").style.display=(id==="dziv")?"none":"block";
   document.getElementById("sub-parbuve").style.display=(id==="parbuve")?"block":"none";
   document.getElementById("sub-legbez").style.display=(id==="leg-bez")?"block":"none";
   document.getElementById("sub-legizm").style.display=(id==="leg-izm")?"block":"none";
   document.getElementById("sub-lc").style.display=(id==="lc")?"block":"none";
+  document.getElementById("sub-dziv").style.display=(id==="dziv")?"block":"none";
   calc();
 }
 
@@ -289,6 +300,16 @@ function setDarb(id){
 let ekas=[{tips:0,platiba:"",stavi:1,apsild:false}];
 function tipsOpts(sel){return TIPI.map((t,i)=>`<option value="${i}"${i===sel?" selected":""}>${t.n}</option>`).join("");}
 function renderEkas(){
+  if(darb==="dziv"){ // telpu grupa — tikai platība, bez tipa/stāviem/palīgēkām
+    const e=ekas[0];
+    document.getElementById("ekas").innerHTML=`<div class="eka">
+      <div class="eka-head"><span class="eka-title">Dzīvoklis / telpu grupa</span></div>
+      <label class="fl" style="margin-top:0">Dzīvokļa platība, m²</label>
+      <input type="number" min="0" step="1" value="${e.platiba}" placeholder="0" oninput="ekas[0].platiba=this.value;calc()">
+      <div style="font-size:.7rem;color:var(--muted);margin-top:7px;line-height:1.45">Telpu grupai būves grupu (I/II/III), m² minimumu, teritorijas analīzi, ĢP, topo un energosertifikātu nerēķina.</div>
+    </div>`;
+    return;
+  }
   document.getElementById("ekas").innerHTML=ekas.map((e,i)=>{
     const cat=TIPI[e.tips].cat;
     return `<div class="eka">
@@ -386,6 +407,10 @@ function docFor(e){
      ja būvniecība vēl turpinās, iesaka būvprojektu + būvatļauju (ilgāks logs pabeigšanai). */
   if(isLegalDarb()&&turpinaBuvet()&&(res.dt==="pr"||res.dt==="pz"))
     return {dt:"bp",ref:"izvēle — ilgāks termiņš",why:"Būvdarbi vēl nav pabeigti — iesakām būvprojektu + būvatļauju: logs 5 gadi uzsākšanai + 8 gadi pabeigšanai, pagarināms. Ar paskaidrojuma rakstu logs ir tikai 5 gadi bez pagarinājuma. Ja viss jau uzbūvēts, pietiek ar paskaidrojuma rakstu (noņem ķeksīti \"būvniecība vēl turpinās\")."};
+  /* Toma izvēle (16.07.2026): ja pēc likuma pietiek ar PR/paziņojumu, klients drīkst apzināti
+     izvēlēties būvprojektu + būvatļauju (ilgāks būvdarbu logs) — slēdzis ceļa kartītē. */
+  if(docChoice==="bp"&&DOC_CHOICE_DARB.includes(darb)&&(res.dt==="pr"||res.dt==="pz"))
+    return {dt:"bp",ref:"izvēle — ilgāks termiņš",why:"Pēc likuma pietiek ar "+(res.dt==="pr"?"paskaidrojuma rakstu":"paziņojumu")+" ("+res.ref+"), bet izvēlēts būvprojekts + būvatļauja: būvdarbu logs 5 gadi uzsākšanai + 8 gadi pabeigšanai, pagarināms (vienkāršotajam ceļam — 5 gadi bez pagarinājuma)."};
   return res;
 }
 function docForBase(e){
@@ -398,9 +423,10 @@ function docForBase(e){
   const lcParbuve=document.getElementById("opt-lc-parbuve").checked;
 
   if(cat==="apartment"){
-    if(darb==="vienk") return {dt:"pz",ref:"MK 529 7.¹1.",why:"Telpu grupas vienkāršota atjaunošana bez robežu maiņas un nesošo skaršanas — paziņojums."};
+    const nesosasApt=document.getElementById("opt-dziv-nesosas")?.checked;
     if(darb==="lc") return lcParbuve?{dt:"bp",ref:"MK 529 7.³",why:"Lietošanas veida maiņa kopā ar pārbūvi — būvprojekts + būvatļauja."}:{dt:"pr",ref:"MK 529 7.²7.",why:"Telpu grupas lietošanas veida maiņa bez pārbūves — paskaidrojuma raksts, ja TIAN atļauj."};
-    return {dt:"pr",ref:"MK 529 7.²",why:"Telpu grupas pārbūve / apvienošana — paskaidrojuma raksts. Būves grupu (I/II/III) telpu grupai nenosaka."};
+    if((darb==="dziv"||darb==="vienk")&&!nesosasApt) return {dt:"pz",ref:"MK 529 7.¹1.",why:"Telpu grupas vienkāršota atjaunošana — bez telpu robežu maiņas un nesošo konstrukciju skaršanas → paziņojums par būvniecību. Būves grupu (I/II/III) telpu grupai nenosaka."};
+    return {dt:"pr",ref:"MK 529 7.²",why:"Dzīvokļa pārplānošana / telpu robežu maiņa / nesošo konstrukciju skaršana = ēkas daļas pārbūve → paskaidrojuma raksts (BIS veidlapa telpu grupai). Būves grupu (I/II/III) telpu grupai nenosaka."};
   }
   if(darb==="vienk") return {dt:"pz",ref:"MK 529 7.¹1.",why:"Vienkāršota atjaunošana, neskarot nesošās konstrukcijas — paziņojums par būvniecību."};
   if(darb==="lc") return lcParbuve?{dt:"bp",ref:"MK 529 7.³",why:"Lietošanas veida maiņa KOPĀ ar pārbūvi — būvprojekts + būvatļauja."}:{dt:"pr",ref:"MK 529 7.²7.",why:"Lietošanas veida maiņa bez pārbūves — paskaidrojuma raksts, ja pašvaldības TIAN atļauj jauno funkciju."};
@@ -461,6 +487,16 @@ function priceFor(e,doc,pzTier){
   const t=TIPI[e.tips];
   const a=parseFloat(e.platiba)||0,f=parseInt(e.stavi)||1;
   if(!(a>0))return null;
+  /* ── TELPU GRUPA (dzīvoklis): fiksēta projektēšanas bāze, NE m²×likme×grupa (Toms+Vladimirs 27.07.2026) ── */
+  if(t.cat==="apartment"){
+    const skice=document.getElementById("opt-dziv-skice")?.checked;
+    const baseAuto=skice?APT_SKICE:APT_BASE;
+    const ov=(e.rateOv!==undefined&&e.rateOv!==null);
+    const v=ov?e.rateOv:baseAuto;
+    const ei=ekas.indexOf(e);
+    const cell=`<input type="number" min="0" step="50" value="${v}" onchange="setRate(${ei},this.value)" title="Dzīvokļa pārplānošanas bāze — maini manuāli, ja jāpielāgo" style="width:78px;text-align:right;padding:2px 5px;border:1px solid ${ov?"var(--gold)":"var(--border)"};border-radius:6px;font-family:inherit;font-size:.76rem;background:${ov?"#fffbf0":"#fff"}"> €${ov?` <a href="#" onclick="setRateReset(${ei});return false" title="Atjaunot (${baseAuto} €)" style="text-decoration:none">↺</a>`:""}`;
+    return {sum:r50(v),rows:[[(skice?"Dzīvokļa pārplānošana + skice (izstrāde + saskaņošana)":"Dzīvokļa pārplānošana (izstrāde + saskaņošana)"),cell]]};
+  }
   if(doc.dt==="none")return {sum:0,rows:[["Ieceres dokuments nav vajadzīgs","0 EUR"]]};
   if(doc.dt==="pz"){
     const v=pzTier==="a"?PZ_A:pzTier==="c"?r50(PZ_C*muni.p):PZ_B;
@@ -512,8 +548,6 @@ function svcList(mainE){
   const heated=(cat==="dwelling"||cat==="public"||(cat==="aux"&&mainE.apsild));
   const out=[];
   if(cat==="apartment"){
-    out.push({id:"esi",n:"ESI — juridiskā esošās situācijas izpēte",st:(risk||darb==="lc")?"yes":"cond",p:r50(SVC_BASE.esi*muni.s),
-      w:"Vienkāršai telpu grupas pārbūvei parasti nav vajadzīga; ieteicama, ja neskaidras dzīvokļa īpašuma robežas vai kopīpašuma daļas."});
     out.push({id:"taa",n:"TAA — tehniskā apsekošana",st:"cond",p:r50(SVC_BASE.taa*muni.s),
       w:"Vajadzīga tikai, ja darbi skar nesošās konstrukcijas."});
     out.push({id:"bk",n:"BK — būvkonstrukciju daļa",st:"cond",p:r50(SVC_BASE.bk_s*muni.s),
@@ -524,15 +558,12 @@ function svcList(mainE){
       w:"Darbi ēkas iekšienē — topogrāfija nav vajadzīga."});
     return out;
   }
-  const esiYes=risk||darb==="lc"||darb==="leg-bez";
-  out.push({id:"esi",n:"ESI — juridiskā esošās situācijas izpēte",st:esiYes?"yes":"cond",p:r50(SVC_BASE.esi*muni.s),
-    w:esiYes?"Riska faktori vai legalizācija/funkcijas maiņa — pirms projekta jāpārbauda, vai iecere vispār iespējama.":"Vienkāršā gadījumā pietiek ar TIAN pārbaudi; ieteicama, ja zona vai aizsargjoslas neskaidras."});
   const taaSt=(darb==="jaunbuve")?"no":(darb==="vienk")?"cond":"yes";
   out.push({id:"taa",n:"TAA — tehniskā apsekošana",st:taaSt,p:r50(SVC_BASE.taa*muni.s),
     w:taaSt==="no"?"Jaunbūvei nav esošu konstrukciju, ko apsekot.":taaSt==="cond"?"Vajadzīga tikai, ja ir šaubas par ēkas tehnisko stāvokli.":"Esošas ēkas pārbūvei / legalizācijai obligāta (LBN 405-21)."});
   let bkSt="cond";
-  if(cat==="apartment")bkSt="cond";
-  else if(g==="III")bkSt="yes";
+  const mainDoc=docFor(mainE);
+  if(g==="III"||mainDoc.dt==="bp")bkSt="yes";
   else if(g==="I"||darb==="vienk"||darb==="nojauksana")bkSt="no";
   else if(darb==="jaunbuve"&&a>200)bkSt="yes";
   out.push({id:"bk",n:"BK — būvkonstrukciju daļa",st:bkSt,p:r50((a<=100?SVC_BASE.bk_s:a<=250?SVC_BASE.bk_m:SVC_BASE.bk_l)*muni.s),
@@ -543,6 +574,11 @@ function svcList(mainE){
   const tiSt=(darb==="jaunbuve")?"yes":"cond";
   out.push({id:"ti",n:"TI — topogrāfija",st:tiSt,p:r50(SVC_BASE.ti*muni.s),
     w:tiSt==="yes"?"Jaunbūvei vajadzīgs aktuāls topogrāfiskais plāns.":"Vajadzīga, ja topogrāfija vecāka par 3 gadiem vai projekts skar ārtelpu."});
+  /* GEO — ģeotehniskā izpēte: ārpakalpojums (SIA geoengineered), cenu ieraksta manuāli (kā legacy GI) */
+  const lcParb=document.getElementById("opt-lc-parbuve").checked;
+  const geoSt=(darb==="jaunbuve")?(g==="I"?"cond":"yes"):((darb==="parbuve"||(darb==="lc"&&lcParb))?"cond":"no");
+  out.push({id:"geo",n:"GEO — ģeotehniskā izpēte",st:geoSt,p:0,
+    w:geoSt==="yes"?"Jaunbūvei pamatu projektēšanai vajadzīga grunts izpēte (urbumi, nestspēja). Ārpakalpojums — cenu ieraksti pēc piedāvājuma.":geoSt==="cond"?"Vajadzīga, ja paredzēta piebūve, jauni pamati vai būtiska papildu slodze uz pamatiem. Ārpakalpojums — cenu ieraksti pēc piedāvājuma.":"Šai darbībai grunts izpēte parasti nav vajadzīga."});
   return out;
 }
 let svcChecked={};
@@ -553,6 +589,10 @@ const DOCLBL={pz:["📨 Paziņojums par būvniecību","#2563eb"],pr:["📋 Paska
 const DOCRANK={none:0,pz:1,pr:2,bp:3};
 let pzTier="b";
 function setPz(t){pzTier=t;calc(false);}
+/* Ieceres ceļa izvēle: "auto" = likuma minimālais ceļš; "bp" = apzināta izvēle iet būvprojekta + būvatļaujas ceļu */
+const DOC_CHOICE_DARB=["jaunbuve","parbuve","lc","leg-bez","leg-izm"];
+let docChoice="auto";
+function setDocChoice(v){docChoice=v;calc(false);}
 function calc(resetSvc){
   if(resetSvc!==false)svcChecked={};
   const valid=darb&&ekas.some(e=>(parseFloat(e.platiba)||0)>0);
@@ -563,14 +603,15 @@ function calc(resetSvc){
   if(!valid){document.getElementById("total").textContent="—";document.getElementById("total-sub").textContent="Izvēlies darbību un ievadi platību";return;}
 
   const list=ekas.filter(e=>(parseFloat(e.platiba)||0)>0);
-  let sum=0,cels="",brk="",worst="none",anyPz=false,anyPrJaunbuve=false;
+  let sum=0,cels="",brk="",worst="none",anyPz=false,anyChoice=false;
   list.forEach((e,i)=>{
     const t=TIPI[e.tips];
     const a=parseFloat(e.platiba)||0,f=parseInt(e.stavi)||1;
     const g=grp(a,f,t.cat);
     const doc=docFor(e);
-    if(doc.dt==="pz")anyPz=true;
-    if(doc.dt==="pr"&&darb==="jaunbuve"&&t.cat==="dwelling")anyPrJaunbuve=true;
+    if(doc.dt==="pz"&&t.cat!=="apartment")anyPz=true; // dzīvoklim cena no fiksētās bāzes, ne PZ tieriem
+    const db=docForBase(e);
+    if((db.dt==="pr"||db.dt==="pz")&&DOC_CHOICE_DARB.includes(darb))anyChoice=true;
     if(DOCRANK[doc.dt]>DOCRANK[worst])worst=doc.dt;
     const pr=priceFor(e,doc,pzTier);
     sum+=pr.sum;
@@ -588,9 +629,11 @@ function calc(resetSvc){
   const pirms1993=document.getElementById("opt-pirms1993").checked;
   if(darb==="leg-bez"&&pirms1993)notes+=`<div class="note gold">🏛 <strong>Vēsturiska ēka bez nodošanas ekspluatācijā.</strong> Likums konkrētu ceļu neparedz — visā Latvijā pieņemtā prakse: izmaiņu projekta ceļš + paskaidrojuma raksts, un būvvalde procesu noformē tā, lai ēku var nodot ekspluatācijā. Cenā tāpēc lietota izmaiņu projekta likme, ne rekonstrukcijas. Dokumentos MK punktu nerakstīt — atsaukties uz būvvaldes praksi.</div>`;
   if(darb==="leg-bez"&&!pirms1993)notes+=`<div class="note gold">⚠️ Ēka celta pēc 1993. gada bez dokumentiem — legalizācija pēc Būvniecības likuma 18. panta (būvvalde lemj: legalizēt vai atjaunot iepriekšējo stāvokli). Cenā lietota jaunbūves likme (Toma noteikums nekad nenodotām ēkām).</div>`;
-  if(anyPrJaunbuve)notes+=`<div class="note blue">⏱ <strong>Var izvēlēties arī būvatļauju — tas ir atļauts un bieži izdevīgi.</strong> Paskaidrojuma raksta būvēšanas logs = 5 gadi, nepagarināms; būvatļauja = 5 gadi uzsākšanai + 8 gadi pabeigšanai, pagarināms. Ja klients būvēs lēni vai pa posmiem, iesaki būvatļaujas ceļu par to pašu projektēšanas darbu.</div>`;
+  if(anyChoice&&!(isLegalDarb()&&turpinaBuvet()))notes+=`<div class="note blue">⏱ <strong>Der abi ceļi — izvēlies:</strong><br>
+    <label class="chk" style="padding:4px 0 0"><input type="radio" name="docch" ${docChoice==="auto"?"checked":""} onchange="setDocChoice('auto')"> Vienkāršotais ceļš (likuma minimums) — būvdarbu logs 5 gadi, nepagarināms</label>
+    <label class="chk" style="padding:2px 0 0"><input type="radio" name="docch" ${docChoice==="bp"?"checked":""} onchange="setDocChoice('bp')"> Būvprojekts + būvatļauja — 5 g. uzsākšanai + 8 g. pabeigšanai, pagarināms. Izdevīgi, ja būvēs lēni vai pa posmiem</label></div>`;
   if(isLegalDarb()&&turpinaBuvet())notes+=`<div class="note blue">⏱ <strong>Būvniecība vēl turpinās</strong> — tāpēc ieteikts būvatļaujas ceļš (5+8 g., pagarināms), nevis paskaidrojuma raksts (5 g., nepagarināms). Projektēšanas cena no tā nemainās.</div>`;
-  if(isLegalDarb())notes+=`<div class="note red">⚠️ Legalizācijas risks: būvvalde var atteikt — tad ēka jānojauc vai jāatjauno iepriekšējais stāvoklis. Pašvaldībai var būt pastiprināta (piem. 5×) nodeva. Sarežģītos gadījumos sāc ar ESI.</div>`;
+  if(isLegalDarb())notes+=`<div class="note red">⚠️ Legalizācijas risks: būvvalde var atteikt — tad ēka jānojauc vai jāatjauno iepriekšējais stāvoklis. Pašvaldībai var būt pastiprināta (piem. 5×) nodeva.</div>`;
   if(anyPz)notes+=`<div class="note green" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">📨 Paziņojuma līmenis:
     <label class="chk" style="padding:0"><input type="radio" name="pz" ${pzTier==="a"?"checked":""} onchange="setPz('a')"> A — klients pats (${PZ_A} €)</label>
     <label class="chk" style="padding:0"><input type="radio" name="pz" ${pzTier==="b"?"checked":""} onchange="setPz('b')"> B — Volko pilns (${PZ_B} €)</label>
