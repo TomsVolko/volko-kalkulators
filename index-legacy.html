@@ -1929,6 +1929,11 @@ body[data-artype="jaunbuve"] #ar-jaunbuve-note{display:block}
           <option value="Ražotājs – CLT paneļi">CLT paneļi (ražotājam)</option>
           <option value="Ražotājs – betona sendvičpaneļi">Betona sendvičpaneļi (ražotājam)</option>
         </optgroup>
+        <optgroup label="🏗️ Tērauda karkass / halles">
+          <option value="Karkass – tērauda rāmji (halle)">Tērauda rāmji — halle (kolonnas, rāmji, saites)</option>
+          <option value="Jumts – tērauda kopnes">Tērauda kopnes (jumts)</option>
+          <option value="Siena – tērauda karkass + sendvičpaneļi">Tērauda karkass + sendvičpaneļu sienas</option>
+        </optgroup>
       </select>
 
       <div style="margin-top:10px;">
@@ -3358,6 +3363,14 @@ const BK_SYS = {
     'Ražotājs – koka karkasi':           { c:1.15, u:'m2' },
     'Ražotājs – CLT paneļi':             { c:1.25, u:'m2' },
     'Ražotājs – betona sendvičpaneļi':   { c:1.30, u:'m2' },
+    /* Tērauda karkass / halles (pievienots 05.08.2026, deal 7457 — 750 m² halle:
+       sarakstā nebija nevienas tērauda pozīcijas, tāpēc tika rēķināts ar "koka kopnes"
+       un "betona sendvičpaneļi" kā tuvākajām. Tērauda rāmju BK prasa mezglu un savienojumu
+       aprēķinu, tāpēc koeficients starp CLT (1.25) un ražotāja dokumentāciju.
+       ⚠️ KOEFICIENTI JĀAPSTIPRINA VLADIMIRAM pirms lietošanas reālā piedāvājumā. */
+    'Karkass – tērauda rāmji (halle)':   { c:1.35, u:'m2' },
+    'Jumts – tērauda kopnes':            { c:1.25, u:'m2' },
+    'Siena – tērauda karkass + sendvičpaneļi': { c:1.15, u:'m2' },
 };
 
 const BK_RATES = {
@@ -3394,6 +3407,7 @@ const BK_CAT_HINTS = {
     'Sijas':      '⚠️ Mērvienība — METRI (garums), nevis m². Ievadi sijas garumu metros.',
     'Aiļu':       'Logu/durvju aiļu pārsedze.',
     'Ražotājs':   'Dokumentācija ražotājam — detalizētākas rasējumu prasības.',
+    'Karkass':    'Tērauda karkass / halle. Cenā ietilpst mezglu un savienojumu aprēķins — tas ir galvenais darba apjoms tērauda konstrukcijās.',
 };
 
 let bkLevel = 'L2';

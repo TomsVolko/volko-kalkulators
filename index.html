@@ -229,6 +229,19 @@ const I_FIXED=[{max:10,cli:800},{max:15,cli:1000},{max:20,cli:1200},{max:25,cli:
 const PZ_A=400,PZ_B=950,PZ_C=1800; // paziņojuma līmeņi (Vladimirs 07.07.2026)
 const APT_BASE=450,APT_SKICE=950; // dzīvokļa (telpu grupas) pārplānošana: bez skices / ar skici (Toms+Vladimirs 27.07.2026)
 const SVC_BASE={esi:950,taa:400,nod:950,bk_s:1400,bk_m:2000,bk_l:3000,ti:400,eps:370};
+/* BK lielām platībām (05.08.2026, deal 7457). Fiksētā bk_l=3000 EUR bija spēkā VISAM,
+   kas >250 m² — 750 m² tērauda karkasa hallei tas ir klaji par zemu (detalizētais BK
+   kalkulators index-legacy.html L2 tai pašai ēkai dod ~11 500 EUR; legalizācijai reālais
+   ~5000–7000). Virs BK_XL_NO platība sāk skaitīties: bāze + likme par katru m² virs sliekšņa,
+   ar griestiem, aiz kuriem cenu NEDRĪKST minēt — jārēķina ar detalizēto kalkulatoru.
+   ⚠️ LIKME UN GRIESTI JĀAPSTIPRINA VLADIMIRAM pirms lietošanas reālā piedāvājumā. */
+const BK_XL_NO=450, BK_XL_M2=10, BK_XL_MAX=12000;
+function bkCena(a){
+  if(a<=100)return SVC_BASE.bk_s;
+  if(a<=250)return SVC_BASE.bk_m;
+  if(a<=BK_XL_NO)return SVC_BASE.bk_l;
+  return Math.min(BK_XL_MAX, SVC_BASE.bk_l+(a-BK_XL_NO)*BK_XL_M2);
+}
 function bi(a){for(let i=0;i<AR_BRACKS.length;i++)if(a<=AR_BRACKS[i])return i;return AR_BRACKS.length-1;}
 function r50(n){return Math.round(n/50)*50;}
 function eur(n){return n.toLocaleString("lv-LV")+" EUR";}
@@ -566,8 +579,10 @@ function svcList(mainE){
   if(g==="III"||mainDoc.dt==="bp")bkSt="yes";
   else if(g==="I"||darb==="vienk"||darb==="nojauksana")bkSt="no";
   else if(darb==="jaunbuve"&&a>200)bkSt="yes";
-  out.push({id:"bk",n:"BK — būvkonstrukciju daļa",st:bkSt,p:r50((a<=100?SVC_BASE.bk_s:a<=250?SVC_BASE.bk_m:SVC_BASE.bk_l)*muni.s),
-    w:bkSt==="yes"?"Vajadzīgs būvprojekts — BK daļa obligāta.":bkSt==="no"?"Pietiek ar paskaidrojuma rakstu — atsevišķa BK daļa nav obligāta.":"Vajadzīga, ja darbi skar nesošās konstrukcijas vai jāizstrādā būvprojekts."});
+  const bkP=r50(bkCena(a)*muni.s);
+  const bkW=bkSt==="yes"?"Vajadzīgs būvprojekts — BK daļa obligāta.":bkSt==="no"?"Pietiek ar paskaidrojuma rakstu — atsevišķa BK daļa nav obligāta.":"Vajadzīga, ja darbi skar nesošās konstrukcijas vai jāizstrādā būvprojekts.";
+  out.push({id:"bk",n:"BK — būvkonstrukciju daļa",st:bkSt,p:bkP,
+    w:bkW+(a>BK_XL_NO?" ⚠️ Virs "+BK_XL_NO+" m² šī ir APLĒSE — pirms piedāvājuma pārrēķini ar detalizēto BK kalkulatoru (index-legacy.html, L2) pa konstrukciju sistēmām.":"")});
   const epsSt=(darb==="nojauksana"||!heated)?"no":(darb==="vienk")?"cond":"yes";
   out.push({id:"eps",n:"EPS — energoefektivitātes pārskats",st:epsSt,p:r50(SVC_BASE.eps*muni.s),
     w:epsSt==="no"?"Neapsildāmai ēkai vai nojaukšanai nav vajadzīgs.":epsSt==="cond"?"Vajadzīgs, ja darbi skar norobežojošās konstrukcijas (siltināšana, logi).":"Apsildāmai ēkai — vajadzīgs nodošanai ekspluatācijā."});
