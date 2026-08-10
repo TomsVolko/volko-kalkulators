@@ -234,8 +234,13 @@ const SVC_BASE={esi:950,taa:400,nod:950,bk_s:1400,bk_m:2000,bk_l:3000,ti:400,eps
    kalkulators index-legacy.html L2 tai pašai ēkai dod ~11 500 EUR; legalizācijai reālais
    ~5000–7000). Virs BK_XL_NO platība sāk skaitīties: bāze + likme par katru m² virs sliekšņa,
    ar griestiem, aiz kuriem cenu NEDRĪKST minēt — jārēķina ar detalizēto kalkulatoru.
-   ⚠️ LIKME UN GRIESTI JĀAPSTIPRINA VLADIMIRAM pirms lietošanas reālā piedāvājumā. */
+   ✅ APSTIPRINĀJA VLADIMIRS 10.08.2026 (e-pasts "🔴 HOT: Kalkulatora cenas apstiprināšanai"):
+   likme 10 EUR/m², griesti 12 000 EUR. Divas viņa piezīmes, kas ir SPĒKĀ:
+   – griesti pēc formulas iestājas jau no ~1350 m² (nevis 2000, kā rakstīts sarunā);
+   – virs 450 m² formula ir TIKAI orientieris sarunai — pirms piedāvājuma vienmēr
+     pārrēķins ar detalizēto BK kalkulatoru (index-legacy.html, L2). */
 const BK_XL_NO=450, BK_XL_M2=10, BK_XL_MAX=12000;
+const BK_XL_CAP=BK_XL_NO+(BK_XL_MAX-SVC_BASE.bk_l)/BK_XL_M2; // platība, no kuras iestājas griesti (1350 m²)
 function bkCena(a){
   if(a<=100)return SVC_BASE.bk_s;
   if(a<=250)return SVC_BASE.bk_m;
@@ -342,12 +347,14 @@ function addEka(){ekas.push({tips:7,platiba:"",stavi:1,apsild:false});renderEkas
 function rmEka(i){ekas.splice(i,1);renderEkas();calc();}
 
 /* ═══ PAŠVALDĪBAS (koeficienti identiski vecajai versijai) ═══ */
-const _MT={R:{p:1.20,s:1.05},P:{p:1.10,s:1.05},S:{p:1.00,s:1.10},G:{p:1.02,s:1.15},C:{p:1.05,s:1.20}};
+/* V — Ventspils (pilsēta un novads): būvvalde nav vienkārša, tāpēc projektēšana kā Pierīgai
+   1.10, servisi paliek 1.20 (Vladimirs 10.08.2026, e-pasts par kalkulatora cenām). */
+const _MT={R:{p:1.20,s:1.05},P:{p:1.10,s:1.05},S:{p:1.00,s:1.10},G:{p:1.02,s:1.15},C:{p:1.05,s:1.20},V:{p:1.10,s:1.20}};
 const MUNI_LIST=[
  {g:"Rīga",items:[["Rīga","R"]]},
  {g:"Pierīga",items:[["Mārupes novads","P"],["Ķekavas novads","P"],["Salaspils novads","P"],["Ādažu novads","P"],["Ropažu novads","P"],["Olaines novads","P"],["Garkalnes novads","P"],["Stopiņu novads","P"],["Babītes novads","P"],["Carnikavas novads","P"]]},
- {g:"Valstspilsētas",items:[["Jūrmala","S"],["Jelgava","S"],["Liepāja","C"],["Ventspils","C"],["Daugavpils","C"],["Rēzekne","C"]]},
- {g:"Novadi",items:[["Aizkraukles novads","S"],["Alūksnes novads","C"],["Augšdaugavas novads","G"],["Balvu novads","C"],["Bauskas novads","S"],["Cēsu novads","S"],["Daugavpils novads","C"],["Dienvidkurzemes novads","G"],["Dobeles novads","S"],["Gulbenes novads","G"],["Jelgavas novads","S"],["Jēkabpils novads","G"],["Krāslavas novads","C"],["Kuldīgas novads","G"],["Limbažu novads","S"],["Līvānu novads","C"],["Ludzas novads","C"],["Madonas novads","G"],["Ogres novads","S"],["Preiļu novads","G"],["Rēzeknes novads","C"],["Saldus novads","G"],["Saulkrastu novads","S"],["Siguldas novads","S"],["Smiltenes novads","G"],["Talsu novads","G"],["Tukuma novads","S"],["Valkas novads","G"],["Valmieras novads","G"],["Varakļānu novads","C"],["Ventspils novads","C"]]}
+ {g:"Valstspilsētas",items:[["Jūrmala","S"],["Jelgava","S"],["Liepāja","C"],["Ventspils","V"],["Daugavpils","C"],["Rēzekne","C"]]},
+ {g:"Novadi",items:[["Aizkraukles novads","S"],["Alūksnes novads","C"],["Augšdaugavas novads","G"],["Balvu novads","C"],["Bauskas novads","S"],["Cēsu novads","S"],["Daugavpils novads","C"],["Dienvidkurzemes novads","G"],["Dobeles novads","S"],["Gulbenes novads","G"],["Jelgavas novads","S"],["Jēkabpils novads","G"],["Krāslavas novads","C"],["Kuldīgas novads","G"],["Limbažu novads","S"],["Līvānu novads","C"],["Ludzas novads","C"],["Madonas novads","G"],["Ogres novads","S"],["Preiļu novads","G"],["Rēzeknes novads","C"],["Saldus novads","G"],["Saulkrastu novads","S"],["Siguldas novads","S"],["Smiltenes novads","G"],["Talsu novads","G"],["Tukuma novads","S"],["Valkas novads","G"],["Valmieras novads","G"],["Varakļānu novads","C"],["Ventspils novads","V"]]}
 ];
 let muni={p:1.00,s:1.10,name:""};
 function muniNorm(s){return (s||"").toLowerCase().replace(/[āčēģīķļņšūž]/g,c=>({"ā":"a","č":"c","ē":"e","ģ":"g","ī":"i","ķ":"k","ļ":"l","ņ":"n","š":"s","ū":"u","ž":"z"}[c]||c));}
@@ -582,7 +589,8 @@ function svcList(mainE){
   const bkP=r50(bkCena(a)*muni.s);
   const bkW=bkSt==="yes"?"Vajadzīgs būvprojekts — BK daļa obligāta.":bkSt==="no"?"Pietiek ar paskaidrojuma rakstu — atsevišķa BK daļa nav obligāta.":"Vajadzīga, ja darbi skar nesošās konstrukcijas vai jāizstrādā būvprojekts.";
   out.push({id:"bk",n:"BK — būvkonstrukciju daļa",st:bkSt,p:bkP,
-    w:bkW+(a>BK_XL_NO?" ⚠️ Virs "+BK_XL_NO+" m² šī ir APLĒSE — pirms piedāvājuma pārrēķini ar detalizēto BK kalkulatoru (index-legacy.html, L2) pa konstrukciju sistēmām.":"")});
+    w:bkW+(a>BK_XL_NO?" ⚠️ Virs "+BK_XL_NO+" m² šī ir APLĒSE (orientieris sarunai) — pirms piedāvājuma pārrēķini ar detalizēto BK kalkulatoru (index-legacy.html, L2) pa konstrukciju sistēmām.":"")
+      +(a>=BK_XL_CAP?" ⛔ No ~"+BK_XL_CAP+" m² iestājas griesti "+eur(BK_XL_MAX)+" — virs tiem cenu NESOLĀM bez detalizēta pārrēķina.":"")});
   const epsSt=(darb==="nojauksana"||!heated)?"no":(darb==="vienk")?"cond":"yes";
   out.push({id:"eps",n:"EPS — energoefektivitātes pārskats",st:epsSt,p:r50(SVC_BASE.eps*muni.s),
     w:epsSt==="no"?"Neapsildāmai ēkai vai nojaukšanai nav vajadzīgs.":epsSt==="cond"?"Vajadzīgs, ja darbi skar norobežojošās konstrukcijas (siltināšana, logi).":"Apsildāmai ēkai — vajadzīgs nodošanai ekspluatācijā."});
