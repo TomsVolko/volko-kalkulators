@@ -148,6 +148,7 @@ footer{max-width:1240px;margin:0 auto;padding:0 20px 40px;font-size:.7rem;color:
     <div class="sub-box" id="sub-dziv" style="display:none">
       <label class="chk"><input type="checkbox" id="opt-dziv-nesosas" onchange="calc()"> Darbi skar nesošās sienas vai maina telpu (dzīvokļu) robežas</label>
       <label class="chk" style="margin-top:6px;border-top:1px dashed var(--border);padding-top:8px"><input type="checkbox" id="opt-dziv-skice" onchange="calc()"> Vajadzīga pārplānošanas skice — Volko izstrādā jauno plānojumu (cena 950 € vietā 450 €)</label>
+      <label class="chk" style="margin-top:6px;border-top:1px dashed var(--border);padding-top:8px"><input type="checkbox" id="opt-jauna-telpu-grupa" onchange="calc()"> Būvdarbu rezultātā rodas JAUNS dzīvoklis (dzīvokļa sadalīšana) — MK 529 7.⁵ p.</label>
     </div>
   </div>
 
@@ -434,7 +435,22 @@ function docFor(e){
      izvēlēties būvprojektu + būvatļauju (ilgāks būvdarbu logs) — slēdzis ceļa kartītē. */
   if(docChoice==="bp"&&DOC_CHOICE_DARB.includes(darb)&&(res.dt==="pr"||res.dt==="pz"))
     return {dt:"bp",ref:"izvēle — ilgāks termiņš",why:"Pēc likuma pietiek ar "+(res.dt==="pr"?"paskaidrojuma rakstu":"paziņojumu")+" ("+res.ref+"), bet izvēlēts būvprojekts + būvatļauja: būvdarbu logs 5 gadi uzsākšanai + 8 gadi pabeigšanai, pagarināms (vienkāršotajam ceļam — 5 gadi bez pagarinājuma)."};
-  return res;
+  return VOLKO_75(res);
+}
+/* MK 529 7.⁵ p. (MK 29.04.2025. not. Nr. 262 red.): "7.¹1. apakšpunktu nepiemēro, ja ēkā
+   būvdarbu rezultātā tiek veidota jauna dzīvojamo telpu grupa (dzīvoklis)." Tātad dzīvokļa
+   SADALĪŠANĀ vienkāršotā atjaunošana ar paziņojumu neder — paliek paskaidrojuma raksts
+   (cenas ziņā no 2–3 daļām uz 5–6). Apvienošanu automātiski neizlemj — tas ir robežgadījums.
+   Loģika no Vladimira 11.08.2026 koda gabala (references\kalkulators_labojums_11082026.js),
+   pielāgota kalkulatora laukiem dt/ref/why; tas pats ir legalizacijas_cels.py --jauna-telpu-grupa. */
+function VOLKO_75(r){
+  if(!document.getElementById("opt-jauna-telpu-grupa")?.checked) return r;
+  if(r.dt!=="pz"||String(r.ref).indexOf("7.¹1.")===-1) return r;   // 7.⁵ skar TIKAI 7.¹1. ceļu
+  return {dt:"pr",ref:"MK 529 7.² + 7.⁵ p. izņēmums",
+    why:"Būvdarbu rezultātā veidojas JAUNA dzīvojamo telpu grupa (dzīvoklis) — MK 529 7.⁵ p. aizliedz "
+       +"piemērot 7.¹1., tāpēc paziņojuma vietā paliek paskaidrojuma raksts. Konkrēto 7.² apakšpunktu "
+       +"precizē BIS/būvvalde. ⚠️ Ja dzīvokļi tiek APVIENOTI (nevis sadalīti), tas ir robežgadījums — "
+       +"apstiprina būvvalde vai Vladimirs."};
 }
 function docForBase(e){
   const t=TIPI[e.tips],cat=t.cat,sub=t.sub||"";
