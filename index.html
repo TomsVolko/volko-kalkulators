@@ -597,11 +597,27 @@ function svcList(mainE){
       w:"Darbi ēkas iekšienē — topogrāfija nav vajadzīga."});
     return out;
   }
-  const taaSt=(darb==="jaunbuve")?"no":(darb==="vienk")?"cond":"yes";
-  out.push({id:"taa",n:"TAA — tehniskā apsekošana",st:taaSt,p:r50(SVC_BASE.taa*muni.s),
-    w:taaSt==="no"?"Jaunbūvei nav esošu konstrukciju, ko apsekot.":taaSt==="cond"?"Vajadzīga tikai, ja ir šaubas par ēkas tehnisko stāvokli.":"Esošas ēkas pārbūvei / legalizācijai obligāta (LBN 405-21)."});
-  let bkSt="cond";
   const mainDoc=docFor(mainE);
+  /* TAA — LBN 405-21 (MK Nr. 384, likumi.lv id 324221; 9., 9.¹ un 12. p. MK 03.03.2026.
+     noteikumu Nr. 85 redakcijā; verificēts pret likumi.lv 18.08.2026).
+     TAA NAV automātiski obligāta esošas ēkas pārbūvei vai legalizācijai:
+       9.2.  — pirms atjaunošanas/pārbūves/restaurācijas/konservācijas BŪVPROJEKTA izstrādes
+               un tikai tad, "ja būvprojekta izstrādātājs identificē tehniskās apsekošanas
+               nepieciešamību atbilstoši būvprojekta izstrādātāja noteiktajam apjomam";
+       12.   — apjomu tad nosaka tehniskās apsekošanas uzdevumā;
+       9.¹   — "Tehnisko apsekošanu VAR veikt, ja jānosaka būves ... faktiskais tehniskais stāvoklis";
+       9.1.1.— periodiski (reizi 10 gados) tikai 2./3. grupas publiskām un daudzstāvu
+               daudzdzīvokļu dzīvojamām ēkām — tas nav mūsu ieceres pienākums.
+     Tāpēc paziņojuma un paskaidrojuma raksta ceļā TAA ir NOSACĪTI, ne JĀ.
+     ⚠️ Līdz 18.08.2026 šeit stāvēja "Esošas ēkas pārbūvei / legalizācijai obligāta (LBN 405-21)".
+     Tas bija nepareizi, un tā pati frāze 10.08.2026 aizceļoja PV Lapā un vēstulē projekta
+     vadītājai, kamēr klienta piedāvājumā bija rakstīts pretējais ("ja būvvalde pieprasa"). */
+  const taaSt=(darb==="jaunbuve")?"no":(g==="III"||mainDoc.dt==="bp")?"yes":"cond";
+  out.push({id:"taa",n:"TAA — tehniskā apsekošana",st:taaSt,p:r50(SVC_BASE.taa*muni.s),
+    w:taaSt==="no"?"Jaunbūvei nav esošu konstrukciju, ko apsekot."
+      :taaSt==="yes"?"Tiek izstrādāts būvprojekts — LBN 405-21 9.2. p.: apsekošanu veic, ja projekta izstrādātājs identificē nepieciešamību; apjomu nosaka apsekošanas uzdevumā (12. p.)."
+      :"Nav automātiski obligāta (LBN 405-21 9.2., 9.¹ p.) — paziņojuma vai paskaidrojuma raksta ceļā bez būvprojekta vajadzīga tikai tad, ja to identificē projekta izstrādātājs vai pieprasa būvvalde. Praksē ņem, ja ēka veca, pārbūvētas nesošās konstrukcijas vai stāvoklis nav zināms."});
+  let bkSt="cond";
   if(g==="III"||mainDoc.dt==="bp")bkSt="yes";
   else if(g==="I"||darb==="vienk"||darb==="nojauksana")bkSt="no";
   else if(darb==="jaunbuve"&&a>200)bkSt="yes";
