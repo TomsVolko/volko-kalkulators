@@ -232,7 +232,7 @@ const GC={I:0.75,II:1.20,III:1.80}; // iekšējais cenu koeficients — atšifr�
 const I_FIXED=[{max:10,cli:800},{max:15,cli:1000},{max:20,cli:1200},{max:25,cli:1400}];
 const PZ_A=400,PZ_B=950,PZ_C=1800; // paziņojuma līmeņi (Vladimirs 07.07.2026)
 const APT_BASE=450,APT_SKICE=950; // dzīvokļa (telpu grupas) pārplānošana: bez skices / ar skici (Toms+Vladimirs 27.07.2026)
-const SVC_BASE={esi:950,taa:400,nod:950,bk_s:1400,bk_m:2000,bk_l:3000,ti:400,eps:370};
+const SVC_BASE={esi:950,taa:400,nod:950,bk_s:1400,bk_m:2000,bk_l:3000,ti:400,eps:370,izm:350};
 /* BK lielām platībām (05.08.2026, deal 7457). Fiksētā bk_l=3000 EUR bija spēkā VISAM,
    kas >250 m² — 750 m² tērauda karkasa hallei tas ir klaji par zemu (detalizētais BK
    kalkulators index-legacy.html L2 tai pašai ēkai dod ~11 500 EUR; legalizācijai reālais
@@ -595,6 +595,8 @@ function svcList(mainE){
       w:"Atsevišķam dzīvoklim parasti nav vajadzīgs — to gatavo visai ēkai."});
     out.push({id:"ti",n:"TI — topogrāfija",st:"no",p:r50(SVC_BASE.ti*muni.s),
       w:"Darbi ēkas iekšienē — topogrāfija nav vajadzīga."});
+    out.push({id:"izm",n:"IZM — izpildmērījums",st:"no",p:r50(SVC_BASE.izm*muni.s),
+      w:"Telpu grupas darbiem ēkas novietni no jauna neuzmēra."});
     return out;
   }
   const taaSt=(darb==="jaunbuve")?"no":(darb==="vienk")?"cond":"yes";
@@ -616,6 +618,11 @@ function svcList(mainE){
   const tiSt=(darb==="jaunbuve")?"yes":"cond";
   out.push({id:"ti",n:"TI — topogrāfija",st:tiSt,p:r50(SVC_BASE.ti*muni.s),
     w:tiSt==="yes"?"Jaunbūvei vajadzīgs aktuāls topogrāfiskais plāns.":"Vajadzīga, ja topogrāfija vecāka par 3 gadiem vai projekts skar ārtelpu."});
+  /* IZM — izpildmērījums: ATSEVIŠĶS darbs, NEKAD nav topogrāfijas cenā. Jaunbūvei obligāts visos trijos nodošanas ceļos (punkts atšķiras pēc ceļa: būvatļauja / paskaidrojuma raksts / paziņojums), pārbūvei un atjaunošanai nosacīts. Punkti un izņēmumi: volko-shared/references/izpildmerijums_apjoms.md */
+  const izmSt=(darb==="nojauksana")?"no":(darb==="jaunbuve")?"yes":"cond";
+  out.push({id:"izm",n:"IZM — izpildmērījums",st:izmSt,p:r50(SVC_BASE.izm*muni.s),
+    w:(izmSt==="yes"?"Jaunbūvei nodošanai ekspluatācijā obligāts pēc MK 529 — izņēmums tikai sezonas ēkām un ēkām ar tikai pazemes stāvu. ":izmSt==="cond"?"Pārbūvei/atjaunošanai vajadzīgs, ja mainījusies situācija apvidū (MK 529). ":"Nojaukšanai nav vajadzīgs. ")
+      +(izmSt!=="no"?"Atsevišķs darbs — NAV iekļauts topogrāfijas cenā. ⚠️ Rīgā parasti vajag 4–5 atsevišķus (ŪKT · ELT · gāze · ēka ar labiekārtojumu) — skaitu apstiprina būvvaldē, cena attiecīgi.":"")});
   /* GEO — ģeotehniskā izpēte: ārpakalpojums (SIA geoengineered), cenu ieraksta manuāli (kā legacy GI) */
   const lcParb=document.getElementById("opt-lc-parbuve").checked;
   const geoSt=(darb==="jaunbuve")?(g==="I"?"cond":"yes"):((darb==="parbuve"||(darb==="lc"&&lcParb))?"cond":"no");
