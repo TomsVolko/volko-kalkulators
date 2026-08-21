@@ -2172,8 +2172,8 @@ body[data-artype="jaunbuve"] #ar-jaunbuve-note{display:block}
         <div class="tl-why">Būvdarbu žurnāls BIS aizpildīts, segto darbu akti, nozīmīgo konstrukciju pieņemšanas akti. BEZ šiem aktiem NOD nevar sākt — prasi būvniekam jau būvēšanas laikā, nevis beigās!</div>
       </div></div>
       <div class="tl-step"><div class="tl-num">2</div><div class="tl-content">
-        <div class="tl-title">Izpildmērījumi <span class="tl-price-tag">~150–300 €</span></div>
-        <div class="tl-who">Veic: Sertificēts mērnieks (klients pasūta, Volko koordinē) · <span class="tl-dur">⏱ 1–2 ned.</span></div>
+        <div class="tl-title">Izpildmērījumi <span class="tl-price-tag">no 350 € + PVN par vienu</span></div>
+        <div class="tl-who">Veic: Sertificēts mērnieks (pasūtām mēs kā ārpakalpojumu) · <span class="tl-dur">⏱ 1–2 ned.</span></div>
         <div class="tl-why">Ēkas novietojuma izpildmērījums + inženiertīklu izpildshēmas (ūdens, kanalizācija, elektrība pagalmā). Pierāda, ka uzbūvēts tur un tā, kā projektā.</div>
       </div></div>
       <div class="tl-step"><div class="tl-num">3</div><div class="tl-content">
@@ -2732,7 +2732,7 @@ body[data-artype="jaunbuve"] #ar-jaunbuve-note{display:block}
         <div class="nod-service-item">Saziņa ar būvvaldi un inspektoru</div>
         <div class="nod-service-item">Atzinumu pasūtīšanas koordinācija</div>
         <div class="nod-service-item">Projekta dokumentācijas sagatavošana</div>
-        <div class="nod-service-item">Izpildmērījumu organizēšana (ja nepieciešams)</div>
+        <div class="nod-service-item">Izpildmērījumu organizēšana (Rīgā parasti 4, dažkārt 5)</div>
       </div>
       <div>
         <div class="nod-service-col-title">Klients kārto / sedz</div>
@@ -5740,7 +5740,7 @@ function renderARPanels(type, area, svcCoef) {
     html+='<div class="wiz-sec-h">Iekļauts cenā (NOD)</div>'+inclRow('Nodošanas dokumentācijas sagatavošana')+inclRow('BIS — pieprasījums pieņemšanai ekspluatācijā')+priceRow('NOD — pamatcena', 950);
     html+='<div class="wiz-sec-h">Papildus — pēc vajadzības (atsevišķi)</div>'+
       svcRowStatic('🔴 JĀ — apkurināmai','#fee2e2','#b91c1c','Energosertifikāts','Apkurināmai ēkai obligāts pirms nodošanas ekspluatācijā.')+
-      svcRowStatic('⚠️ NOSACĪTI','#fef9c3','#b45309','Izpildmērījuma plāns','Ja vēl nav — mērnieks fiksē faktisko novietojumu un inženiertīklus.');
+      svcRowStatic('🔴 JĀ — jaunbūvei','#fee2e2','#b91c1c','Izpildmērījuma plāns','Jaunbūvei obligāts pēc MK 529 (izņēmums tikai sezonas ēkām un ēkām ar tikai pazemes stāvu); pārbūvei — ja mainījusies situācija apvidū. Konkrētais punkts atkarīgs no nodošanas ceļa. Atsevišķs darbs, no 350 € + PVN par vienu; Rīgā parasti 4, dažkārt 5.');
     html+='<div class="wiz-sec-h">Process soli pa solim</div>';
     ['Izpilddokumentācijas sakārtošana','Atzinumi (inženiertīkli, VUGD u.c. — ja attiecas)','BIS — pieprasījums pieņemšanai ekspluatācijā','Pašvaldības/komisijas apsekošana','Akts par pieņemšanu ekspluatācijā'].forEach((s,i)=>{ html+=seqRow(i+1,s); });
     res.innerHTML=html;
