@@ -2963,7 +2963,7 @@ function determineServices(type,g,cat,area,auxHeated){
       apt.push({id:'esi',name:'ESI — Juridiskā esošās situācijas izpēte',status:'cond',why:'Vienkāršai telpu grupas pārbūvei parasti nav vajadzīga; ieteicama, ja ir šaubas par dzīvokļa īpašuma robežām vai kopīpašuma daļām.'});
     // TAA — tikai ja skar nesošās konstrukcijas
     apt.push(load
-      ? {id:'taa',name:'TAA — Tehniskā apsekošana',status:'yes',why:'Tiek skartas nesošās konstrukcijas — obligāta esošā stāvokļa tehniskā apsekošana pirms pārbūves (LBN 405-21).'}
+      ? {id:'taa',name:'TAA — Tehniskā apsekošana',status:'yes',why:'Tiek skartas nesošās konstrukcijas — ieteicama esošā stāvokļa tehniskā apsekošana. LBN 405-21 (MK Nr. 384) 9.2. p. to prasa tikai pirms būvprojekta izstrādes un tikai tad, ja projekta izstrādātājs identificē nepieciešamību; 9.¹ p. — "var veikt".'}
       : {id:'taa',name:'TAA — Tehniskā apsekošana',status:'cond',why:'Vajadzīga tikai, ja darbi skar nesošās konstrukcijas vai ir šaubas par tehnisko stāvokli.'});
     // BK — atkārtoti izmanto bkRequired (apartment-aware)
     const bk=bkRequired(type,g,cat,area);
@@ -2999,7 +2999,7 @@ function determineServices(type,g,cat,area,auxHeated){
   else if(type==='vienk')
     out.push({id:'taa',name:'TAA — Tehniskā apsekošana',status:'cond',why:'Vienkāršotā atjaunošanā nesošās konstrukcijas netiek skartas — TAA vajadzīga tikai, ja ir šaubas par ēkas tehnisko stāvokli.'});
   else
-    out.push({id:'taa',name:'TAA — Tehniskā apsekošana',status:'yes',why:'Esošas ēkas pārbūvei/legalizācijai obligāta esošā stāvokļa tehniskā apsekošana (LBN 405-21, MK Nr. 384). Bez TAA būvvalde var pieprasīt nojaukšanu.'});
+    out.push({id:'taa',name:'TAA — Tehniskā apsekošana',status:'yes',why:'Esošas ēkas pārbūvei/legalizācijai ieteicama esošā stāvokļa tehniskā apsekošana. LBN 405-21 (MK Nr. 384, likumi.lv id 324221) 9.2. p. to prasa tikai pirms būvprojekta izstrādes un tikai tad, ja projekta izstrādātājs identificē nepieciešamību; 9.¹ p. — "var veikt". Automātiski obligāta tā NAV.'});
   // BK — atkārtoti izmanto bkRequired (jau verificētā loģika)
   const bk=bkRequired(type,g,cat,area);
   out.push({id:'bk',name:'BK — Būvkonstrukciju daļa',status:bk.f,why:bk.t});
