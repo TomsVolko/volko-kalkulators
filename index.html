@@ -127,6 +127,7 @@ footer{max-width:1240px;margin:0 auto;padding:0 20px 40px;font-size:.7rem;color:
   <div class="card">
     <h2><span class="num">1</span> Kas jādara?</h2>
     <div class="darb-grid" id="darb-grid"></div>
+    <div class="sub-box" style="color:var(--muted)">Restaurācijas (kultūras pieminekļu) šeit apzināti nav — cenu tiem nerēķina. Tāds objekts → Vladimirs, individuāls piedāvājums.</div>
     <div class="sub-box" id="sub-parbuve" style="display:none">
       <label class="chk"><input type="checkbox" id="opt-nemaina" onchange="calc()"> Pārbūve NEMAINA būvapjomu, lietošanas veidu un ēkas izskatu</label>
     </div>
@@ -286,7 +287,14 @@ const TIPI=[
   {n:"Inženierbūve / žogs",k:0.50,cat:"eng"}
 ];
 
-/* ═══ DARBĪBAS ═══ */
+/* ═══ DARBĪBAS ═══
+   ⚠️ RESTAURĀCIJA ŠEIT NEIETILPST — tas nav trūkums, to nepievieno (Vladimirs 17.08.2026).
+   Būvniecības likuma 1. panta 10. p. (likumi.lv id 258572, 1. p. red. no 07.01.2026):
+   restaurācija = būvdarbi "zinātniski pamatotai būves vai tās daļas atjaunošanai, lietojot
+   oriģinālam atbilstošus materiālus, paņēmienus vai tehnoloģijas". Praksē tie ir kultūras
+   pieminekļi (NKMP saskaņojums, izpēte, sertificēts restaurators) — cenu formula tur neder,
+   vienmēr ir individuāls piedāvājums. Klients ar tādu objektu → sūta Vladimiram.
+   Ceļa noteikšana paliek spēkā: kods RE1 (MK 529 7.²3.) `legalizacijas_cels.py`. */
 const DARBS=[
   {id:"jaunbuve",icon:"🏗",n:"Jaunbūve",d:"Jauna ēka uz brīvas zemes"},
   {id:"parbuve",icon:"🔨",n:"Pārbūve / paplašināšana",d:"Esošas legālas ēkas izmaiņas"},
