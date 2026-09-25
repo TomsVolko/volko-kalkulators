@@ -233,6 +233,9 @@ const GC={I:0.75,II:1.20,III:1.80}; // iekšējais cenu koeficients — atšifr�
 const I_FIXED=[{max:10,cli:800},{max:15,cli:1000},{max:20,cli:1200},{max:25,cli:1400}];
 const PZ_A=400,PZ_B=950,PZ_C=1800; // paziņojuma līmeņi (Vladimirs 07.07.2026)
 const APT_BASE=450,APT_SKICE=950; // dzīvokļa (telpu grupas) pārplānošana: bez skices / ar skici (Toms+Vladimirs 27.07.2026)
+/* ŪK dzīvoklim (sanmezgls / vannas istaba) — TW #36442653. CENA NAV IZLEMTA: null = «JĀIZLEMJ TOMAM».
+   Izdomātu skaitli te NELIEK (sk. PR aprakstu); līdz lēmumam cenu ieraksta ar roku pakalpojumu rindā. */
+const UK_APT=null;
 const SVC_BASE={esi:950,taa:400,nod:950,bk_s:1400,bk_m:2000,bk_l:3000,ti:400,eps:370};
 /* BK lielām platībām (05.08.2026, deal 7457). Fiksētā bk_l=3000 EUR bija spēkā VISAM,
    kas >250 m² — 750 m² tērauda karkasa hallei tas ir klaji par zemu (detalizētais BK
@@ -603,6 +606,10 @@ function svcList(mainE){
       w:"Atsevišķam dzīvoklim parasti nav vajadzīgs — to gatavo visai ēkai."});
     out.push({id:"ti",n:"TI — topogrāfija",st:"no",p:r50(SVC_BASE.ti*muni.s),
       w:"Darbi ēkas iekšienē — topogrāfija nav vajadzīga."});
+    out.push({id:"uk",n:"ŪK — ūdensapgāde un kanalizācija (sanmezgls / vannas istaba)",st:"cond",
+      p:UK_APT===null?0:r50(UK_APT*muni.s),jaizlemj:UK_APT===null,
+      w:"Vajadzīga, ja pārplānošana pārvieto sanmezglu, vannas istabu vai skar ūdens / kanalizācijas stāvvadus."
+        +(UK_APT===null?" ⚠️ Kalkulatora cena JĀIZLEMJ TOMAM (TW #36442653) — līdz tam ieraksti apakšuzņēmēja piedāvājuma cenu ar roku.":"")});
     return out;
   }
   const taaSt=(darb==="jaunbuve")?"no":(darb==="vienk")?"cond":"yes";
@@ -699,16 +706,20 @@ function calc(resetSvc){
     const on=svcChecked[s.id]??(s.st==="yes");svcChecked[s.id]=on;
     const ov=_svcPrice[s.id]!==undefined, ep=ov?_svcPrice[s.id]:s.p;
     return `<div class="svc"><input type="checkbox" ${on?"checked":""} onchange="toggleSvc('${s.id}',this.checked)">
-    <div style="flex:1"><span class="sv-n">${s.n}</span> <span class="pill ${s.st}">${PILL[s.st]}</span><div class="sv-w">${s.w}</div></div>
+    <div style="flex:1"><span class="sv-n">${s.n}</span> <span class="pill ${s.st}">${PILL[s.st]}</span>${s.jaizlemj&&!ov?' <span class="pill yes" style="background:#fee2e2;color:#991b1b">CENA JĀIZLEMJ TOMAM</span>':""}<div class="sv-w">${s.w}</div></div>
     <span class="sv-p"><input type="number" min="0" step="50" value="${ep}" onchange="svcPrice('${s.id}',this.value)" title="Klienta cena — maini manuāli, saglabājas pārlūkā" style="width:74px;text-align:right;padding:3px 5px;border:1px solid ${ov?"var(--gold)":"var(--border)"};border-radius:6px;font-family:inherit;font-size:.8rem;background:${ov?"#fffbf0":"#fff"}"> €${ov?` <a href="#" onclick="svcPriceReset('${s.id}');return false" title="Atjaunot aprēķināto cenu (${eur(s.p)})" style="text-decoration:none">↺</a>`:""}</span></div>`;
   }).join("");
   let svcSum=0;
-  svcs.forEach(s=>{const ep=_svcPrice[s.id]!==undefined?_svcPrice[s.id]:s.p;if(svcChecked[s.id]){svcSum+=ep;brk+=`<div class="br"><span>${s.n.split(" — ")[0]}${_svcPrice[s.id]!==undefined?" (manuāla cena)":""}</span><span>${eur(ep)}</span></div>`;}});
+  let neizlemts=false;
+  svcs.forEach(s=>{const ov=_svcPrice[s.id]!==undefined,ep=ov?_svcPrice[s.id]:s.p;if(svcChecked[s.id]){svcSum+=ep;
+    const bezCenas=s.jaizlemj&&!ov; if(bezCenas)neizlemts=true;   // 0 EUR nedrīkst izskatīties pēc cenas
+    brk+=`<div class="br"><span>${s.n.split(" — ")[0]}${ov?" (manuāla cena)":""}</span><span>${bezCenas?"JĀIZLEMJ TOMAM":eur(ep)}</span></div>`;}});
   brk+=`<div class="br tot"><span>KOPĀ</span><span>${eur(sum+svcSum)}</span></div>`;
   document.getElementById("brk").innerHTML=brk;
 
   document.getElementById("total").textContent=eur(sum+svcSum);
-  document.getElementById("total-sub").textContent="Projektēšana "+eur(sum)+(svcSum?" + pakalpojumi "+eur(svcSum):"")+(darb==="jaunbuve"?" · detalizētai jaunbūves tāmei — pakešu konfigurators vecajā versijā":"");
+  document.getElementById("total-sub").textContent="Projektēšana "+eur(sum)+(svcSum?" + pakalpojumi "+eur(svcSum):"")+(darb==="jaunbuve"?" · detalizētai jaunbūves tāmei — pakešu konfigurators vecajā versijā":"")
+    +(neizlemts?" · ⚠️ ŪK cena kalkulatorā vēl nav izlemta — kopsummā NAV iekļauta":"");
 }
 
 renderDarb();renderEkas();calc();
