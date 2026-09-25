@@ -587,6 +587,10 @@ function svcPrice(id,val){
   calc(false);
 }
 function svcPriceReset(id){delete _svcPrice[id];localStorage.setItem("volkoSvcPrice",JSON.stringify(_svcPrice));calc(false);}
+/* BK stundu darbs (darbs pēc stundām, arī R trūkstošie mezgli) — Vladimira lēmums 25.09.2026
+   (TW #36435966): stundu likme dzīvo TIKAI Raita BK/R kalkulatoros v1.1. Šeit skaitli NEGLABĀJAM,
+   tikai norādi: viena likme divās vietās pēc nākamā labojuma dotu divas patiesības. */
+const BK_STUNDAS_NORADE=" ⏱️ BK stundu darbu rēķina Raita kalkulatorā v1.1 (Pārdošana\\Kalkulatori\\BK un R kalkulatori v1.1) — stundu likme šeit netiek glabāta.";
 function svcList(mainE){
   const t=TIPI[mainE.tips],cat=t.cat;
   const a=parseFloat(mainE.platiba)||0,f=parseInt(mainE.stavi)||1;
@@ -598,7 +602,7 @@ function svcList(mainE){
     out.push({id:"taa",n:"TAA — tehniskā apsekošana",st:"cond",p:r50(SVC_BASE.taa*muni.s),
       w:"Vajadzīga tikai, ja darbi skar nesošās konstrukcijas."});
     out.push({id:"bk",n:"BK — būvkonstrukciju daļa",st:"cond",p:r50(SVC_BASE.bk_s*muni.s),
-      w:"Vajadzīga tikai, ja darbi skar nesošās konstrukcijas (tad arī visu kopīpašnieku piekrišana)."});
+      w:"Vajadzīga tikai, ja darbi skar nesošās konstrukcijas (tad arī visu kopīpašnieku piekrišana)."+BK_STUNDAS_NORADE});
     out.push({id:"eps",n:"EPS — energoefektivitātes pārskats",st:"no",p:r50(SVC_BASE.eps*muni.s),
       w:"Atsevišķam dzīvoklim parasti nav vajadzīgs — to gatavo visai ēkai."});
     out.push({id:"ti",n:"TI — topogrāfija",st:"no",p:r50(SVC_BASE.ti*muni.s),
@@ -617,7 +621,7 @@ function svcList(mainE){
   const bkW=bkSt==="yes"?"Vajadzīgs būvprojekts — BK daļa obligāta.":bkSt==="no"?"Pietiek ar paskaidrojuma rakstu — atsevišķa BK daļa nav obligāta.":"Vajadzīga, ja darbi skar nesošās konstrukcijas vai jāizstrādā būvprojekts.";
   out.push({id:"bk",n:"BK — būvkonstrukciju daļa",st:bkSt,p:bkP,
     w:bkW+(a>BK_XL_NO?" ⚠️ Virs "+BK_XL_NO+" m² šī ir APLĒSE (orientieris sarunai) — pirms piedāvājuma pārrēķini ar detalizēto BK kalkulatoru (index-legacy.html, L2) pa konstrukciju sistēmām.":"")
-      +(a>=BK_XL_CAP?" ⛔ No ~"+BK_XL_CAP+" m² iestājas griesti "+eur(BK_XL_MAX)+" — virs tiem cenu NESOLĀM bez detalizēta pārrēķina.":"")});
+      +(a>=BK_XL_CAP?" ⛔ No ~"+BK_XL_CAP+" m² iestājas griesti "+eur(BK_XL_MAX)+" — virs tiem cenu NESOLĀM bez detalizēta pārrēķina.":"")+BK_STUNDAS_NORADE});
   const epsSt=(darb==="nojauksana"||!heated)?"no":(darb==="vienk")?"cond":"yes";
   out.push({id:"eps",n:"EPS — energoefektivitātes pārskats",st:epsSt,p:r50(SVC_BASE.eps*muni.s),
     w:epsSt==="no"?"Neapsildāmai ēkai vai nojaukšanai nav vajadzīgs.":epsSt==="cond"?"Vajadzīgs, ja darbi skar norobežojošās konstrukcijas (siltināšana, logi).":"Apsildāmai ēkai — vajadzīgs nodošanai ekspluatācijā."});
