@@ -233,9 +233,6 @@ const GC={I:0.75,II:1.20,III:1.80}; // iekšējais cenu koeficients — atšifr�
 const I_FIXED=[{max:10,cli:800},{max:15,cli:1000},{max:20,cli:1200},{max:25,cli:1400}];
 const PZ_A=400,PZ_B=950,PZ_C=1800; // paziņojuma līmeņi (Vladimirs 07.07.2026)
 const APT_BASE=450,APT_SKICE=950; // dzīvokļa (telpu grupas) pārplānošana: bez skices / ar skici (Toms+Vladimirs 27.07.2026)
-/* ŪK dzīvoklim (sanmezgls / vannas istaba) — TW #36442653. CENA NAV IZLEMTA: null = «JĀIZLEMJ TOMAM».
-   Izdomātu skaitli te NELIEK (sk. PR aprakstu); līdz lēmumam cenu ieraksta ar roku pakalpojumu rindā. */
-const UK_APT=null;
 const SVC_BASE={esi:950,taa:400,nod:950,bk_s:1400,bk_m:2000,bk_l:3000,ti:400,eps:370};
 /* BK lielām platībām (05.08.2026, deal 7457). Fiksētā bk_l=3000 EUR bija spēkā VISAM,
    kas >250 m² — 750 m² tērauda karkasa hallei tas ir klaji par zemu (detalizētais BK
@@ -590,6 +587,9 @@ function svcPrice(id,val){
   calc(false);
 }
 function svcPriceReset(id){delete _svcPrice[id];localStorage.setItem("volkoSvcPrice",JSON.stringify(_svcPrice));calc(false);}
+/* ŪK dzīvoklim (sanmezgls / vannas istaba) — TW #36442653. CENA NAV IZLEMTA: null = «JĀIZLEMJ TOMAM».
+   Izdomātu skaitli te NELIEK (sk. PR aprakstu); līdz lēmumam cenu ieraksta ar roku pakalpojumu rindā. */
+const UK_APT=null;
 function svcList(mainE){
   const t=TIPI[mainE.tips],cat=t.cat;
   const a=parseFloat(mainE.platiba)||0,f=parseInt(mainE.stavi)||1;
