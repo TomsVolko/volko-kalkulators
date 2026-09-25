@@ -113,7 +113,7 @@ footer{max-width:1240px;margin:0 auto;padding:0 20px 40px;font-size:.7rem;color:
 <header>
   <div>
     <div class="h-brand">VOLKO</div>
-    <div class="h-sub">Cenas &amp; legalizācijas ceļa kalkulators · v2 · 2026-08-10</div>
+    <div class="h-sub">Cenas &amp; legalizācijas ceļa kalkulators · v2 · 2026-09-25</div>
   </div>
   <div style="display:flex;gap:8px;align-items:center">
     <a class="h-legacy" href="iecere.html" style="border-color:var(--gold);color:var(--gold)">📋 Ieceres tabula →</a>
@@ -233,7 +233,11 @@ const GC={I:0.75,II:1.20,III:1.80}; // iekšējais cenu koeficients — atšifr�
 const I_FIXED=[{max:10,cli:800},{max:15,cli:1000},{max:20,cli:1200},{max:25,cli:1400}];
 const PZ_A=400,PZ_B=950,PZ_C=1800; // paziņojuma līmeņi (Vladimirs 07.07.2026)
 const APT_BASE=450,APT_SKICE=950; // dzīvokļa (telpu grupas) pārplānošana: bez skices / ar skici (Toms+Vladimirs 27.07.2026)
-const SVC_BASE={esi:950,taa:400,nod:950,bk_s:1400,bk_m:2000,bk_l:3000,ti:400,eps:370};
+/* BK bāze 2200 (Toma lēmums 24.09.2026, TW #36435977): līdz 100 m² fiksēti 2200 EUR pirms
+   pašvaldības koeficienta s, VISĀM ēkām (arī dzīvoklim, kas lieto bk_s). Virs 100 m² pakāpes
+   aug no 2200 tāpat, kā agrāk no 1400 (+600 / +1600): 2800 / 3800. Pakāpēm JĀBŪT augošām
+   (bk_s <= bk_m <= bk_l) — citādi 101 m² ēka maksā mazāk nekā 100 m². Tests: scripts/test_bk_cena.js */
+const SVC_BASE={esi:950,taa:400,nod:950,bk_s:2200,bk_m:2800,bk_l:3800,ti:400,eps:370};
 /* BK lielām platībām (05.08.2026, deal 7457). Fiksētā bk_l=3000 EUR bija spēkā VISAM,
    kas >250 m² — 750 m² tērauda karkasa hallei tas ir klaji par zemu (detalizētais BK
    kalkulators index-legacy.html L2 tai pašai ēkai dod ~11 500 EUR; legalizācijai reālais
@@ -242,10 +246,11 @@ const SVC_BASE={esi:950,taa:400,nod:950,bk_s:1400,bk_m:2000,bk_l:3000,ti:400,eps
    ✅ APSTIPRINĀJA VLADIMIRS 10.08.2026 (e-pasts "🔴 HOT: Kalkulatora cenas apstiprināšanai"):
    likme 10 EUR/m², griesti 12 000 EUR. Divas viņa piezīmes, kas ir SPĒKĀ:
    – griesti pēc formulas iestājas jau no ~1350 m² (nevis 2000, kā rakstīts sarunā);
+     no 25.09.2026 ar bk_l 3800 — no ~1270 m² (BK_XL_CAP rēķina pats);
    – virs 450 m² formula ir TIKAI orientieris sarunai — pirms piedāvājuma vienmēr
      pārrēķins ar detalizēto BK kalkulatoru (index-legacy.html, L2). */
 const BK_XL_NO=450, BK_XL_M2=10, BK_XL_MAX=12000;
-const BK_XL_CAP=BK_XL_NO+(BK_XL_MAX-SVC_BASE.bk_l)/BK_XL_M2; // platība, no kuras iestājas griesti (1350 m²)
+const BK_XL_CAP=BK_XL_NO+(BK_XL_MAX-SVC_BASE.bk_l)/BK_XL_M2; // platība, no kuras iestājas griesti (ar bk_l 3800 — 1270 m²)
 function bkCena(a){
   if(a<=100)return SVC_BASE.bk_s;
   if(a<=250)return SVC_BASE.bk_m;
