@@ -281,6 +281,12 @@ const TIPI=[
   {n:"Saimniecības ēka / šķūnis",k:0.70,cat:"aux"},
   {n:"Garāža",k:0.60,cat:"aux"},
   {n:"Noliktava",k:0.65,cat:"warehouse"},
+  /* Toma lēmums 17.09.2026 (TW #36414329): k = 0,70. MK 326 klase 1251 «Rūpnieciskās ražošanas
+     ēkas» tieši nosauc autoservisus un automazgātavas (likumi.lv id 299645). Līdz šim tās gāja kā
+     «Saimniecības ēka» (cat aux) → PR 7.²1., bet II grupas ražošanas ēkas jaunbūve ir būvatļauja 7.³
+     (legalizacijas_cels.py --kategorija industrial). ⚠️ Rinda stāv AIZ «Noliktava»: tips 0–9 ir
+     cieti kodēti (tips:0/5/6/7), tāpēc jaunu rindu augstāk ielikt NEDRĪKST. */
+  {n:"Ražošanas ēka (autoserviss, automazgātava, darbnīca)",k:0.70,cat:"industrial"},
   {n:"Biroja ēka",k:1.20,cat:"public"},
   {n:"Tirdzniecības ēka",k:1.25,cat:"public"},
   {n:"Jaukta lietojuma ēka",k:1.15,cat:"public"},
@@ -487,21 +493,25 @@ function docForBase(e){
     }
     if(g==="III") return {dt:"bp",ref:"MK 529 7.³",why:"III grupas ēkas pārbūve / legalizācija — būvprojekts + būvatļauja."};
     if(!legRisk&&nemaina&&g==="I") return {dt:"none",ref:"MK 529 7.3.1.",why:"I grupas ēkas pārbūve, nemainot apjomu, lietošanas veidu un izskatu — ieceres dokuments NAV vajadzīgs (tikai jau legālai ēkai)."};
-    if(g==="I") return darb==="leg-bez"?{dt:"pz",ref:"MK 529 7.¹4.",why:"I grupas ēkas legalizācija — paziņojums (kā jaunai būvniecībai) + esošā stāvokļa fiksācija."}:{dt:"pr",ref:"MK 529 7.²4.",why:"I grupas ēkas pārbūve — paskaidrojuma raksts."};
+    /* 7.¹4. attiecas TIKAI uz I gr. dzīvojamo ēku / palīgēku / lauksaim. nedzīvojamo ēku / mazēku
+       (legalizacijas_cels.py: tas pats «kā jaunbūvei»); ražošanas, noliktavas, publiskai I gr. ēkai
+       legalizācija iet PR 7.²1. (TW #36414329, salīdzināts ar legalizacijas_cels.py 25.09.2026). */
+    if(g==="I"&&darb==="leg-bez") return (cat==="dwelling"||cat==="aux")?{dt:"pz",ref:"MK 529 7.¹4.",why:"I grupas ēkas legalizācija — paziņojums (kā jaunai būvniecībai) + esošā stāvokļa fiksācija."}:{dt:"pr",ref:"MK 529 7.²1.",why:"I grupas ēkas (ne dzīvojamās / palīgēkas) legalizācija — paskaidrojuma raksts kā jaunbūvei + esošā stāvokļa fiksācija."};
+    if(g==="I") return {dt:"pr",ref:"MK 529 7.²4.",why:"I grupas ēkas pārbūve — paskaidrojuma raksts."};
     if(!legRisk&&nemaina&&cat==="aux"&&f<=1&&g==="II") return {dt:"none",ref:"MK 529 7.4.1.",why:"Vienstāva 2. grupas palīgēkas pārbūve/atjaunošana, nemainot apjomu un lietošanas veidu — dokuments NAV vajadzīgs (tikai jau legālai ēkai)."};
     if(cat==="aux") return {dt:"pr",ref:"MK 529 7.²11.",why:"Palīgēkas pārbūve / legalizācija — paskaidrojuma raksts (bez platības limita)."};
     if(cat==="dwelling"&&sub==="single"){
       if(!legRisk&&nemaina) return {dt:"pz",ref:"MK 529 7.¹6.",why:"1–2 dzīvokļu mājas pārbūve, nemainot apjomu un lietošanas veidu — paziņojums."};
       return {dt:"pr",ref:"MK 529 7.²11.",why:(legRisk?"Legalizācija — paskaidrojuma raksts (kā pārbūvei) + esošā stāvokļa fiksācija un tehniskā apsekošana.":"1–2 dzīvokļu mājas pārbūve, nemainot lietošanas veidu — paskaidrojuma raksts (bez 200 m² limita).")};
     }
-    return {dt:"bp",ref:"MK 529 7.³",why:"Daudzdzīvokļu / publiskas ēkas pārbūve vai legalizācija — būvprojekts + būvatļauja."};
+    return {dt:"bp",ref:"MK 529 7.³",why:"Daudzdzīvokļu / publiskas / noliktavas / ražošanas ēkas pārbūve vai legalizācija — būvprojekts + būvatļauja."};
   }
   /* jaunbūve */
   if(g==="III") return {dt:"bp",ref:"MK 529 7.³",why:"III grupas ēkas jaunbūve — būvprojekts + būvatļauja."};
   if(g==="I") return (cat==="dwelling"||cat==="aux")?{dt:"pz",ref:"MK 529 7.¹4.",why:"I grupas dzīvojamās ēkas / palīgēkas jaunbūve — paziņojums (no 01.01.2026)."}:{dt:"pr",ref:"MK 529 7.²1.",why:"I grupas ēkas jaunbūve — paskaidrojuma raksts."};
   if(cat==="aux") return {dt:"pr",ref:"MK 529 7.²1.",why:"Palīgēkas jaunbūve — paskaidrojuma raksts neatkarīgi no platības (60 m² maina tikai grupu, ne dokumentu)."};
   if(cat==="dwelling"&&sub==="single") return (parseFloat(e.platiba)||0)<=200?{dt:"pr",ref:"MK 529 7.²1.",why:"Viena dzīvokļa māja ≤200 m² — paskaidrojuma raksts."}:{dt:"bp",ref:"MK 529 7.³",why:"Viena dzīvokļa māja >200 m² — būvprojekts + būvatļauja."};
-  return {dt:"bp",ref:"MK 529 7.³",why:"Daudzdzīvokļu / publiskas / noliktavas ēkas jaunbūve — būvprojekts + būvatļauja."};
+  return {dt:"bp",ref:"MK 529 7.³",why:"Daudzdzīvokļu / publiskas / noliktavas / ražošanas ēkas jaunbūve — būvprojekts + būvatļauja."};
 }
 
 /* ═══ CENA PAR ĒKU — formula identiska vecajai (calcAR) ═══ */
