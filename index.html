@@ -587,9 +587,6 @@ function svcPrice(id,val){
   calc(false);
 }
 function svcPriceReset(id){delete _svcPrice[id];localStorage.setItem("volkoSvcPrice",JSON.stringify(_svcPrice));calc(false);}
-/* ŪK dzīvoklim (sanmezgls / vannas istaba) — TW #36442653. CENA NAV IZLEMTA: null = «JĀIZLEMJ TOMAM».
-   Izdomātu skaitli te NELIEK (sk. PR aprakstu); līdz lēmumam cenu ieraksta ar roku pakalpojumu rindā. */
-const UK_APT=null;
 function svcList(mainE){
   const t=TIPI[mainE.tips],cat=t.cat;
   const a=parseFloat(mainE.platiba)||0,f=parseInt(mainE.stavi)||1;
@@ -606,10 +603,6 @@ function svcList(mainE){
       w:"Atsevišķam dzīvoklim parasti nav vajadzīgs — to gatavo visai ēkai."});
     out.push({id:"ti",n:"TI — topogrāfija",st:"no",p:r50(SVC_BASE.ti*muni.s),
       w:"Darbi ēkas iekšienē — topogrāfija nav vajadzīga."});
-    out.push({id:"uk",n:"ŪK — ūdensapgāde un kanalizācija (sanmezgls / vannas istaba)",st:"cond",
-      p:UK_APT===null?0:r50(UK_APT*muni.s),jaizlemj:UK_APT===null,
-      w:"Vajadzīga, ja pārplānošana pārvieto sanmezglu, vannas istabu vai skar ūdens / kanalizācijas stāvvadus."
-        +(UK_APT===null?" ⚠️ Kalkulatora cena JĀIZLEMJ TOMAM (TW #36442653) — līdz tam ieraksti apakšuzņēmēja piedāvājuma cenu ar roku.":"")});
     return out;
   }
   const taaSt=(darb==="jaunbuve")?"no":(darb==="vienk")?"cond":"yes";
@@ -640,6 +633,17 @@ function svcList(mainE){
 }
 let svcChecked={};
 function toggleSvc(id,on){svcChecked[id]=on;calc(false);}
+
+/* ŪK dzīvoklim (sanmezgls / vannas istaba) — TW #36442653. CENA NAV IZLEMTA: null = «JĀIZLEMJ TOMAM».
+   Izdomātu skaitli te NELIEK (sk. PR aprakstu); līdz lēmumam cenu ieraksta ar roku pakalpojumu rindā.
+   Rinda dzīvo ārpus svcList() apzināti: tā dzīvokļa zaru maina vēl divi atvērti PR (#2, #4). */
+const UK_APT=null;
+function ukRinda(){
+  return {id:"uk",n:"ŪK — ūdensapgāde un kanalizācija (sanmezgls / vannas istaba)",st:"cond",
+    p:UK_APT===null?0:r50(UK_APT*muni.s),jaizlemj:UK_APT===null,
+    w:"Vajadzīga, ja pārplānošana pārvieto sanmezglu, vannas istabu vai skar ūdens / kanalizācijas stāvvadus."
+      +(UK_APT===null?" ⚠️ Kalkulatora cena JĀIZLEMJ TOMAM (TW #36442653) — līdz tam ieraksti apakšuzņēmēja piedāvājuma cenu ar roku.":"")};
+}
 
 /* ═══ GALVENAIS APRĒĶINS ═══ */
 const DOCLBL={pz:["📨 Paziņojums par būvniecību","#2563eb"],pr:["📋 Paskaidrojuma raksts","#a16207"],bp:["🏗 Būvprojekts + būvatļauja","#dc2626"],none:["✓ Dokuments nav vajadzīgs","#16a34a"]};
@@ -701,6 +705,7 @@ function calc(resetSvc){
   /* Pakalpojumi */
   const mainE=list.reduce((m,e)=>(parseFloat(e.platiba)||0)>(parseFloat(m.platiba)||0)?e:m,list[0]);
   const svcs=svcList(mainE);
+  if(TIPI[mainE.tips].cat==="apartment")svcs.push(ukRinda());
   const PILL={yes:"JĀ — vajadzīgs",cond:"NOSACĪTI",no:"NAV VAJADZĪGS"};
   document.getElementById("svc").innerHTML=svcs.map(s=>{
     const on=svcChecked[s.id]??(s.st==="yes");svcChecked[s.id]=on;
