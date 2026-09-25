@@ -180,6 +180,13 @@ footer{max-width:1240px;margin:0 auto;padding:0 20px 40px;font-size:.7rem;color:
     <label class="chk"><input type="checkbox" id="r-steidz" onchange="calc()"> Steidzams termiņš</label>
   </div>
 
+  <div class="card">
+    <h2><span class="num">4</span> VR no klienta projekta (DWG)</h2>
+    <label class="chk" style="margin-top:0"><input type="checkbox" id="vr-on" onchange="calc()"> Klientam jau ir gatavs projekts — vajag TIKAI VR (atsevišķs pakalpojums)</label>
+    <label class="chk"><input type="checkbox" id="vr-komerc" onchange="calc()"> Komerclietošana (= 2× 3. līmenis)</label>
+    <div class="sub-box" style="color:var(--muted)">Ēkas ņem no 2. kartītes. VR cenai platība = kopējā platība no klienta DWG (iekštelpas + ārtelpas), ne apbūves laukums. Darbība (1. kartīte) VR cenai nav vajadzīga.</div>
+  </div>
+
 </div>
 
 <div class="res"><!-- LABĀ KOLONNA — REZULTĀTS -->
@@ -187,6 +194,11 @@ footer{max-width:1240px;margin:0 auto;padding:0 20px 40px;font-size:.7rem;color:
     <div class="p-box-lbl">Projektēšana kopā (klientam)</div>
     <div class="p-box-val" id="total">—</div>
     <div class="p-box-sub" id="total-sub">Izvēlies darbību un ievadi platību</div>
+  </div>
+
+  <div class="res-card" id="vr-card" style="display:none">
+    <h3>🥽 VR no klienta projekta (DWG) — cena bez PVN</h3>
+    <div id="vr"></div>
   </div>
 
   <div class="res-card" id="cels-card" style="display:none">
@@ -357,6 +369,66 @@ function renderEkas(){
 }
 function addEka(){ekas.push({tips:7,platiba:"",stavi:1,apsild:false});renderEkas();calc();}
 function rmEka(i){ekas.splice(i,1);renderEkas();calc();}
+
+/* ═══ VR NO KLIENTA PROJEKTA (DWG) — atsevišķs pakalpojums ═══
+   Vladimira lēmums 25.09.2026 (TW #36447107, komentārs 15133870). Cenas bez PVN, katrai ēkai:
+   · tirgus: 1. līm. 150 € + 2,5 €/m² · 2. līm. 320 € + 4,0 €/m² · 3. līm. 390 € + 6,5 €/m²;
+   · stundu grīda: 22 / 26 / 34 h × 30 €/h × platības koef. (≤60 0,7 · ≤100 0,8 · ≤160 0,9 ·
+     ≤250 1,0 · ≤400 1,1 · ≤700 1,3);
+   · cena = lielākā no abām, noapaļo līdz 10 €;
+   · otrai un nākamajām ēkām tajā pašā zemesgabalā tirgus −15 %, bet ne zem grīdas;
+   · virs 700 m² — individuāli (Vladimirs); komerclietošana = 2× 3. līmenis.
+   VR tūre TIKAI Volko birojā (brillēs); fails un saite klientam netiek nodoti (saites licence 500 €).
+   Testi: scripts/test_vr_cena.js (1 ēka 267 m² → 820/1390/2130; 2 ēkas 460+135 m² → 1890/2890/4460). */
+const VR_TIRGUS={L1:[150,2.5],L2:[320,4.0],L3:[390,6.5]};
+const VR_STUNDAS={L1:22,L2:26,L3:34};
+const VR_LIKME=30;
+const VR_KOEF=[[60,0.7],[100,0.8],[160,0.9],[250,1.0],[400,1.1],[700,1.3]];
+const VR_ATLAIDE=0.15;
+function r10(n){return Math.round(n/10)*10;}
+function vrKoef(a){for(const [lim,k] of VR_KOEF)if(a<=lim)return k;return null;} // null = virs 700 m² → individuāli
+/* Viena ēka; nr = kārtas numurs zemesgabalā (0 = galvenā ēka, pilnā cenā) */
+function vrEka(a,lim,nr){
+  const k=vrKoef(a);
+  if(k===null)return {a,individ:true,cena:null};
+  const [bazes,m2]=VR_TIRGUS[lim];
+  const tirgus=(bazes+m2*a)*(nr>0?1-VR_ATLAIDE:1);
+  const grida=VR_STUNDAS[lim]*VR_LIKME*k;
+  return {a,k,tirgus,grida,cena:r10(Math.max(tirgus,grida))};
+}
+/* Visas ēkas vienā līmenī; kopa = null, ja kāda ēka virs 700 m² (tad cenu nesolām) */
+function vrCena(platibas,lim){
+  const rindas=platibas.map((a,i)=>vrEka(a,lim,i));
+  const kopa=rindas.some(r=>r.individ)?null:rindas.reduce((s,r)=>s+r.cena,0);
+  return {rindas,kopa};
+}
+function vrKomerc(platibas){const v=vrCena(platibas,"L3");return v.kopa===null?null:2*v.kopa;}
+function vrRender(){
+  const card=document.getElementById("vr-card");
+  const list=ekas.filter(e=>(parseFloat(e.platiba)||0)>0);
+  const on=document.getElementById("vr-on").checked;
+  card.style.display=(on&&list.length)?"block":"none";
+  if(!on||!list.length)return;
+  if(!darb)document.getElementById("empty-card").style.display="none"; // VR cenai darbība nav vajadzīga
+  const plat=list.map(e=>parseFloat(e.platiba)||0);
+  const LIM=["L1","L2","L3"],v={};
+  LIM.forEach(l=>v[l]=vrCena(plat,l));
+  const td='style="text-align:right;padding:4px 0 4px 8px;white-space:nowrap"';
+  const sv=r=>r.individ?"individuāli":eur(r.cena)+(r.grida>r.tirgus?' <span style="color:var(--muted);font-size:.64rem" title="Stundu grīda augstāka par tirgus cenu">(grīda)</span>':"");
+  let h=`<table style="width:100%;border-collapse:collapse;font-size:.78rem">
+    <tr style="color:var(--muted);font-weight:700"><td>Ēka</td><td ${td}>m²</td><td ${td}>1. līm.</td><td ${td}>2. līm.</td><td ${td}>3. līm.</td></tr>`;
+  list.forEach((e,i)=>{
+    h+=`<tr style="border-top:1px dashed #eef1f4"><td>${i===0?"Galvenā ēka":"Palīgēka "+i} — ${TIPI[e.tips].n}${i>0?' <span style="color:var(--muted)">(−15 %, ne zem grīdas)</span>':""}</td>
+      <td ${td}>${plat[i]}</td>${LIM.map(l=>`<td ${td}>${sv(v[l].rindas[i])}</td>`).join("")}</tr>`;
+  });
+  h+=`<tr style="font-weight:800;color:var(--navy);border-top:2px solid var(--navy)"><td>KOPĀ</td><td ${td}></td>${LIM.map(l=>`<td ${td}>${v[l].kopa===null?"—":eur(v[l].kopa)}</td>`).join("")}</tr></table>`;
+  const km=vrKomerc(plat);
+  if(document.getElementById("vr-komerc").checked)h+=`<div class="note gold">🏢 Komerclietošana (2× 3. līmenis): <strong>${km===null?"individuāli":eur(km)}</strong></div>`;
+  if(v.L1.kopa===null)h+=`<div class="note red">⛔ Ēka virs 700 m² — cenu nerēķinām, individuāls piedāvājums (Vladimirs).</div>`;
+  h+=`<div class="note blue">Cena katrai ēkai = lielākā no tirgus cenas un stundu grīdas (22 / 26 / 34 h × 30 €/h × platības koef.), noapaļota līdz 10 €. Vladimira lēmums 25.09.2026.</div>
+    <div class="note gold">🥽 VR tūre TIKAI Volko birojā (brillēs); fails un saite klientam netiek nodoti (saites licence 500 €).</div>`;
+  document.getElementById("vr").innerHTML=h;
+}
 
 /* ═══ PAŠVALDĪBAS (koeficienti identiski vecajai versijai) ═══ */
 /* V — Ventspils (pilsēta un novads): būvvalde nav vienkārša, tāpēc projektēšana kā Pierīgai
@@ -718,6 +790,11 @@ if(location.hash==="#demo"){
   ekas=[{tips:0,platiba:"120",stavi:1,apsild:false},{tips:6,platiba:"30",stavi:1,apsild:false}];
   renderEkas();document.getElementById("kadastrs").value="80760070123";kadCheck();calc();
 }
+/* VR kartīte atjaunojas PĒC katra calc(): bez darbības calc() parāda «izvēlies darbību» kartīti, un
+   VR cenai darbība nav vajadzīga — vrRender() to paslēpj. calc() iekšiene tāpēc nav mainīta. */
+const _calcBezVR=calc;
+calc=function(resetSvc){_calcBezVR(resetSvc);vrRender();};
+vrRender();
 </script>
 </body>
 </html>
